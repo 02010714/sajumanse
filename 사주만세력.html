@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사주 만세력 — AI시대 사주문해력</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f0e8;color:#2c2416;font-family:"Malgun Gothic","Apple SD Gothic Neo",serif;padding:20px 14px;min-height:100vh}
+.wrap{max-width:440px;margin:0 auto}
+.header{text-align:center;margin-bottom:22px}
+.header .sub{font-size:9px;letter-spacing:.4em;color:#8a6200;margin-bottom:6px}
+.header h1{font-size:22px;font-weight:700;color:#5a3e00}
+.header p{font-size:10px;color:#6b5a3a;margin-top:5px;line-height:1.7}
+.card{background:#fff;border:1px solid #ddd5c0;border-radius:13px;padding:20px;margin-bottom:14px}
+.card-title{font-size:11px;color:#8a6200;letter-spacing:.1em;margin-bottom:13px;font-weight:700}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:9px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
+label{font-size:9px;color:#7a6040;display:block;margin-bottom:3px}
+label.em{color:#8a6200;font-weight:700}
+input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-radius:7px;padding:8px 10px;font-size:13px;outline:none;width:100%;font-family:inherit}
+.btn-main{width:100%;background:linear-gradient(135deg,#c9a227,#9a7010);color:#fff;font-weight:700;font-size:13px;border:none;border-radius:8px;padding:12px;cursor:pointer;font-family:inherit;margin-top:4px}
+.btn-main:disabled{opacity:.5;cursor:not-allowed}
+.preview{margin-bottom:12px;padding:8px 11px;border-radius:7px;background:#fdf9f0;border:1px solid #ddd0b0;display:flex;align-items:center;justify-content:space-between}
+.preview-time{font-size:10px;color:#5a4a2a}
+.preview-jj{font-weight:700;margin-left:6px;font-family:serif;font-size:15px}
+.preview-name{color:#8a7a5a;margin-left:4px;font-size:10px}
+.warn-badge{font-size:8px;color:#e07070;background:rgba(224,112,112,.12);border-radius:3px;padding:1px 5px}
+.tabs{display:flex;gap:2px;margin-bottom:13px;background:#e8e0d0;border-radius:9px;padding:3px}
+.tab-btn{flex:1;padding:7px;border-radius:7px;border:none;cursor:pointer;font-size:12px;font-family:inherit;background:transparent;color:#7a6040;font-weight:400}
+.tab-btn.active{background:#fff;color:#8a6200;font-weight:700}
+.summary-box{background:#fffbf0;border:1px solid #e0c870;border-radius:9px;padding:11px 14px;margin-bottom:13px}
+.summary-box .lbl{font-size:9px;color:#8a7a5a;margin-bottom:2px}
+.pillar-row{display:flex;gap:5px;margin-bottom:13px}
+.pillar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 5px;border-radius:10px;position:relative;background:#faf8f4;border:1px solid #ddd0b0}
+.pillar.day{background:#fffbf0;border:1px solid #e0c870}
+.pillar .ss{font-size:10px;color:#8a7a5a;min-height:14px}
+.pillar.day .ss{color:#8a6200;font-weight:700}
+.pillar .hj{font-size:30px;font-weight:700;font-family:serif;line-height:1}
+.pillar .kr{font-size:10px;color:#8a7a5a}
+.pillar .divider{width:100%;height:1px;background:#e0d8c8;margin:2px 0}
+.pillar .jzgan{width:100%;border-top:1px solid #e0d8c8;padding-top:6px;display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:2px}
+.pillar .jzgan .lbl{font-size:8px;color:#8a7a5a;margin-bottom:1px}
+.pillar .jzgan .item{font-size:10px}
+.pillar .warn{position:absolute;top:3px;right:3px;font-size:7px;color:#e07070;background:rgba(224,112,112,.15);border-radius:2px;padding:1px 3px}
+.oh-badge{font-size:9px;font-weight:700;border-radius:3px;padding:1px 5px;letter-spacing:.02em;display:inline-block}
+.sipsin-box{background:#faf8f4;border:1px solid #ddd0b0;border-radius:9px;padding:12px 14px;margin-bottom:10px}
+.sipsin-box .lbl{font-size:9px;color:#8a7a5a;margin-bottom:7px}
+.sipsin-row{display:flex;gap:7px;flex-wrap:wrap}
+.sipsin-item{font-size:11px;background:#f0ece0;border-radius:5px;padding:4px 9px}
+.sipsin-item .k{color:#8a7a5a;margin-right:3px}
+.sipsin-item .v{color:#8a6200;font-weight:700}
+.gm-box{background:#faf8f4;border:1px solid #ddd0b0;border-radius:9px;padding:12px 14px}
+.gm-box .lbl{font-size:9px;color:#8a7a5a;margin-bottom:7px}
+.gm-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.gm-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 12px;border-radius:7px;background:#f0ece0;border:1px solid #ddd0b0}
+.gm-item.in-chart{background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.35)}
+.gm-item .hj{font-size:22px;font-weight:700;font-family:serif}
+.gm-item .kr{font-size:9px;color:#8a7a5a}
+.gm-item .star{font-size:8px;color:#c0392b;font-weight:700}
+.gm-note{font-size:10px;color:#9a8a6a;line-height:1.7;flex:1}
+.daeun-summary{background:#fffbf0;border:1px solid #e0c870;border-radius:9px;padding:13px 15px;margin-bottom:14px}
+.daeun-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.daeun-hdr .tit{font-size:12px;color:#8a6200;font-weight:700}
+.daeun-hdr .sub{font-size:10px;color:#8a7a5a}
+.daeun-cards{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.daeun-card{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 5px;border-radius:9px;min-width:60px;position:relative;background:#faf8f4;border:1px solid #ddd0b0;flex-shrink:0}
+.daeun-card.now{background:#fffbf0;border:1px solid #e0c870}
+.daeun-card .now-lbl{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:7px;color:#8a6200;background:#f4f0e8;padding:0 3px;white-space:nowrap}
+.daeun-card .age{font-size:10px;color:#7a6040;font-weight:700}
+.daeun-card .sy{font-size:8px;color:#9a8a6a}
+.daeun-card .cg{font-size:22px;font-weight:700;font-family:serif;line-height:1.1}
+.daeun-card .ss{font-size:8px;color:#8a7a5a}
+.daeun-card .div{width:70%;height:1px;background:#e0d8c8}
+.daeun-card .jj{font-size:22px;font-weight:700;font-family:serif;line-height:1.1}
+.now-box{background:#fffbf0;border:2px solid #e0c870;border-radius:9px;padding:14px}
+.now-box .lbl{font-size:9px;color:#8a7a5a;margin-bottom:7px}
+.now-box .inner{display:flex;align-items:center;gap:13px}
+.now-box .hj{font-size:36px;font-weight:700;font-family:serif;line-height:1}
+.now-box .name{font-size:14px;color:#8a6200;font-weight:700;margin-bottom:2px}
+.now-box .years{font-size:10px;color:#7a6040;margin-bottom:4px}
+.now-box .badges{display:flex;gap:5px}
+.copy-btn{width:100%;padding:13px;border-radius:9px;border:1px solid #ccc0a0;background:#fffbf0;color:#7a6040;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.03em;margin-top:14px}
+.copy-btn.open{border-color:rgba(46,95,163,.4);background:#f0f4ff;color:#2e5fa3}
+.copy-area{margin-top:8px}
+.copy-area .hint{font-size:10px;color:#8a6200;margin-bottom:5px;font-weight:700}
+.copy-area textarea{width:100%;height:260px;padding:12px;border-radius:8px;border:1px solid #ccc0a0;background:#faf8f4;color:#2c2416;font-size:11px;line-height:1.7;font-family:monospace;resize:vertical}
+.copy-area .hint2{font-size:9px;color:#9a8a6a;margin-top:4px}
+.footer{text-align:center;margin-top:36px;padding-top:18px;border-top:1px solid #ddd0b0}
+.footer p{font-size:9px;color:#9a8a6a;line-height:1.9}
+.kasi-box{margin-bottom:12px;background:#fff;border:1px solid #ddd5c0;border-radius:11px;padding:13px 15px}
+.kasi-hdr{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.kasi-hdr span{font-size:11px;color:#5a4a2a}
+.kasi-body{margin-top:10px}
+.kasi-hint{font-size:9px;color:#8a7a5a;margin-top:3px}
+#result{margin-top:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="sub">萬歲曆 × KASI</div>
+    <h1>사주 만세력</h1>
+    <p>『AI시대 사주문해력』 독자 전용 · 분 단위 시주 · KASI 절기</p>
+  </div>
+
+  <!-- KASI 키 -->
+  <div class="kasi-box">
+    <div class="kasi-hdr" onclick="toggleKasi()">
+      <span>🔑 KASI API 키 (선택) <span id="kasi-status"></span></span>
+      <span id="kasi-arrow">▼</span>
+    </div>
+    <div class="kasi-body" id="kasi-body" style="display:none">
+      <input type="password" id="kKey" placeholder="data.go.kr 서비스키...">
+      <div class="kasi-hint">없으면 근사값 계산 (±1일 오차) · data.go.kr 무료 발급</div>
+    </div>
+  </div>
+
+  <!-- 입력 폼 -->
+  <div class="card">
+    <div class="card-title">생년월일시 입력</div>
+    <div class="grid3">
+      <div><label>년도</label><input type="number" id="yr" value="1990" min="1900" max="2100"></div>
+      <div><label>월</label><input type="number" id="mo" value="6" min="1" max="12"></div>
+      <div><label>일</label><input type="number" id="dy" value="15" min="1" max="31"></div>
+    </div>
+    <div class="grid3">
+      <div><label>시 (0~23)</label><input type="number" id="hr" value="10" min="0" max="23" oninput="updatePreview()"></div>
+      <div><label class="em">분 (0~59)</label><input type="number" id="min" value="30" min="0" max="59" oninput="updatePreview()"></div>
+      <div><label>성별</label><select id="gd"><option value="남">남성</option><option value="여">여성</option></select></div>
+    </div>
+    <div class="preview">
+      <span class="preview-time">
+        <span id="pv-time"></span>
+        <span class="preview-jj" id="pv-jj"></span>
+        <span class="preview-name" id="pv-name"></span>
+      </span>
+      <span class="warn-badge" id="pv-warn" style="display:none">시경계 ±10분</span>
+    </div>
+    <button class="btn-main" onclick="handleCalc()">✦ 원국 + 대운 뽑기</button>
+  </div>
+
+  <div id="result" style="display:none">
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-chart" onclick="setTab('chart')">원국</button>
+      <button class="tab-btn" id="tab-daeun" onclick="setTab('daeun')">대운</button>
+    </div>
+    <div id="panel-chart"></div>
+    <div id="panel-daeun" style="display:none"></div>
+    <button class="copy-btn" id="copy-btn" onclick="toggleCopy()">📋 사주 원국 + 대운 복사 (채팅창 간명용)</button>
+    <div class="copy-area" id="copy-area" style="display:none">
+      <div class="hint">▼ 텍스트 클릭 → 전체선택(Ctrl+A) → 복사(Ctrl+C) → 채팅창 붙여넣기</div>
+      <textarea id="copy-text" readonly onclick="this.select()"></textarea>
+      <div class="hint2">복사 후 Claude 채팅창에 붙여넣으면 종합 간명을 받을 수 있습니다</div>
+    </div>
+  </div>
+
+  <div class="footer"><p>『AI시대 사주문해력』 독자 전용 만세력 · KASI 절기 데이터</p></div>
+</div>
+
+<script>
+// ── 기초 데이터 ───────────────────────────────────────────
+const CG=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const JJ=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const CG_KR=['갑','을','병','정','무','기','경','신','임','계'];
+const JJ_KR=['자','축','인','묘','진','사','오','미','신','유','술','해'];
+const OH=['목','화','토','금','수'];
+const OH_CG=[0,0,1,1,2,2,3,3,4,4];
+const OH_JJ=[4,2,0,0,2,1,1,2,3,3,2,4];
+const JJGAN=[[9],[9,7,5],[2,4,0],[1],[1,9,4],[4,6,2],[3,5],[1,3,5],[4,8,6],[7],[3,7,4],[0,8]];
+const CO={목:{t:'#2e7d4f',bg:'rgba(46,125,79,0.08)',b:'rgba(46,125,79,0.3)'},
+          화:{t:'#c0392b',bg:'rgba(192,57,43,0.08)',b:'rgba(192,57,43,0.3)'},
+          토:{t:'#8a6200',bg:'rgba(138,98,0,0.08)',b:'rgba(138,98,0,0.3)'},
+          금:{t:'#2e5fa3',bg:'rgba(46,95,163,0.08)',b:'rgba(46,95,163,0.3)'},
+          수:{t:'#1565a0',bg:'rgba(21,101,160,0.08)',b:'rgba(21,101,160,0.3)'}};
+const JD_NAME=['소한','입춘','경칩','청명','입하','망종','소서','입추','백로','한로','입동','대설'];
+const GONGMANG_TABLE=[[10,11],[8,9],[6,7],[4,5],[2,3],[0,1]];
+const SUN_NAME=['甲子순','甲戌순','甲申순','甲午순','甲辰순','甲寅순'];
+
+// ── 계산 함수 ─────────────────────────────────────────────
+function toJDN(y,m,d){const a=Math.floor((14-m)/12),yr=y+4800-a,mn=m+12*a-3;return d+Math.floor((153*mn+2)/5)+365*yr+Math.floor(yr/4)-Math.floor(yr/100)+Math.floor(yr/400)-32045;}
+function calcYear(y,m,d){const ay=(m<2||(m===2&&d<4))?y-1:y;return{cg:((ay-4)%10+10)%10,jj:((ay-4)%12+12)%12,warn:m===2&&Math.abs(d-4)<=1};}
+function calcMonth(y,m,d,ycg,gmap){
+  const name=JD_NAME[m-1];let jeolJDN=null;
+  if(gmap){for(let i=-1;i<=1;i++){const k=name+'_'+(y+i);if(gmap[k]){jeolJDN=gmap[k];break;}}}
+  const approx=[6,4,6,5,6,6,7,7,8,8,7,7];
+  const jdn=toJDN(y,m,d);
+  const after=jeolJDN?jdn>=jeolJDN:d>=approx[m-1];
+  const bm=after?m%12:(m-1+12)%12;
+  const mc=((ycg%5)*2+2+(bm-2+12)%12)%10;
+  return{cg:mc,jj:bm,warn:jeolJDN?Math.abs(jdn-jeolJDN)<=1:false};
+}
+function calcDay(y,m,d){const pos=(toJDN(y,m,d)+49)%60;return{cg:pos%10,jj:pos%12};}
+function calcHour(h,min,dcg){
+  const t=h*60+min;
+  const ji=(t>=1380||t<60)?0:t<180?1:t<300?2:t<420?3:t<540?4:t<660?5:t<780?6:t<900?7:t<1020?8:t<1140?9:t<1260?10:11;
+  const hc=((dcg%5)*2+ji)%10;
+  return{cg:hc,jj:ji};
+}
+function getSS(dc,tc){
+  const d=Math.floor(dc/2),t=Math.floor(tc/2),same=(dc%2)===(tc%2);
+  const gen=[[0,1],[1,2],[2,3],[3,4],[4,0]];
+  const ctl=[[0,2],[1,3],[2,4],[3,0],[4,1]];
+  if(d===t)return same?'비견':'겁재';
+  if(gen.some(p=>p[0]===d&&p[1]===t))return same?'식신':'상관';
+  if(ctl.some(p=>p[0]===d&&p[1]===t))return same?'편재':'정재';
+  if(gen.some(p=>p[0]===t&&p[1]===d))return same?'편인':'정인';
+  return same?'편관':'정관';
+}
+function calcGongmang(y,m,d){const pos=(toJDN(y,m,d)+49)%60,sun=Math.floor(pos/10);return{jj:GONGMANG_TABLE[sun],sunName:SUN_NAME[sun]};}
+function getJeolJDN(year,month,gmap){
+  const name=JD_NAME[month-1];
+  if(gmap){for(let i=-1;i<=1;i++){const k=name+'_'+(year+i);if(gmap[k])return{j:gmap[k],p:true};}}
+  const approx=[6,4,6,5,6,6,7,7,8,8,7,7];
+  return{j:toJDN(year,month,approx[month-1]),p:false};
+}
+function calcDaeun(y,m,d,h,min,gender,dc,mp,gmap){
+  const forward=(gender==='남')===(dc%2===0);
+  const bJDN=toJDN(y,m,d);
+  let days,precise;
+  if(forward){const res=getJeolJDN(y,mp.jj<=1?m+1:m+1,gmap);days=res.j-bJDN;precise=res.p;}
+  else{
+    const res=getJeolJDN(y,m,gmap);
+    if(bJDN>=res.j){const res2=getJeolJDN(y,m-1||12,gmap);days=bJDN-res2.j;precise=res2.p;}
+    else{days=bJDN-res.j;precise=res.p;}
+  }
+  const totalMin=days*4*60;
+  const yearMin=365.25*24*60;
+  const monMin=yearMin/12;
+  const rawYears=totalMin/yearMin;
+  const sy=rawYears===Math.floor(rawYears)?Math.floor(rawYears):Math.ceil(rawYears);
+  const remMin=totalMin%yearMin;
+  const sm=Math.floor(remMin/monMin);
+  const sd=Math.round((remMin%monMin)/(monMin/30));
+  const daeuns=[];
+  for(let i=1;i<=9;i++){
+    const idx=forward?(mp.cg+i)%10:((mp.cg-i)%10+10)%10;
+    const jidx=forward?(mp.jj+i)%12:((mp.jj-i)%12+12)%12;
+    daeuns.push({cg:idx,jj:jidx,age:sy+(i-1)*10,ss:getSS(dc,idx)});
+  }
+  return{forward,sy,sm,sd,daeuns,precise,rawDays:Math.round(days*10)/10};
+}
+function buildSaju(y,m,d,h,min,gender,gmap){
+  const yp=calcYear(y,m,d);
+  const mp=calcMonth(y,m,d,yp.cg,gmap);
+  const dp=calcDay(y,m,d);
+  const hp=calcHour(h,min,dp.cg);
+  const dc=dp.cg;
+  const gm=calcGongmang(y,m,d);
+  const shiName=JJ_KR[hp.jj]+'시';
+  return{
+    pillars:[
+      {label:'년주',cg:yp.cg,jj:yp.jj,warn:yp.warn,ss:getSS(dc,yp.cg)},
+      {label:'월주',cg:mp.cg,jj:mp.jj,warn:mp.warn,ss:getSS(dc,mp.cg)},
+      {label:'일주',cg:dc,jj:dp.jj,warn:false,ss:'일원'},
+      {label:'시주',cg:hp.cg,jj:hp.jj,warn:false,ss:getSS(dc,hp.cg)},
+    ],
+    dc,shiName,gongmang:gm,
+    daeun:calcDaeun(y,m,d,h,min,gender,dc,mp,gmap),
+  };
+}
+async function fetchKasi(year,key){
+  const map={};
+  const months=[1,2,3,4,5,6,7,8,9,10,11,12];
+  for(const mo of months){
+    try{
+      const url=`https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/get24DivisionsInfo?solYear=${year}&solMonth=${String(mo).padStart(2,'0')}&ServiceKey=${encodeURIComponent(key)}&_type=json&numOfRows=30`;
+      const res=await fetch(url);
+      const data=await res.json();
+      const items=data?.response?.body?.items?.item;
+      if(!items)continue;
+      const arr=Array.isArray(items)?items:[items];
+      for(const it of arr){
+        const s=String(it.locdate);
+        const jy=parseInt(s.slice(0,4)),jm=parseInt(s.slice(4,6)),jd=parseInt(s.slice(6,8));
+        map[it.dateName+'_'+jy]=toJDN(jy,jm,jd);
+      }
+    }catch(e){}
+  }
+  return map;
+}
+
+// ── UI 헬퍼 ───────────────────────────────────────────────
+function ohBadge(oh){const c=CO[oh];return `<span class="oh-badge" style="color:${c.t};background:${c.bg};border:1px solid ${c.b}">${oh}</span>`;}
+
+let currentSaju=null;
+let nowYear=new Date().getFullYear();
+
+function updatePreview(){
+  const h=parseInt(document.getElementById('hr').value)||0;
+  const min=parseInt(document.getElementById('min').value)||0;
+  const t=h*60+min;
+  const ji=(t>=1380||t<60)?0:t<180?1:t<300?2:t<420?3:t<540?4:t<660?5:t<780?6:t<900?7:t<1020?8:t<1140?9:t<1260?10:11;
+  const oh=OH[OH_JJ[ji]];
+  const c=CO[oh];
+  document.getElementById('pv-time').textContent=h+'시 '+String(min).padStart(2,'0')+'분 →';
+  document.getElementById('pv-jj').textContent=JJ[ji];
+  document.getElementById('pv-jj').style.color=c.t;
+  document.getElementById('pv-name').textContent=JJ_KR[ji]+'시';
+  const boundaries=[0,60,150,270,390,510,630,750,870,990,1110,1290,1410,1440];
+  const near=boundaries.some(b=>Math.abs(t-b)<=10);
+  document.getElementById('pv-warn').style.display=near?'':'none';
+}
+
+function toggleKasi(){
+  const body=document.getElementById('kasi-body');
+  const arrow=document.getElementById('kasi-arrow');
+  const show=body.style.display==='none';
+  body.style.display=show?'':'none';
+  arrow.textContent=show?'▲':'▼';
+}
+
+function setTab(t){
+  document.getElementById('panel-chart').style.display=t==='chart'?'':'none';
+  document.getElementById('panel-daeun').style.display=t==='daeun'?'':'none';
+  document.getElementById('tab-chart').className='tab-btn'+(t==='chart'?' active':'');
+  document.getElementById('tab-daeun').className='tab-btn'+(t==='daeun'?' active':'');
+}
+
+function toggleCopy(){
+  const area=document.getElementById('copy-area');
+  const btn=document.getElementById('copy-btn');
+  const show=area.style.display==='none';
+  area.style.display=show?'':'none';
+  btn.className='copy-btn'+(show?' open':'');
+  btn.textContent=show?'▲ 텍스트 닫기':'📋 사주 원국 + 대운 복사 (채팅창 간명용)';
+  if(show&&currentSaju)document.getElementById('copy-text').value=buildCopyText(currentSaju);
+}
+
+function buildCopyText(s){
+  const {pillars,dc,daeun,shiName}=s;
+  const yr=parseInt(document.getElementById('yr').value);
+  const hr=parseInt(document.getElementById('hr').value)||0;
+  const min=parseInt(document.getElementById('min').value)||0;
+  const gd=document.getElementById('gd').value;
+  const pillarStr=pillars.map(p=>
+    p.label+': '+CG[p.cg]+JJ[p.jj]+
+    ' [천간: '+CG_KR[p.cg]+'('+OH[OH_CG[p.cg]]+') / 지지: '+JJ_KR[p.jj]+'('+OH[OH_JJ[p.jj]]+')]'+
+    ' 십신: '+p.ss
+  ).join('\n');
+  const ohCnt={목:0,화:0,토:0,금:0,수:0};
+  pillars.forEach(p=>{ohCnt[OH[OH_CG[p.cg]]]++;ohCnt[OH[OH_JJ[p.jj]]]++;});
+  const ohStr=Object.entries(ohCnt).map(e=>e[0]+e[1]).join(' ');
+  const dStr=daeun.daeuns.slice(0,8).map(d=>d.age+'세 '+CG[d.cg]+JJ[d.jj]+'('+d.ss+')').join(' / ');
+  const cd=daeun.daeuns.find(d=>nowYear>=yr+d.age&&nowYear<=yr+d.age+9);
+  const dir=daeun.forward?'순행':'역행';
+  return '아래 사주를 종합 간명해주세요.\n\n'+
+    '[사주 원국]\n'+pillarStr+'\n'+
+    '일간: '+CG[dc]+CG_KR[dc]+' ('+OH[OH_CG[dc]]+') | 성별: '+gd+'성\n'+
+    '생시: '+hr+'시 '+min+'분 → '+shiName+' | 오행분포: '+ohStr+'\n\n'+
+    '[대운] '+dir+' | '+daeun.sy+'세 시작\n'+dStr+
+    (cd?'\n현재 대운('+nowYear+'): '+CG[cd.cg]+JJ[cd.jj]+'('+cd.ss+')':'');
+}
+
+function renderChart(s){
+  const {pillars,dc,gongmang}=s;
+  const yr=parseInt(document.getElementById('yr').value);
+
+  // 오행 분포
+  const ohCnt={목:0,화:0,토:0,금:0,수:0};
+  pillars.forEach(p=>{ohCnt[OH[OH_CG[p.cg]]]++;ohCnt[OH[OH_JJ[p.jj]]]++;});
+  const ohBadges=Object.entries(ohCnt).filter(e=>e[1]>0).map(e=>ohBadge(e[0])).join(' ');
+
+  // 필러 카드
+  const pillarCards=pillars.map((p,i)=>{
+    const co=OH[OH_CG[p.cg]],jo=OH[OH_JJ[p.jj]];
+    const jzItems=JJGAN[p.jj].map(c=>`<div class="item" style="color:${CO[OH[OH_CG[c]]].t}">${CG[c]}<span style="font-size:8px;color:#8a7a5a;margin-left:1px">${OH[OH_CG[c]]}</span></div>`).join('');
+    return `<div class="pillar${i===2?' day':''}">
+      ${p.warn?'<div class="warn">경계</div>':''}
+      <div class="ss">${p.ss}</div>
+      <div class="hj" style="color:${CO[co].t}">${CG[p.cg]}</div>
+      <div class="kr">${CG_KR[p.cg]}</div>
+      ${ohBadge(co)}
+      <div class="divider"></div>
+      <div class="hj" style="color:${CO[jo].t}">${JJ[p.jj]}</div>
+      <div class="kr">${JJ_KR[p.jj]}</div>
+      ${ohBadge(jo)}
+      ${i===3?`<div class="kr">${s.shiName}</div>`:''}
+      <div class="jzgan"><div class="lbl">지장간</div>${jzItems}</div>
+    </div>`;
+  }).join('');
+
+  // 십신
+  const sipsinItems=pillars.filter((_,i)=>i!==2).map(p=>`<div class="sipsin-item"><span class="k">${p.label}</span><span class="v">${p.ss}</span></div>`).join('');
+
+  // 공망
+  const gmItems=gongmang.jj.map(j=>{
+    const inChart=pillars.some(p=>p.jj===j);
+    const jo=OH[OH_JJ[j]];
+    return `<div class="gm-item${inChart?' in-chart':''}">
+      <div class="hj" style="color:${CO[jo].t}">${JJ[j]}</div>
+      <div class="kr">${JJ_KR[j]}</div>
+      ${inChart?'<div class="star">명식 내 ★</div>':''}
+    </div>`;
+  }).join('');
+  const gmNote=gongmang.jj.some(j=>pillars.some(p=>p.jj===j))
+    ?'★ 명식 내 공망 — 해당 십신 작용 약화':'명식 내 공망 없음';
+
+  return `
+    <div class="summary-box">
+      <div class="lbl">일간</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:32px;font-weight:700;font-family:serif;color:${CO[OH[OH_CG[dc]]].t};line-height:1">${CG[dc]}</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#2c2416">${CG_KR[dc]} (${OH[OH_CG[dc]]})</div>
+          <div style="margin-top:3px">${ohBadges}</div>
+        </div>
+      </div>
+    </div>
+    <div class="pillar-row">${pillarCards}</div>
+    <div class="sipsin-box"><div class="lbl">십신 구조</div><div class="sipsin-row">${sipsinItems}</div></div>
+    <div class="gm-box">
+      <div class="lbl">공망(空亡) · ${gongmang.sunName} 기준</div>
+      <div class="gm-row">${gmItems}<div class="gm-note">${gmNote}</div></div>
+    </div>`;
+}
+
+function renderDaeun(s){
+  const {daeun,dc}=s;
+  const yr=parseInt(document.getElementById('yr').value);
+  const dir=daeun.forward?'순행 ▶':'◀ 역행';
+  const preciseLabel=daeun.precise
+    ?'<span style="color:#2e7d4f;margin-left:6px;font-size:9px">✓ KASI 정밀</span>'
+    :'<span style="color:#8a6200;margin-left:6px;font-size:9px">~ 근사값</span>';
+
+  const cards=daeun.daeuns.map(d=>{
+    const sy=yr+d.age;
+    const isNow=nowYear>=sy&&nowYear<=sy+9;
+    const co=OH[OH_CG[d.cg]],jo=OH[OH_JJ[d.jj]];
+    return `<div class="daeun-card${isNow?' now':''}">
+      ${isNow?'<div class="now-lbl">현재</div>':''}
+      <div class="age">${d.age}세</div>
+      <div class="sy">${sy}~</div>
+      <div class="cg" style="color:${CO[co].t}">${CG[d.cg]}</div>
+      <div class="ss">${d.ss}</div>
+      <div class="div"></div>
+      <div class="jj" style="color:${CO[jo].t}">${JJ[d.jj]}</div>
+      ${ohBadge(jo)}
+    </div>`;
+  }).join('');
+
+  const cd=daeun.daeuns.find(d=>nowYear>=yr+d.age&&nowYear<=yr+d.age+9);
+  let nowBox='';
+  if(cd){
+    const co=OH[OH_CG[cd.cg]],jo=OH[OH_JJ[cd.jj]];
+    nowBox=`<div class="now-box">
+      <div class="lbl">현재 대운 (${nowYear}년)</div>
+      <div class="inner">
+        <div>
+          <span class="hj" style="color:${CO[co].t}">${CG[cd.cg]}</span>
+          <span class="hj" style="color:${CO[jo].t}">${JJ[cd.jj]}</span>
+        </div>
+        <div>
+          <div class="name">${CG_KR[cd.cg]}${JJ_KR[cd.jj]} · ${cd.ss}</div>
+          <div class="years">${yr+cd.age} ~ ${yr+cd.age+9}년</div>
+          <div class="badges">${ohBadge(co)}${ohBadge(jo)}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  return `
+    <div class="daeun-summary">
+      <div class="daeun-hdr">
+        <span class="tit">${dir} 대운</span>
+        <span class="sub">${daeun.sy}세 시작${daeun.sm>0?' '+daeun.sm+'개월':''}${preciseLabel}</span>
+      </div>
+      <div class="daeun-cards">${cards}</div>
+    </div>
+    ${nowBox}`;
+}
+
+async function handleCalc(){
+  const btn=document.querySelector('.btn-main');
+  btn.disabled=true; btn.textContent='계산 중...';
+  const yr=parseInt(document.getElementById('yr').value);
+  const mo=parseInt(document.getElementById('mo').value);
+  const dy=parseInt(document.getElementById('dy').value);
+  const hr=parseInt(document.getElementById('hr').value)||0;
+  const min=parseInt(document.getElementById('min').value)||0;
+  const gd=document.getElementById('gd').value;
+  const kKey=document.getElementById('kKey').value.trim();
+  let gmap=null;
+  if(kKey){
+    try{gmap=await fetchKasi(yr,kKey);if(Object.keys(gmap).length===0)gmap=null;}catch(e){}
+  }
+  const s=buildSaju(yr,mo,dy,hr,min,gd,gmap);
+  currentSaju=s;
+  document.getElementById('panel-chart').innerHTML=renderChart(s);
+  document.getElementById('panel-daeun').innerHTML=renderDaeun(s);
+  document.getElementById('result').style.display='';
+  setTab('chart');
+  // 복사창 닫기
+  document.getElementById('copy-area').style.display='none';
+  document.getElementById('copy-btn').className='copy-btn';
+  document.getElementById('copy-btn').textContent='📋 사주 원국 + 대운 복사 (채팅창 간명용)';
+  btn.disabled=false; btn.textContent='✦ 원국 + 대운 뽑기';
+}
+
+// 초기화
+updatePreview();
+</script>
+</body>
+</html>
