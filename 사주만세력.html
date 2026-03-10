@@ -179,7 +179,16 @@ const SUN_NAME=['甲子순','甲戌순','甲申순','甲午순','甲辰순','甲
 
 // ── 계산 함수 ─────────────────────────────────────────────
 function toJDN(y,m,d){const a=Math.floor((14-m)/12),yr=y+4800-a,mn=m+12*a-3;return d+Math.floor((153*mn+2)/5)+365*yr+Math.floor(yr/4)-Math.floor(yr/100)+Math.floor(yr/400)-32045;}
-function calcYear(y,m,d){const ay=(m<2||(m===2&&d<4))?y-1:y;return{cg:((ay-4)%10+10)%10,jj:((ay-4)%12+12)%12,warn:m===2&&Math.abs(d-4)<=1};}
+function calcYear(y,m,d,gmap){
+  let ibchunJDN=null,precise=false;
+  if(gmap){const k='입춘_'+y;if(gmap[k]){ibchunJDN=gmap[k];precise=true;}}
+  const bJDN=toJDN(y,m,d);
+  let ay;
+  if(precise){ay=bJDN>=ibchunJDN?y:y-1;}
+  else{ay=(m<2||(m===2&&d<4))?y-1:y;}
+  const warn=m===2&&(precise?Math.abs(bJDN-ibchunJDN)<=1:Math.abs(d-4)<=1);
+  return{cg:((ay-4)%10+10)%10,jj:((ay-4)%12+12)%12,warn};
+}
 function calcMonth(y,m,d,ycg,gmap){
   const name=JD_NAME[m-1];let jeolJDN=null;
   if(gmap){for(let i=-1;i<=1;i++){const k=name+'_'+(y+i);if(gmap[k]){jeolJDN=gmap[k];break;}}}
@@ -218,20 +227,36 @@ function calcDaeun(y,m,d,h,min,gender,dc,mp,gmap){
   const forward=(gender==='남')===(dc%2===0);
   const bJDN=toJDN(y,m,d);
   let days,precise;
-  if(forward){const res=getJeolJDN(y,mp.jj<=1?m+1:m+1,gmap);days=res.j-bJDN;precise=res.p;}
-  else{
+  if(forward){
+    // 순행: 생일 → 다음 절기까지의 날수
+    // 12월이면 다음해 1월 소한
+    const ny=m===12?y+1:y, nm=m===12?1:m+1;
+    const res=getJeolJDN(ny,nm,gmap);
+    days=res.j-bJDN;
+    precise=res.p;
+  } else {
+    // 역행: 생일 → 직전 절기까지의 날수
     const res=getJeolJDN(y,m,gmap);
-    if(bJDN>=res.j){const res2=getJeolJDN(y,m-1||12,gmap);days=bJDN-res2.j;precise=res2.p;}
-    else{days=bJDN-res.j;precise=res.p;}
+    if(bJDN>=res.j){
+      // 당월 절기 이후 출생 → 당월 절기까지의 날수
+      days=bJDN-res.j;
+      precise=res.p;
+    } else {
+      // 당월 절기 이전 출생 → 전월 절기까지의 날수
+      // 1월이면 전년 12월 절기
+      const py=m===1?y-1:y, pm=m===1?12:(m-1);
+      const res2=getJeolJDN(py,pm,gmap);
+      days=bJDN-res2.j;
+      precise=res2.p;
+    }
   }
-  const totalMin=days*4*60;
-  const yearMin=365.25*24*60;
-  const monMin=yearMin/12;
-  const rawYears=totalMin/yearMin;
-  const sy=rawYears===Math.floor(rawYears)?Math.floor(rawYears):Math.ceil(rawYears);
-  const remMin=totalMin%yearMin;
-  const sm=Math.floor(remMin/monMin);
-  const sd=Math.round((remMin%monMin)/(monMin/30));
+  // 음수 보정 (절기 당일 출생 등 경계 케이스)
+  if(days<0)days=0;
+  // ── 3일 = 1년 (전통 대운수 공식) ──
+  const sy=Math.round(days/3);
+  const remDays=days%3;
+  const sm=remDays===1?4:remDays===2?8:0; // 1일 나머지=4개월, 2일=8개월
+  const sd=0;
   const daeuns=[];
   for(let i=1;i<=9;i++){
     const idx=forward?(mp.cg+i)%10:((mp.cg-i)%10+10)%10;
@@ -241,7 +266,7 @@ function calcDaeun(y,m,d,h,min,gender,dc,mp,gmap){
   return{forward,sy,sm,sd,daeuns,precise,rawDays:Math.round(days*10)/10};
 }
 function buildSaju(y,m,d,h,min,gender,gmap){
-  const yp=calcYear(y,m,d);
+  const yp=calcYear(y,m,d,gmap);
   const mp=calcMonth(y,m,d,yp.cg,gmap);
   const dp=calcDay(y,m,d);
   const hp=calcHour(h,min,dp.cg);
