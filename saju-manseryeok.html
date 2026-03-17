@@ -31,9 +31,16 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .tab-btn.active{background:#fff;color:#8a6200;font-weight:700}
 .summary-box{background:#fffbf0;border:1px solid #e0c870;border-radius:9px;padding:11px 14px;margin-bottom:13px}
 .summary-box .lbl{font-size:9px;color:#8a7a5a;margin-bottom:2px}
-.pillar-row{display:flex;gap:5px;margin-bottom:13px}
+/* 사주명식: 전통 배열 시주-일주-월주-년주 */
+.pillar-section{margin-bottom:13px}
+.pillar-direction{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;padding:0 2px}
+.pillar-direction .dir-label{font-size:8px;color:#9a8a6a;letter-spacing:.05em}
+.pillar-direction .dir-arrow{font-size:9px;color:#c9a227}
+.pillar-row{display:flex;gap:5px;margin-bottom:0}
 .pillar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 5px;border-radius:10px;position:relative;background:#faf8f4;border:1px solid #ddd0b0}
 .pillar.day{background:#fffbf0;border:1px solid #e0c870}
+.pillar .col-label{font-size:8px;color:#9a8a6a;letter-spacing:.05em;padding-bottom:3px;border-bottom:1px solid #e8e0d0;width:100%;text-align:center}
+.pillar.day .col-label{color:#8a6200;font-weight:700;border-bottom-color:#e0c870}
 .pillar .ss{font-size:10px;color:#8a7a5a;min-height:14px}
 .pillar.day .ss{color:#8a6200;font-weight:700}
 .pillar .hj{font-size:30px;font-weight:700;font-family:serif;line-height:1}
@@ -104,7 +111,6 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
     <p>『AI시대 사주문해력』 독자 전용 · 분 단위 시주 · KASI 절기</p>
   </div>
 
-  <!-- KASI 키 -->
   <div class="kasi-box">
     <div class="kasi-hdr" onclick="toggleKasi()">
       <span>🔑 KASI API 키 (선택) <span id="kasi-status"></span></span>
@@ -116,7 +122,6 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
     </div>
   </div>
 
-  <!-- 입력 폼 -->
   <div class="card">
     <div class="card-title">생년월일시 입력</div>
     <div class="grid3">
@@ -159,7 +164,6 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 </div>
 
 <script>
-// ── 기초 데이터 ───────────────────────────────────────────
 const CG=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
 const JJ=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
 const CG_KR=['갑','을','병','정','무','기','경','신','임','계'];
@@ -177,7 +181,6 @@ const JD_NAME=['소한','입춘','경칩','청명','입하','망종','소서','�
 const GONGMANG_TABLE=[[10,11],[8,9],[6,7],[4,5],[2,3],[0,1]];
 const SUN_NAME=['甲子순','甲戌순','甲申순','甲午순','甲辰순','甲寅순'];
 
-// ── 계산 함수 ─────────────────────────────────────────────
 function toJDN(y,m,d){const a=Math.floor((14-m)/12),yr=y+4800-a,mn=m+12*a-3;return d+Math.floor((153*mn+2)/5)+365*yr+Math.floor(yr/4)-Math.floor(yr/100)+Math.floor(yr/400)-32045;}
 function calcYear(y,m,d,gmap){
   let ibchunJDN=null,precise=false;
@@ -228,42 +231,29 @@ function calcDaeun(y,m,d,h,min,gender,dc,mp,gmap){
   const bJDN=toJDN(y,m,d);
   let days,precise;
   if(forward){
-    // 순행: 생일 → 다음 절기까지의 날수
-    // 12월이면 다음해 1월 소한
     const ny=m===12?y+1:y, nm=m===12?1:m+1;
     const res=getJeolJDN(ny,nm,gmap);
-    days=res.j-bJDN;
-    precise=res.p;
+    days=res.j-bJDN; precise=res.p;
   } else {
-    // 역행: 생일 → 직전 절기까지의 날수
     const res=getJeolJDN(y,m,gmap);
-    if(bJDN>=res.j){
-      // 당월 절기 이후 출생 → 당월 절기까지의 날수
-      days=bJDN-res.j;
-      precise=res.p;
-    } else {
-      // 당월 절기 이전 출생 → 전월 절기까지의 날수
-      // 1월이면 전년 12월 절기
+    if(bJDN>=res.j){days=bJDN-res.j;precise=res.p;}
+    else{
       const py=m===1?y-1:y, pm=m===1?12:(m-1);
       const res2=getJeolJDN(py,pm,gmap);
-      days=bJDN-res2.j;
-      precise=res2.p;
+      days=bJDN-res2.j; precise=res2.p;
     }
   }
-  // 음수 보정 (절기 당일 출생 등 경계 케이스)
   if(days<0)days=0;
-  // ── 3일 = 1년 (전통 대운수 공식) ──
   const sy=Math.round(days/3);
   const remDays=days%3;
-  const sm=remDays===1?4:remDays===2?8:0; // 1일 나머지=4개월, 2일=8개월
-  const sd=0;
+  const sm=remDays===1?4:remDays===2?8:0;
   const daeuns=[];
   for(let i=1;i<=9;i++){
     const idx=forward?(mp.cg+i)%10:((mp.cg-i)%10+10)%10;
     const jidx=forward?(mp.jj+i)%12:((mp.jj-i)%12+12)%12;
     daeuns.push({cg:idx,jj:jidx,age:sy+(i-1)*10,ss:getSS(dc,idx)});
   }
-  return{forward,sy,sm,sd,daeuns,precise,rawDays:Math.round(days*10)/10};
+  return{forward,sy,sm,daeuns,precise,rawDays:Math.round(days*10)/10};
 }
 function buildSaju(y,m,d,h,min,gender,gmap){
   const yp=calcYear(y,m,d,gmap);
@@ -286,8 +276,7 @@ function buildSaju(y,m,d,h,min,gender,gmap){
 }
 async function fetchKasi(year,key){
   const map={};
-  const months=[1,2,3,4,5,6,7,8,9,10,11,12];
-  for(const mo of months){
+  for(const mo of [1,2,3,4,5,6,7,8,9,10,11,12]){
     try{
       const url=`https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/get24DivisionsInfo?solYear=${year}&solMonth=${String(mo).padStart(2,'0')}&ServiceKey=${encodeURIComponent(key)}&_type=json&numOfRows=30`;
       const res=await fetch(url);
@@ -305,7 +294,6 @@ async function fetchKasi(year,key){
   return map;
 }
 
-// ── UI 헬퍼 ───────────────────────────────────────────────
 function ohBadge(oh){const c=CO[oh];return `<span class="oh-badge" style="color:${c.t};background:${c.bg};border:1px solid ${c.b}">${oh}</span>`;}
 
 let currentSaju=null;
@@ -379,19 +367,23 @@ function buildCopyText(s){
 
 function renderChart(s){
   const {pillars,dc,gongmang}=s;
-  const yr=parseInt(document.getElementById('yr').value);
 
-  // 오행 분포
   const ohCnt={목:0,화:0,토:0,금:0,수:0};
   pillars.forEach(p=>{ohCnt[OH[OH_CG[p.cg]]]++;ohCnt[OH[OH_JJ[p.jj]]]++;});
   const ohBadges=Object.entries(ohCnt).filter(e=>e[1]>0).map(e=>ohBadge(e[0])).join(' ');
 
-  // 필러 카드
-  const pillarCards=pillars.map((p,i)=>{
+  // ── 전통 명리 배열: 시주(3) → 일주(2) → 월주(1) → 년주(0) ──
+  // pillars: [0]=년주, [1]=월주, [2]=일주, [3]=시주
+  const displayOrder=[3,2,1,0];
+  const pillarCards=displayOrder.map(origIdx=>{
+    const p=pillars[origIdx];
+    const isDay=(origIdx===2);
+    const isHour=(origIdx===3);
     const co=OH[OH_CG[p.cg]],jo=OH[OH_JJ[p.jj]];
     const jzItems=JJGAN[p.jj].map(c=>`<div class="item" style="color:${CO[OH[OH_CG[c]]].t}">${CG[c]}<span style="font-size:8px;color:#8a7a5a;margin-left:1px">${OH[OH_CG[c]]}</span></div>`).join('');
-    return `<div class="pillar${i===2?' day':''}">
+    return `<div class="pillar${isDay?' day':''}">
       ${p.warn?'<div class="warn">경계</div>':''}
+      <div class="col-label">${p.label}</div>
       <div class="ss">${p.ss}</div>
       <div class="hj" style="color:${CO[co].t}">${CG[p.cg]}</div>
       <div class="kr">${CG_KR[p.cg]}</div>
@@ -400,15 +392,13 @@ function renderChart(s){
       <div class="hj" style="color:${CO[jo].t}">${JJ[p.jj]}</div>
       <div class="kr">${JJ_KR[p.jj]}</div>
       ${ohBadge(jo)}
-      ${i===3?`<div class="kr">${s.shiName}</div>`:''}
+      ${isHour?`<div class="kr">${s.shiName}</div>`:''}
       <div class="jzgan"><div class="lbl">지장간</div>${jzItems}</div>
     </div>`;
   }).join('');
 
-  // 십신
   const sipsinItems=pillars.filter((_,i)=>i!==2).map(p=>`<div class="sipsin-item"><span class="k">${p.label}</span><span class="v">${p.ss}</span></div>`).join('');
 
-  // 공망
   const gmItems=gongmang.jj.map(j=>{
     const inChart=pillars.some(p=>p.jj===j);
     const jo=OH[OH_JJ[j]];
@@ -432,7 +422,14 @@ function renderChart(s){
         </div>
       </div>
     </div>
-    <div class="pillar-row">${pillarCards}</div>
+    <div class="pillar-section">
+      <div class="pillar-direction">
+        <span class="dir-label">시주</span>
+        <span class="dir-arrow">← 년주 방향</span>
+        <span class="dir-label">년주</span>
+      </div>
+      <div class="pillar-row">${pillarCards}</div>
+    </div>
     <div class="sipsin-box"><div class="lbl">십신 구조</div><div class="sipsin-row">${sipsinItems}</div></div>
     <div class="gm-box">
       <div class="lbl">공망(空亡) · ${gongmang.sunName} 기준</div>
@@ -515,14 +512,12 @@ async function handleCalc(){
   document.getElementById('panel-daeun').innerHTML=renderDaeun(s);
   document.getElementById('result').style.display='';
   setTab('chart');
-  // 복사창 닫기
   document.getElementById('copy-area').style.display='none';
   document.getElementById('copy-btn').className='copy-btn';
   document.getElementById('copy-btn').textContent='📋 사주 원국 + 대운 복사 (채팅창 간명용)';
   btn.disabled=false; btn.textContent='✦ 원국 + 대운 뽑기';
 }
 
-// 초기화
 updatePreview();
 </script>
 </body>
