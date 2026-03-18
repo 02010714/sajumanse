@@ -379,8 +379,8 @@ function getJeolJDN(year,month,gmap){
   const approx=[6,4,6,5,6,6,7,7,8,8,7,7];
   return{j:toJDN(year,month,approx[month-1]),p:false};
 }
-function calcDaeun(y,m,d,h,min,gender,dc,mp,gmap){
-  const forward=(gender==='남')===(dc%2===0);
+function calcDaeun(y,m,d,h,min,gender,dc,mp,gmap,ycg){
+  const forward=(gender==='남')===(ycg%2===0);
   const bJDN=toJDN(y,m,d);
   let days,precise;
   if(forward){
@@ -424,7 +424,7 @@ function buildSaju(y,m,d,h,min,gender,gmap){
       {label:'시주',cg:hp.cg,jj:hp.jj,warn:false,ss:getSS(dc,hp.cg)},
     ],
     dc,shiName,gongmang:gm,
-    daeun:calcDaeun(y,m,d,h,min,gender,dc,mp,gmap),
+    daeun:calcDaeun(y,m,d,h,min,gender,dc,mp,gmap,yp.cg),
   };
 }
 async function fetchKasi(year,key){
@@ -481,6 +481,7 @@ function setTab(t){
   document.getElementById('panel-daeun').style.display=t==='daeun'?'':'none';
   document.getElementById('tab-chart').className='tab-btn'+(t==='chart'?' active':'');
   document.getElementById('tab-daeun').className='tab-btn'+(t==='daeun'?' active':'');
+  if(t==='daeun'){setTimeout(()=>{const el=document.getElementById('daeun-scroll');if(el)el.scrollLeft=el.scrollWidth;},50);}
 }
 
 function toggleCopy(){
@@ -657,7 +658,7 @@ function renderDaeun(s){
     ?'<span style="color:#2e7d4f;margin-left:6px;font-size:9px">✓ KASI 정밀</span>'
     :'<span style="color:#8a6200;margin-left:6px;font-size:9px">~ 근사값</span>';
 
-  const cards=daeun.daeuns.map(d=>{
+  const cards=[...daeun.daeuns].reverse().map(d=>{
     const sy=yr+d.age;
     const isNow=nowYear>=sy&&nowYear<=sy+9;
     const co=OH[OH_CG[d.cg]],jo=OH[OH_JJ[d.jj]];
@@ -699,7 +700,10 @@ function renderDaeun(s){
         <span class="tit">${dir} 대운</span>
         <span class="sub">${daeun.sy}세 시작${daeun.sm>0?' '+daeun.sm+'개월':''}${preciseLabel}</span>
       </div>
-      <div class="daeun-cards">${cards}</div>
+      <div style="display:flex;justify-content:space-between;font-size:8px;color:#9a8a6a;margin-bottom:4px;padding:0 2px">
+        <span>← 미래</span><span>과거 →</span>
+      </div>
+      <div class="daeun-cards" id="daeun-scroll">${cards}</div>
     </div>
     ${nowBox}`;
 }
@@ -722,6 +726,7 @@ async function handleCalc(){
   currentSaju=s;
   document.getElementById('panel-chart').innerHTML=renderChart(s);
   document.getElementById('panel-daeun').innerHTML=renderDaeun(s);
+  setTimeout(()=>{const el=document.getElementById('daeun-scroll');if(el)el.scrollLeft=el.scrollWidth;},50);
   document.getElementById('result').style.display='';
   setTab('chart');
   document.getElementById('copy-area').style.display='none';
