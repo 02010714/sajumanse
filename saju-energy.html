@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나의 에너지 코드 — 사주 × MBTI</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f0e8;color:#2c2416;font-family:"Malgun Gothic","Apple SD Gothic Neo",serif;padding:20px 14px;min-height:100vh}
+.wrap{max-width:440px;margin:0 auto}
+.header{text-align:center;margin-bottom:22px}
+.header .sub{font-size:9px;letter-spacing:.4em;color:#8a6200;margin-bottom:6px}
+.header h1{font-size:22px;font-weight:700;color:#5a3e00}
+.header p{font-size:10px;color:#6b5a3a;margin-top:5px;line-height:1.7}
+.card{background:#fff;border:1px solid #ddd5c0;border-radius:13px;padding:20px;margin-bottom:14px}
+.card-title{font-size:11px;color:#8a6200;letter-spacing:.1em;margin-bottom:13px;font-weight:700}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:9px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
+label{font-size:9px;color:#7a6040;display:block;margin-bottom:3px}
+label.em{color:#8a6200;font-weight:700}
+input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-radius:7px;padding:8px 10px;font-size:13px;outline:none;width:100%;font-family:inherit}
+.btn-main{width:100%;background:linear-gradient(135deg,#c9a227,#9a7010);color:#fff;font-weight:700;font-size:13px;border:none;border-radius:8px;padding:12px;cursor:pointer;font-family:inherit;margin-top:4px}
+.btn-main:disabled{opacity:.5;cursor:not-allowed}
+.preview{margin-bottom:12px;padding:8px 11px;border-radius:7px;background:#fdf9f0;border:1px solid #ddd0b0;display:flex;align-items:center;justify-content:space-between}
+.preview-time{font-size:10px;color:#5a4a2a}
+.preview-jj{font-weight:700;margin-left:6px;font-family:serif;font-size:15px}
+.preview-name{color:#8a7a5a;margin-left:4px;font-size:10px}
+.warn-badge{font-size:8px;color:#e07070;background:rgba(224,112,112,.12);border-radius:3px;padding:1px 5px}
+.tabs{display:flex;gap:2px;margin-bottom:13px;background:#e8e0d0;border-radius:9px;padding:3px}
+.tab-btn{flex:1;padding:7px;border-radius:7px;border:none;cursor:pointer;font-size:12px;font-family:inherit;background:transparent;color:#7a6040;font-weight:400}
+.tab-btn.active{background:#fff;color:#8a6200;font-weight:700}
+.summary-box{background:#fffbf0;border:1px solid #e0c870;border-radius:9px;padding:11px 14px;margin-bottom:13px}
+.summary-box .lbl{font-size:9px;color:#8a7a5a;margin-bottom:2px}
+/* 사주명식: 전통 배열 시주-일주-월주-년주 */
+.pillar-section{margin-bottom:13px}
+.pillar-direction{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;padding:0 2px}
+.pillar-direction .dir-label{font-size:8px;color:#9a8a6a;letter-spacing:.05em}
+.pillar-direction .dir-arrow{font-size:9px;color:#c9a227}
+.pillar-row{display:flex;gap:5px;margin-bottom:0}
+.pillar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 5px;border-radius:10px;position:relative;background:#faf8f4;border:1px solid #ddd0b0}
+.pillar.day{background:#fffbf0;border:1px solid #e0c870}
+.pillar .col-label{font-size:8px;color:#9a8a6a;letter-spacing:.05em;padding-bottom:3px;border-bottom:1px solid #e8e0d0;width:100%;text-align:center}
+.pillar.day .col-label{color:#8a6200;font-weight:700;border-bottom-color:#e0c870}
+.pillar .ss{font-size:10px;color:#8a7a5a;min-height:14px}
+.pillar.day .ss{color:#8a6200;font-weight:700}
+.pillar .hj{font-size:30px;font-weight:700;font-family:serif;line-height:1}
+.pillar .kr{font-size:10px;color:#8a7a5a}
+.pillar .divider{width:100%;height:1px;background:#e0d8c8;margin:2px 0}
+.pillar .jzgan{width:100%;border-top:1px solid #e0d8c8;padding-top:6px;display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:2px}
+.pillar .jzgan .lbl{font-size:8px;color:#8a7a5a;margin-bottom:1px}
+.pillar .jzgan .item{font-size:10px}
+.pillar .warn{position:absolute;top:3px;right:3px;font-size:7px;color:#e07070;background:rgba(224,112,112,.15);border-radius:2px;padding:1px 3px}
+.oh-badge{font-size:9px;font-weight:700;border-radius:3px;padding:1px 5px;letter-spacing:.02em;display:inline-block}
+.sipsin-box{background:#faf8f4;border:1px solid #ddd0b0;border-radius:9px;padding:12px 14px;margin-bottom:10px}
+.sipsin-box .lbl{font-size:9px;color:#8a7a5a;margin-bottom:7px}
+.sipsin-row{display:flex;gap:7px;flex-wrap:wrap}
+.sipsin-item{font-size:11px;background:#f0ece0;border-radius:5px;padding:4px 9px}
+.sipsin-item .k{color:#8a7a5a;margin-right:3px}
+.sipsin-item .v{color:#8a6200;font-weight:700}
+.gm-box{background:#faf8f4;border:1px solid #ddd0b0;border-radius:9px;padding:12px 14px}
+.gm-box .lbl{font-size:9px;color:#8a7a5a;margin-bottom:7px}
+.gm-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.gm-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 12px;border-radius:7px;background:#f0ece0;border:1px solid #ddd0b0}
+.gm-item.in-chart{background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.35)}
+.gm-item .hj{font-size:22px;font-weight:700;font-family:serif}
+.gm-item .kr{font-size:9px;color:#8a7a5a}
+.gm-item .star{font-size:8px;color:#c0392b;font-weight:700}
+.gm-note{font-size:10px;color:#9a8a6a;line-height:1.7;flex:1}
+.daeun-summary{background:#fffbf0;border:1px solid #e0c870;border-radius:9px;padding:13px 15px;margin-bottom:14px}
+.daeun-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.daeun-hdr .tit{font-size:12px;color:#8a6200;font-weight:700}
+.daeun-hdr .sub{font-size:10px;color:#8a7a5a}
+.daeun-cards{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.daeun-card{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 5px;border-radius:9px;min-width:60px;position:relative;background:#faf8f4;border:1px solid #ddd0b0;flex-shrink:0}
+.daeun-card.now{background:#fffbf0;border:1px solid #e0c870}
+.daeun-card .now-lbl{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:7px;color:#8a6200;background:#f4f0e8;padding:0 3px;white-space:nowrap}
+.daeun-card .age{font-size:10px;color:#7a6040;font-weight:700}
+.daeun-card .sy{font-size:8px;color:#9a8a6a}
+.daeun-card .cg{font-size:22px;font-weight:700;font-family:serif;line-height:1.1}
+.daeun-card .ss{font-size:8px;color:#8a7a5a}
+.daeun-card .div{width:70%;height:1px;background:#e0d8c8}
+.daeun-card .jj{font-size:22px;font-weight:700;font-family:serif;line-height:1.1}
+.now-box{background:#fffbf0;border:2px solid #e0c870;border-radius:9px;padding:14px}
+.now-box .lbl{font-size:9px;color:#8a7a5a;margin-bottom:7px}
+.now-box .inner{display:flex;align-items:center;gap:13px}
+.now-box .hj{font-size:36px;font-weight:700;font-family:serif;line-height:1}
+.now-box .name{font-size:14px;color:#8a6200;font-weight:700;margin-bottom:2px}
+.now-box .years{font-size:10px;color:#7a6040;margin-bottom:4px}
+.now-box .badges{display:flex;gap:5px}
+.copy-btn{width:100%;padding:13px;border-radius:9px;border:1px solid #ccc0a0;background:#fffbf0;color:#7a6040;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.03em;margin-top:14px}
+.copy-btn.open{border-color:rgba(46,95,163,.4);background:#f0f4ff;color:#2e5fa3}
+.copy-area{margin-top:8px}
+.copy-area .hint{font-size:10px;color:#8a6200;margin-bottom:5px;font-weight:700}
+.copy-area textarea{width:100%;height:260px;padding:12px;border-radius:8px;border:1px solid #ccc0a0;background:#faf8f4;color:#2c2416;font-size:11px;line-height:1.7;font-family:monospace;resize:vertical}
+.copy-area .hint2{font-size:9px;color:#9a8a6a;margin-top:4px}
+.footer{text-align:center;margin-top:36px;padding-top:18px;border-top:1px solid #ddd0b0}
+.footer p{font-size:9px;color:#9a8a6a;line-height:1.9}
+.kasi-box{margin-bottom:12px;background:#fff;border:1px solid #ddd5c0;border-radius:11px;padding:13px 15px}
+.kasi-hdr{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.kasi-hdr span{font-size:11px;color:#5a4a2a}
+.kasi-body{margin-top:10px}
+.kasi-hint{font-size:9px;color:#8a7a5a;margin-top:3px}
+.energy-code-box{background:linear-gradient(135deg,#fffbf0,#fff8e8);border:2px solid #e0c870;border-radius:12px;padding:14px 16px;margin-bottom:13px}
+.energy-code-box .ec-title{font-size:10px;color:#8a6200;font-weight:700;letter-spacing:.08em;margin-bottom:8px}
+.energy-code-main{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ec-badge{border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;letter-spacing:.02em}
+.ec-cross{color:#c9a227;font-size:16px;font-weight:700}
+.gek-badge{border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;background:#1a3a5c;color:#fff}
+.mbti-badge{border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;background:#5b21b6;color:#fff}
+.ec-desc{font-size:11px;color:#5a4a2a;line-height:1.7;margin-top:8px;padding-top:8px;border-top:1px solid #e8e0c8}
+.ec-combo{background:#fffef8;border:1px solid #e8d8a0;border-radius:8px;padding:10px 12px;margin-top:8px;font-size:11px;color:#3a2a10;line-height:1.8}
+.ec-combo .combo-title{font-size:10px;color:#8a6200;font-weight:700;margin-bottom:4px}
+#result{margin-top:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="sub">나의 에너지 코드 × KASI</div>
+    <h1>사주 × MBTI 에너지 코드</h1>
+    <p>『나의 에너지 코드』 독자 전용 · 일간 × 格방향 × MBTI 통합 분석</p>
+  </div>
+
+  <div class="kasi-box">
+    <div class="kasi-hdr" onclick="toggleKasi()">
+      <span>🔑 KASI API 키 (선택) <span id="kasi-status"></span></span>
+      <span id="kasi-arrow">▼</span>
+    </div>
+    <div class="kasi-body" id="kasi-body" style="display:none">
+      <input type="password" id="kKey" placeholder="data.go.kr 서비스키...">
+      <div class="kasi-hint">없으면 근사값 계산 (±1일 오차) · data.go.kr 무료 발급</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">생년월일시 입력</div>
+    <div class="grid3">
+      <div><label>년도</label><input type="number" id="yr" value="1990" min="1900" max="2100"></div>
+      <div><label>월</label><input type="number" id="mo" value="6" min="1" max="12"></div>
+      <div><label>일</label><input type="number" id="dy" value="15" min="1" max="31"></div>
+    </div>
+    <div class="grid3">
+      <div><label>시 (0~23)</label><input type="number" id="hr" value="10" min="0" max="23" oninput="updatePreview()"></div>
+      <div><label class="em">분 (0~59)</label><input type="number" id="min" value="30" min="0" max="59" oninput="updatePreview()"></div>
+      <div><label>성별</label><select id="gd"><option value="남">남성</option><option value="여">여성</option></select></div>
+    </div>
+    <div class="grid2" style="margin-bottom:9px">
+      <div><label class="em">MBTI (선택)</label>
+        <select id="mbti">
+          <option value="">— MBTI 모르면 건너뜀 —</option>
+          <optgroup label="분석가형 (NT)">
+            <option value="INTJ">INTJ — 전략가</option>
+            <option value="INTP">INTP — 논리학자</option>
+            <option value="ENTJ">ENTJ — 통솔자</option>
+            <option value="ENTP">ENTP — 변론가</option>
+          </optgroup>
+          <optgroup label="외교관형 (NF)">
+            <option value="INFJ">INFJ — 옹호자</option>
+            <option value="INFP">INFP — 중재자</option>
+            <option value="ENFJ">ENFJ — 선도자</option>
+            <option value="ENFP">ENFP — 활동가</option>
+          </optgroup>
+          <optgroup label="관리자형 (SJ)">
+            <option value="ISTJ">ISTJ — 현실주의자</option>
+            <option value="ISFJ">ISFJ — 수호자</option>
+            <option value="ESTJ">ESTJ — 경영자</option>
+            <option value="ESFJ">ESFJ — 집정관</option>
+          </optgroup>
+          <optgroup label="탐험가형 (SP)">
+            <option value="ISTP">ISTP — 장인</option>
+            <option value="ISFP">ISFP — 모험가</option>
+            <option value="ESTP">ESTP — 사업가</option>
+            <option value="ESFP">ESFP — 연예인</option>
+          </optgroup>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <div style="width:100%;background:#fdf9f0;border:1px solid #ddd0b0;border-radius:7px;padding:7px 10px;font-size:10px;color:#7a6040;line-height:1.6">
+          MBTI를 입력하면 사주 에너지 코드와 통합 분석이 제공됩니다
+        </div>
+      </div>
+    </div>
+    <div class="preview">
+      <span class="preview-time">
+        <span id="pv-time"></span>
+        <span class="preview-jj" id="pv-jj"></span>
+        <span class="preview-name" id="pv-name"></span>
+      </span>
+      <span class="warn-badge" id="pv-warn" style="display:none">시경계 ±10분</span>
+    </div>
+    <button class="btn-main" onclick="handleCalc()">✦ 원국 + 대운 뽑기</button>
+  </div>
+
+  <div id="result" style="display:none">
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-chart" onclick="setTab('chart')">원국</button>
+      <button class="tab-btn" id="tab-daeun" onclick="setTab('daeun')">대운</button>
+    </div>
+    <div id="panel-chart"></div>
+    <div id="panel-daeun" style="display:none"></div>
+    <button class="copy-btn" id="copy-btn" onclick="toggleCopy()">📋 사주 원국 + 대운 복사 (채팅창 간명용)</button>
+    <div class="copy-area" id="copy-area" style="display:none">
+      <div class="hint">▼ 텍스트 클릭 → 전체선택(Ctrl+A) → 복사(Ctrl+C) → 채팅창 붙여넣기</div>
+      <textarea id="copy-text" readonly onclick="this.select()"></textarea>
+      <div class="hint2">복사 후 Claude 채팅창에 붙여넣으면 종합 간명을 받을 수 있습니다</div>
+    </div>
+  </div>
+
+  <div class="footer"><p>『나의 에너지 코드』 독자 전용 · 사주 × MBTI 에너지 코드 통합 분석</p></div>
+</div>
+
+<script>
+// ── 格 방향 테이블 (일간 × 월지 → 십신 → 格방향) ──
+const GEK_LABEL={
+  비견:{label:"독립·자생",desc:"스스로 서고 스스로 방향을 정한다. 자생력이 에너지의 원천."},
+  겁재:{label:"경쟁·도전",desc:"경쟁이 에너지원이다. 맞서고 이기는 환경에서 살아난다."},
+  식신:{label:"표현·생산",desc:"만들고 표현하고 세상에 내놓는다. 창작과 생산이 삶의 방향."},
+  상관:{label:"혁신·자유",desc:"기존의 방식을 깨고 새로운 길을 만든다. 규칙보다 자유."},
+  편재:{label:"행동·현실",desc:"현실을 직시하고 움직인다. 이상보다 성과, 계획보다 실행."},
+  정재:{label:"안정·성실",desc:"쌓고 지키고 꾸준히 간다. 화려함보다 안정, 도전보다 지속."},
+  편관:{label:"단련·극복",desc:"압박이 나를 만든다. 어려운 환경에서 오히려 살아난다."},
+  정관:{label:"규범·책임",desc:"역할을 알고 기준을 지키고 기대에 부응한다. 사회적 책임이 삶의 축."},
+  편인:{label:"직관·탐구",desc:"느끼고 탐구하고 깊이 들어간다. 분석보다 직관, 행동보다 통찰."},
+  정인:{label:"수용·배움",desc:"받아들이고 배우고 자란다. 지식과 이해가 에너지의 원천."}
+};
+// 일간(0=갑~9=계) × 월지(0=寅~11=丑) → 십신
+const SIPSIN_MAP=[
+  ["비견","겁재","편재","식신","상관","정재","편관","정관","편재","편인","정인","정재"],// 갑
+  ["겁재","비견","정재","상관","식신","편재","정관","편관","정재","정인","편인","편재"],// 을
+  ["편인","정인","식신","비견","겁재","상관","편재","정재","식신","편관","정관","상관"],// 병
+  ["정인","편인","상관","겁재","비견","식신","정재","편재","상관","정관","편관","식신"],// 정
+  ["편관","정관","비견","편인","정인","겁재","식신","상관","비견","편재","정재","겁재"],// 무
+  ["정관","편관","겁재","정인","편인","비견","상관","식신","겁재","정재","편재","비견"],// 기
+  ["편재","정재","편인","편관","정관","정인","비견","겁재","편인","식신","상관","정인"],// 경
+  ["정재","편재","정인","정관","편관","편인","겁재","비견","정인","상관","식신","편인"],// 신
+  ["식신","상관","편관","편재","정재","정관","편인","정인","편관","비견","겁재","정관"],// 임
+  ["상관","식신","정관","정재","편재","편관","정인","편인","정관","겁재","비견","편관"] // 계
+];
+// 월지 JJ→ 배열인덱스 변환: 寅=0, 卯=1 ... (JJ 배열: 子=0,丑=1,寅=2...)
+// JJ=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥']
+// 寅=2→idx0, 卯=3→1, 辰=4→2, 巳=5→3, 午=6→4, 未=7→5, 申=8→6, 酉=9→7, 戌=10→8, 亥=11→9, 子=0→10, 丑=1→11
+function jjToMoIdx(jj){return(jj-2+12)%12;}
+
+// 일간 한글 이름
+const ILGAN_NAME=["갑목","을목","병화","정화","무토","기토","경금","신금","임수","계수"];
+const ILGAN_NAT=["큰 나무","덩굴·풀","태양","용광로·촛불","산·대지","밭·논","강철·도끼","보석·칼날","강·바다","이슬·안개"];
+const ILGAN_CORE=["방향이 분명할 때 아무도 막지 못하는","붙을 곳이 생기면 가장 강한","존재만으로 주변의 온도를 높이는","집중한 것은 반드시 달라지게 만드는","세상이 흔들릴 때 가장 먼저 찾게 되는","내 안에 들어온 것은 끝까지 키우는","기준이 분명할 때 가장 선명하게 빛나는","정밀하게 느끼기에 가장 아름다운 것을 만드는","방향이 생겼을 때 가장 멀리까지 흘러가는","아무도 보지 못하는 것을 보기에 아무도 이해하지 못했던"];
+
+// MBTI 특성
+const MBTI_DATA={
+  INTJ:{name:"전략가",core:"비전을 혼자 완성한다",energy:"내향·직관·사고·판단",match:"독립·자생 / 단련·극복 / 직관·탐구"},
+  INTP:{name:"논리학자",core:"원리를 끝까지 파고든다",energy:"내향·직관·사고·인식",match:"직관·탐구 / 혁신·자유 / 독립·자생"},
+  ENTJ:{name:"통솔자",core:"구조를 만들고 이끈다",energy:"외향·직관·사고·판단",match:"규범·책임 / 경쟁·도전 / 행동·현실"},
+  ENTP:{name:"변론가",core:"기존을 뒤집는 아이디어",energy:"외향·직관·사고·인식",match:"혁신·자유 / 경쟁·도전 / 표현·생산"},
+  INFJ:{name:"옹호자",core:"깊이 스며들어 변화시킨다",energy:"내향·직관·감정·판단",match:"수용·배움 / 직관·탐구 / 단련·극복"},
+  INFP:{name:"중재자",core:"내면의 가치로 산다",energy:"내향·직관·감정·인식",match:"직관·탐구 / 혁신·자유 / 수용·배움"},
+  ENFJ:{name:"선도자",core:"사람을 키우고 이끈다",energy:"외향·직관·감정·판단",match:"규범·책임 / 수용·배움 / 표현·생산"},
+  ENFP:{name:"활동가",core:"가능성을 발견하고 표현한다",energy:"외향·직관·감정·인식",match:"표현·생산 / 혁신·자유 / 경쟁·도전"},
+  ISTJ:{name:"현실주의자",core:"원칙대로 묵묵히 쌓는다",energy:"내향·감각·사고·판단",match:"안정·성실 / 규범·책임 / 독립·자생"},
+  ISFJ:{name:"수호자",core:"조용히 지탱하고 돌본다",energy:"내향·감각·감정·판단",match:"안정·성실 / 수용·배움 / 지지·양육"},
+  ESTJ:{name:"경영자",core:"기준을 세우고 실행한다",energy:"외향·감각·사고·판단",match:"규범·책임 / 안정·성실 / 행동·현실"},
+  ESFJ:{name:"집정관",core:"관계를 돌보고 조화롭게",energy:"외향·감각·감정·판단",match:"수용·배움 / 안정·성실 / 규범·책임"},
+  ISTP:{name:"장인",core:"원리로 실제 문제를 푼다",energy:"내향·감각·사고·인식",match:"독립·자생 / 행동·현실 / 단련·극복"},
+  ISFP:{name:"모험가",core:"감각으로 순간을 산다",energy:"내향·감각·감정·인식",match:"표현·생산 / 직관·탐구 / 혁신·자유"},
+  ESTP:{name:"사업가",core:"지금 이 순간 행동한다",energy:"외향·감각·사고·인식",match:"행동·현실 / 경쟁·도전 / 표현·생산"},
+  ESFP:{name:"연예인",core:"존재로 에너지를 나눈다",energy:"외향·감각·감정·인식",match:"표현·생산 / 행동·현실 / 경쟁·도전"}
+};
+
+// 사주 格 × MBTI 통합 설명 생성
+function buildComboDesc(ilganIdx, gekLabel, mbtiKey){
+  const iname=ILGAN_NAME[ilganIdx];
+  const inat=ILGAN_NAT[ilganIdx];
+  const icore=ILGAN_CORE[ilganIdx];
+  const gek=GEK_LABEL[Object.keys(GEK_LABEL).find(k=>GEK_LABEL[k].label===gekLabel)||"비견"];
+  const m=MBTI_DATA[mbtiKey];
+  if(!m) return '';
+
+  // 格방향과 MBTI 에너지 방향의 공명 분석
+  const isMatch = m.match.includes(gekLabel);
+  const matchText = isMatch
+    ? `당신의 格 방향 <b>${gekLabel}</b>은 MBTI ${mbtiKey}의 핵심 에너지 방향과 깊이 공명합니다. 두 시스템이 같은 곳을 가리키고 있습니다.`
+    : `당신의 格 방향 <b>${gekLabel}</b>과 MBTI ${mbtiKey}는 서로 다른 방향을 가리킵니다. 이 긴장이 당신을 입체적으로 만드는 원천일 수 있습니다.`;
+
+  return `
+<b>[ ${iname}(${inat}) × ${gekLabel} × ${mbtiKey} ${m.name} ]</b>
+
+사주가 말하는 당신: <b>${icore} 사람</b>입니다.
+${gek.desc}
+
+MBTI가 말하는 당신: <b>${m.core}</b>입니다.
+에너지 방향: ${m.energy}
+
+통합 해석:
+${matchText}
+
+사주의 ${iname} 에너지는 당신이 '무엇으로 이루어진 사람인가'를 말합니다.
+格 방향 ${gekLabel}은 '그 에너지가 세상에서 어떤 방향으로 작동하는가'를 말합니다.
+MBTI ${mbtiKey}는 '당신이 세상을 어떻게 인식하고 결정하는가'를 말합니다.
+
+이 세 가지가 만나는 지점이 당신의 가장 고유한 정체성입니다.`;
+}
+
+function getGekInfo(dc, moJJ){
+  const moIdx=jjToMoIdx(moJJ);
+  const sipsin=SIPSIN_MAP[dc][moIdx];
+  const gek=GEK_LABEL[sipsin];
+  return{sipsin, label:gek?gek.label:"", desc:gek?gek.desc:""};
+}
+const CG=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const JJ=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const CG_KR=['갑','을','병','정','무','기','경','신','임','계'];
+const JJ_KR=['자','축','인','묘','진','사','오','미','신','유','술','해'];
+const OH=['목','화','토','금','수'];
+const OH_CG=[0,0,1,1,2,2,3,3,4,4];
+const OH_JJ=[4,2,0,0,2,1,1,2,3,3,2,4];
+const JJGAN=[[9],[9,7,5],[2,4,0],[1],[1,9,4],[4,6,2],[3,5],[1,3,5],[4,8,6],[7],[3,7,4],[0,8]];
+const CO={목:{t:'#2e7d4f',bg:'rgba(46,125,79,0.08)',b:'rgba(46,125,79,0.3)'},
+          화:{t:'#c0392b',bg:'rgba(192,57,43,0.08)',b:'rgba(192,57,43,0.3)'},
+          토:{t:'#8a6200',bg:'rgba(138,98,0,0.08)',b:'rgba(138,98,0,0.3)'},
+          금:{t:'#2e5fa3',bg:'rgba(46,95,163,0.08)',b:'rgba(46,95,163,0.3)'},
+          수:{t:'#1565a0',bg:'rgba(21,101,160,0.08)',b:'rgba(21,101,160,0.3)'}};
+const JD_NAME=['소한','입춘','경칩','청명','입하','망종','소서','입추','백로','한로','입동','대설'];
+const GONGMANG_TABLE=[[10,11],[8,9],[6,7],[4,5],[2,3],[0,1]];
+const SUN_NAME=['甲子순','甲戌순','甲申순','甲午순','甲辰순','甲寅순'];
+
+function toJDN(y,m,d){const a=Math.floor((14-m)/12),yr=y+4800-a,mn=m+12*a-3;return d+Math.floor((153*mn+2)/5)+365*yr+Math.floor(yr/4)-Math.floor(yr/100)+Math.floor(yr/400)-32045;}
+function calcYear(y,m,d,gmap){
+  let ibchunJDN=null,precise=false;
+  if(gmap){const k='입춘_'+y;if(gmap[k]){ibchunJDN=gmap[k];precise=true;}}
+  const bJDN=toJDN(y,m,d);
+  let ay;
+  if(precise){ay=bJDN>=ibchunJDN?y:y-1;}
+  else{ay=(m<2||(m===2&&d<4))?y-1:y;}
+  const warn=m===2&&(precise?Math.abs(bJDN-ibchunJDN)<=1:Math.abs(d-4)<=1);
+  return{cg:((ay-4)%10+10)%10,jj:((ay-4)%12+12)%12,warn};
+}
+function calcMonth(y,m,d,ycg,gmap){
+  const name=JD_NAME[m-1];let jeolJDN=null;
+  if(gmap){for(let i=-1;i<=1;i++){const k=name+'_'+(y+i);if(gmap[k]){jeolJDN=gmap[k];break;}}}
+  const approx=[6,4,6,5,6,6,7,7,8,8,7,7];
+  const jdn=toJDN(y,m,d);
+  const after=jeolJDN?jdn>=jeolJDN:d>=approx[m-1];
+  const bm=after?m%12:(m-1+12)%12;
+  const mc=((ycg%5)*2+2+(bm-2+12)%12)%10;
+  return{cg:mc,jj:bm,warn:jeolJDN?Math.abs(jdn-jeolJDN)<=1:false};
+}
+function calcDay(y,m,d){const pos=(toJDN(y,m,d)+49)%60;return{cg:pos%10,jj:pos%12};}
+function calcHour(h,min,dcg){
+  const t=h*60+min;
+  const ji=(t>=1380||t<60)?0:t<180?1:t<300?2:t<420?3:t<540?4:t<660?5:t<780?6:t<900?7:t<1020?8:t<1140?9:t<1260?10:11;
+  const hc=((dcg%5)*2+ji)%10;
+  return{cg:hc,jj:ji};
+}
+function getSS(dc,tc){
+  const d=Math.floor(dc/2),t=Math.floor(tc/2),same=(dc%2)===(tc%2);
+  const gen=[[0,1],[1,2],[2,3],[3,4],[4,0]];
+  const ctl=[[0,2],[1,3],[2,4],[3,0],[4,1]];
+  if(d===t)return same?'비견':'겁재';
+  if(gen.some(p=>p[0]===d&&p[1]===t))return same?'식신':'상관';
+  if(ctl.some(p=>p[0]===d&&p[1]===t))return same?'편재':'정재';
+  if(gen.some(p=>p[0]===t&&p[1]===d))return same?'편인':'정인';
+  return same?'편관':'정관';
+}
+function calcGongmang(y,m,d){const pos=(toJDN(y,m,d)+49)%60,sun=Math.floor(pos/10);return{jj:GONGMANG_TABLE[sun],sunName:SUN_NAME[sun]};}
+function getJeolJDN(year,month,gmap){
+  const name=JD_NAME[month-1];
+  if(gmap){for(let i=-1;i<=1;i++){const k=name+'_'+(year+i);if(gmap[k])return{j:gmap[k],p:true};}}
+  const approx=[6,4,6,5,6,6,7,7,8,8,7,7];
+  return{j:toJDN(year,month,approx[month-1]),p:false};
+}
+function calcDaeun(y,m,d,h,min,gender,dc,mp,gmap){
+  const forward=(gender==='남')===(dc%2===0);
+  const bJDN=toJDN(y,m,d);
+  let days,precise;
+  if(forward){
+    const ny=m===12?y+1:y, nm=m===12?1:m+1;
+    const res=getJeolJDN(ny,nm,gmap);
+    days=res.j-bJDN; precise=res.p;
+  } else {
+    const res=getJeolJDN(y,m,gmap);
+    if(bJDN>=res.j){days=bJDN-res.j;precise=res.p;}
+    else{
+      const py=m===1?y-1:y, pm=m===1?12:(m-1);
+      const res2=getJeolJDN(py,pm,gmap);
+      days=bJDN-res2.j; precise=res2.p;
+    }
+  }
+  if(days<0)days=0;
+  const sy=Math.round(days/3);
+  const remDays=days%3;
+  const sm=remDays===1?4:remDays===2?8:0;
+  const daeuns=[];
+  for(let i=1;i<=9;i++){
+    const idx=forward?(mp.cg+i)%10:((mp.cg-i)%10+10)%10;
+    const jidx=forward?(mp.jj+i)%12:((mp.jj-i)%12+12)%12;
+    daeuns.push({cg:idx,jj:jidx,age:sy+(i-1)*10,ss:getSS(dc,idx)});
+  }
+  return{forward,sy,sm,daeuns,precise,rawDays:Math.round(days*10)/10};
+}
+function buildSaju(y,m,d,h,min,gender,gmap){
+  const yp=calcYear(y,m,d,gmap);
+  const mp=calcMonth(y,m,d,yp.cg,gmap);
+  const dp=calcDay(y,m,d);
+  const hp=calcHour(h,min,dp.cg);
+  const dc=dp.cg;
+  const gm=calcGongmang(y,m,d);
+  const shiName=JJ_KR[hp.jj]+'시';
+  return{
+    pillars:[
+      {label:'년주',cg:yp.cg,jj:yp.jj,warn:yp.warn,ss:getSS(dc,yp.cg)},
+      {label:'월주',cg:mp.cg,jj:mp.jj,warn:mp.warn,ss:getSS(dc,mp.cg)},
+      {label:'일주',cg:dc,jj:dp.jj,warn:false,ss:'일원'},
+      {label:'시주',cg:hp.cg,jj:hp.jj,warn:false,ss:getSS(dc,hp.cg)},
+    ],
+    dc,shiName,gongmang:gm,
+    daeun:calcDaeun(y,m,d,h,min,gender,dc,mp,gmap),
+  };
+}
+async function fetchKasi(year,key){
+  const map={};
+  for(const mo of [1,2,3,4,5,6,7,8,9,10,11,12]){
+    try{
+      const url=`https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/get24DivisionsInfo?solYear=${year}&solMonth=${String(mo).padStart(2,'0')}&ServiceKey=${encodeURIComponent(key)}&_type=json&numOfRows=30`;
+      const res=await fetch(url);
+      const data=await res.json();
+      const items=data?.response?.body?.items?.item;
+      if(!items)continue;
+      const arr=Array.isArray(items)?items:[items];
+      for(const it of arr){
+        const s=String(it.locdate);
+        const jy=parseInt(s.slice(0,4)),jm=parseInt(s.slice(4,6)),jd=parseInt(s.slice(6,8));
+        map[it.dateName+'_'+jy]=toJDN(jy,jm,jd);
+      }
+    }catch(e){}
+  }
+  return map;
+}
+
+function ohBadge(oh){const c=CO[oh];return `<span class="oh-badge" style="color:${c.t};background:${c.bg};border:1px solid ${c.b}">${oh}</span>`;}
+
+let currentSaju=null;
+let nowYear=new Date().getFullYear();
+
+function updatePreview(){
+  const h=parseInt(document.getElementById('hr').value)||0;
+  const min=parseInt(document.getElementById('min').value)||0;
+  const t=h*60+min;
+  const ji=(t>=1380||t<60)?0:t<180?1:t<300?2:t<420?3:t<540?4:t<660?5:t<780?6:t<900?7:t<1020?8:t<1140?9:t<1260?10:11;
+  const oh=OH[OH_JJ[ji]];
+  const c=CO[oh];
+  document.getElementById('pv-time').textContent=h+'시 '+String(min).padStart(2,'0')+'분 →';
+  document.getElementById('pv-jj').textContent=JJ[ji];
+  document.getElementById('pv-jj').style.color=c.t;
+  document.getElementById('pv-name').textContent=JJ_KR[ji]+'시';
+  const boundaries=[0,60,150,270,390,510,630,750,870,990,1110,1290,1410,1440];
+  const near=boundaries.some(b=>Math.abs(t-b)<=10);
+  document.getElementById('pv-warn').style.display=near?'':'none';
+}
+
+function toggleKasi(){
+  const body=document.getElementById('kasi-body');
+  const arrow=document.getElementById('kasi-arrow');
+  const show=body.style.display==='none';
+  body.style.display=show?'':'none';
+  arrow.textContent=show?'▲':'▼';
+}
+
+function setTab(t){
+  document.getElementById('panel-chart').style.display=t==='chart'?'':'none';
+  document.getElementById('panel-daeun').style.display=t==='daeun'?'':'none';
+  document.getElementById('tab-chart').className='tab-btn'+(t==='chart'?' active':'');
+  document.getElementById('tab-daeun').className='tab-btn'+(t==='daeun'?' active':'');
+}
+
+function toggleCopy(){
+  const area=document.getElementById('copy-area');
+  const btn=document.getElementById('copy-btn');
+  const show=area.style.display==='none';
+  area.style.display=show?'':'none';
+  btn.className='copy-btn'+(show?' open':'');
+  btn.textContent=show?'▲ 텍스트 닫기':'📋 사주 원국 + 대운 복사 (채팅창 간명용)';
+  if(show&&currentSaju)document.getElementById('copy-text').value=buildCopyText(currentSaju);
+}
+
+function buildCopyText(s){
+  const {pillars,dc,daeun,shiName}=s;
+  const yr=parseInt(document.getElementById('yr').value);
+  const hr=parseInt(document.getElementById('hr').value)||0;
+  const min=parseInt(document.getElementById('min').value)||0;
+  const gd=document.getElementById('gd').value;
+  const mbti=document.getElementById('mbti').value;
+  const moJJ=pillars[1].jj;
+  const gek=getGekInfo(dc,moJJ);
+  const ilganName=ILGAN_NAME[dc];
+  const pillarStr=pillars.map(p=>
+    p.label+': '+CG[p.cg]+JJ[p.jj]+
+    ' [천간: '+CG_KR[p.cg]+'('+OH[OH_CG[p.cg]]+') / 지지: '+JJ_KR[p.jj]+'('+OH[OH_JJ[p.jj]]+')]'+
+    ' 십신: '+p.ss
+  ).join('\n');
+  const ohCnt={목:0,화:0,토:0,금:0,수:0};
+  pillars.forEach(p=>{ohCnt[OH[OH_CG[p.cg]]]++;ohCnt[OH[OH_JJ[p.jj]]]++;});
+  const ohStr=Object.entries(ohCnt).map(e=>e[0]+e[1]).join(' ');
+  const dStr=daeun.daeuns.slice(0,8).map(d=>d.age+'세 '+CG[d.cg]+JJ[d.jj]+'('+d.ss+')').join(' / ');
+  const cd=daeun.daeuns.find(d=>nowYear>=yr+d.age&&nowYear<=yr+d.age+9);
+  const dir=daeun.forward?'순행':'역행';
+  return '아래 사주를 종합 간명해주세요.\n\n'+
+    '[나의 에너지 코드]\n'+
+    '일간: '+ilganName+' ('+ILGAN_NAT[dc]+')\n'+
+    '格 방향: '+gek.sipsin+' → '+gek.label+' — '+gek.desc+'\n'+
+    (mbti&&MBTI_DATA[mbti]?'MBTI: '+mbti+' ('+MBTI_DATA[mbti].name+') — '+MBTI_DATA[mbti].core+'\n':'')+
+    '\n[사주 원국]\n'+pillarStr+'\n'+
+    '일간: '+CG[dc]+CG_KR[dc]+' ('+OH[OH_CG[dc]]+') | 성별: '+gd+'성\n'+
+    '생시: '+hr+'시 '+min+'분 → '+shiName+' | 오행분포: '+ohStr+'\n\n'+
+    '[대운] '+dir+' | '+daeun.sy+'세 시작\n'+dStr+
+    (cd?'\n현재 대운('+nowYear+'): '+CG[cd.cg]+JJ[cd.jj]+'('+cd.ss+')':'');
+}
+
+function renderEnergyCode(s){
+  const{dc, pillars}=s;
+  const moJJ=pillars[1].jj; // 월주 지지
+  const gek=getGekInfo(dc,moJJ);
+  const mbti=document.getElementById('mbti').value;
+  const ilganName=ILGAN_NAME[dc];
+  const ilganNat=ILGAN_NAT[dc];
+  const co=CO[OH[OH_CG[dc]]];
+
+  // 格 색상
+  const GEK_COLOR={
+    "독립·자생":"#1e8449","경쟁·도전":"#c0392b","표현·생산":"#1a6b3c",
+    "혁신·자유":"#922b21","행동·현실":"#784212","안정·성실":"#1a5276",
+    "단련·극복":"#6e2f1a","규범·책임":"#1f618d","직관·탐구":"#512e5f","수용·배움":"#1a5276"
+  };
+  const gc=GEK_COLOR[gek.label]||"#5a3e00";
+
+  let mbtiHtml='';
+  let comboHtml='';
+  if(mbti&&MBTI_DATA[mbti]){
+    const m=MBTI_DATA[mbti];
+    mbtiHtml=`<span class="ec-cross">×</span>
+      <span class="mbti-badge">${mbti} ${m.name}</span>`;
+    const combo=buildComboDesc(dc,gek.label,mbti);
+    if(combo){
+      comboHtml=`<div class="ec-combo">
+        <div class="combo-title">✦ 통합 해석 — 사주 × MBTI</div>
+        <pre style="white-space:pre-wrap;font-family:inherit;font-size:11px;color:#3a2a10;line-height:1.9">${combo}</pre>
+      </div>`;
+    }
+  }
+
+  return `<div class="energy-code-box">
+    <div class="ec-title">✦ 나의 에너지 코드</div>
+    <div class="energy-code-main">
+      <span class="ec-badge" style="background:${co.bg};color:${co.t};border:1px solid ${co.b}">
+        ${ilganName} (${ilganNat})
+      </span>
+      <span class="ec-cross">×</span>
+      <span class="gek-badge" style="background:${gc}">${gek.label}</span>
+      ${mbtiHtml}
+    </div>
+    <div class="ec-desc">
+      <b>${ilganName}</b>: ${ILGAN_CORE[dc]} 사람<br>
+      <b>${gek.sipsin} → ${gek.label}</b>: ${gek.desc}
+    </div>
+    ${comboHtml}
+  </div>`;
+}
+
+function renderChart(s){
+  const {pillars,dc,gongmang}=s;
+
+  const ohCnt={목:0,화:0,토:0,금:0,수:0};
+  pillars.forEach(p=>{ohCnt[OH[OH_CG[p.cg]]]++;ohCnt[OH[OH_JJ[p.jj]]]++;});
+  const ohBadges=Object.entries(ohCnt).filter(e=>e[1]>0).map(e=>ohBadge(e[0])).join(' ');
+
+  // ── 전통 명리 배열: 시주(3) → 일주(2) → 월주(1) → 년주(0) ──
+  // pillars: [0]=년주, [1]=월주, [2]=일주, [3]=시주
+  const displayOrder=[3,2,1,0];
+  const pillarCards=displayOrder.map(origIdx=>{
+    const p=pillars[origIdx];
+    const isDay=(origIdx===2);
+    const isHour=(origIdx===3);
+    const co=OH[OH_CG[p.cg]],jo=OH[OH_JJ[p.jj]];
+    const jzItems=JJGAN[p.jj].map(c=>`<div class="item" style="color:${CO[OH[OH_CG[c]]].t}">${CG[c]}<span style="font-size:8px;color:#8a7a5a;margin-left:1px">${OH[OH_CG[c]]}</span></div>`).join('');
+    return `<div class="pillar${isDay?' day':''}">
+      ${p.warn?'<div class="warn">경계</div>':''}
+      <div class="col-label">${p.label}</div>
+      <div class="ss">${p.ss}</div>
+      <div class="hj" style="color:${CO[co].t}">${CG[p.cg]}</div>
+      <div class="kr">${CG_KR[p.cg]}</div>
+      ${ohBadge(co)}
+      <div class="divider"></div>
+      <div class="hj" style="color:${CO[jo].t}">${JJ[p.jj]}</div>
+      <div class="kr">${JJ_KR[p.jj]}</div>
+      ${ohBadge(jo)}
+      ${isHour?`<div class="kr">${s.shiName}</div>`:''}
+      <div class="jzgan"><div class="lbl">지장간</div>${jzItems}</div>
+    </div>`;
+  }).join('');
+
+  const sipsinItems=pillars.filter((_,i)=>i!==2).map(p=>`<div class="sipsin-item"><span class="k">${p.label}</span><span class="v">${p.ss}</span></div>`).join('');
+
+  const gmItems=gongmang.jj.map(j=>{
+    const inChart=pillars.some(p=>p.jj===j);
+    const jo=OH[OH_JJ[j]];
+    return `<div class="gm-item${inChart?' in-chart':''}">
+      <div class="hj" style="color:${CO[jo].t}">${JJ[j]}</div>
+      <div class="kr">${JJ_KR[j]}</div>
+      ${inChart?'<div class="star">명식 내 ★</div>':''}
+    </div>`;
+  }).join('');
+  const gmNote=gongmang.jj.some(j=>pillars.some(p=>p.jj===j))
+    ?'★ 명식 내 공망 — 해당 십신 작용 약화':'명식 내 공망 없음';
+
+  return `
+    ${renderEnergyCode(s)}
+    <div class="summary-box">
+      <div class="lbl">일간</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:32px;font-weight:700;font-family:serif;color:${CO[OH[OH_CG[dc]]].t};line-height:1">${CG[dc]}</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#2c2416">${CG_KR[dc]} (${OH[OH_CG[dc]]})</div>
+          <div style="margin-top:3px">${ohBadges}</div>
+        </div>
+      </div>
+    </div>
+    <div class="pillar-section">
+      <div class="pillar-direction">
+        <span class="dir-label">시주</span>
+        <span class="dir-arrow">← 년주 방향</span>
+        <span class="dir-label">년주</span>
+      </div>
+      <div class="pillar-row">${pillarCards}</div>
+    </div>
+    <div class="sipsin-box"><div class="lbl">십신 구조</div><div class="sipsin-row">${sipsinItems}</div></div>
+    <div class="gm-box">
+      <div class="lbl">공망(空亡) · ${gongmang.sunName} 기준</div>
+      <div class="gm-row">${gmItems}<div class="gm-note">${gmNote}</div></div>
+    </div>`;
+}
+
+function renderDaeun(s){
+  const {daeun,dc}=s;
+  const yr=parseInt(document.getElementById('yr').value);
+  const dir=daeun.forward?'순행 ▶':'◀ 역행';
+  const preciseLabel=daeun.precise
+    ?'<span style="color:#2e7d4f;margin-left:6px;font-size:9px">✓ KASI 정밀</span>'
+    :'<span style="color:#8a6200;margin-left:6px;font-size:9px">~ 근사값</span>';
+
+  const cards=daeun.daeuns.map(d=>{
+    const sy=yr+d.age;
+    const isNow=nowYear>=sy&&nowYear<=sy+9;
+    const co=OH[OH_CG[d.cg]],jo=OH[OH_JJ[d.jj]];
+    return `<div class="daeun-card${isNow?' now':''}">
+      ${isNow?'<div class="now-lbl">현재</div>':''}
+      <div class="age">${d.age}세</div>
+      <div class="sy">${sy}~</div>
+      <div class="cg" style="color:${CO[co].t}">${CG[d.cg]}</div>
+      <div class="ss">${d.ss}</div>
+      <div class="div"></div>
+      <div class="jj" style="color:${CO[jo].t}">${JJ[d.jj]}</div>
+      ${ohBadge(jo)}
+    </div>`;
+  }).join('');
+
+  const cd=daeun.daeuns.find(d=>nowYear>=yr+d.age&&nowYear<=yr+d.age+9);
+  let nowBox='';
+  if(cd){
+    const co=OH[OH_CG[cd.cg]],jo=OH[OH_JJ[cd.jj]];
+    nowBox=`<div class="now-box">
+      <div class="lbl">현재 대운 (${nowYear}년)</div>
+      <div class="inner">
+        <div>
+          <span class="hj" style="color:${CO[co].t}">${CG[cd.cg]}</span>
+          <span class="hj" style="color:${CO[jo].t}">${JJ[cd.jj]}</span>
+        </div>
+        <div>
+          <div class="name">${CG_KR[cd.cg]}${JJ_KR[cd.jj]} · ${cd.ss}</div>
+          <div class="years">${yr+cd.age} ~ ${yr+cd.age+9}년</div>
+          <div class="badges">${ohBadge(co)}${ohBadge(jo)}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  return `
+    <div class="daeun-summary">
+      <div class="daeun-hdr">
+        <span class="tit">${dir} 대운</span>
+        <span class="sub">${daeun.sy}세 시작${daeun.sm>0?' '+daeun.sm+'개월':''}${preciseLabel}</span>
+      </div>
+      <div class="daeun-cards">${cards}</div>
+    </div>
+    ${nowBox}`;
+}
+
+async function handleCalc(){
+  const btn=document.querySelector('.btn-main');
+  btn.disabled=true; btn.textContent='계산 중...';
+  const yr=parseInt(document.getElementById('yr').value);
+  const mo=parseInt(document.getElementById('mo').value);
+  const dy=parseInt(document.getElementById('dy').value);
+  const hr=parseInt(document.getElementById('hr').value)||0;
+  const min=parseInt(document.getElementById('min').value)||0;
+  const gd=document.getElementById('gd').value;
+  const kKey=document.getElementById('kKey').value.trim();
+  let gmap=null;
+  if(kKey){
+    try{gmap=await fetchKasi(yr,kKey);if(Object.keys(gmap).length===0)gmap=null;}catch(e){}
+  }
+  const s=buildSaju(yr,mo,dy,hr,min,gd,gmap);
+  currentSaju=s;
+  document.getElementById('panel-chart').innerHTML=renderChart(s);
+  document.getElementById('panel-daeun').innerHTML=renderDaeun(s);
+  document.getElementById('result').style.display='';
+  setTab('chart');
+  document.getElementById('copy-area').style.display='none';
+  document.getElementById('copy-btn').className='copy-btn';
+  document.getElementById('copy-btn').textContent='📋 사주 원국 + 대운 복사 (채팅창 간명용)';
+  btn.disabled=false; btn.textContent='✦ 원국 + 대운 뽑기';
+}
+
+updatePreview();
+</script>
+</body>
+</html>
