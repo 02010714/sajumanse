@@ -26,6 +26,7 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .preview-jj{font-weight:700;margin-left:6px;font-family:serif;font-size:15px}
 .preview-name{color:#8a7a5a;margin-left:4px;font-size:10px}
 .warn-badge{font-size:8px;color:#e07070;background:rgba(224,112,112,.12);border-radius:3px;padding:1px 5px}
+.warn-badge.strong{font-size:9px;color:#fff;background:#c0392b;border-radius:4px;padding:2px 7px;font-weight:700}
 .tabs{display:flex;gap:2px;margin-bottom:13px;background:#e8e0d0;border-radius:9px;padding:3px}
 .tab-btn{flex:1;padding:7px;border-radius:7px;border:none;cursor:pointer;font-size:12px;font-family:inherit;background:transparent;color:#7a6040;font-weight:400}
 .tab-btn.active{background:#fff;color:#8a6200;font-weight:700}
@@ -128,7 +129,7 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
     </div>
     <div class="kasi-body" id="kasi-body" style="display:none">
       <input type="password" id="kKey" placeholder="data.go.kr 서비스키...">
-      <div class="kasi-hint">없으면 근사값 계산 (±1일 오차) · data.go.kr 무료 발급</div>
+      <div class="kasi-hint">없으면 근사값 계산 (±1일 오차) · 절기 당일 출생 시 월주가 달라질 수 있음 · data.go.kr 무료 발급</div>
     </div>
   </div>
 
@@ -339,10 +340,20 @@ function calcMonth(y,m,d,ycg,gmap){
   if(gmap){for(let i=-1;i<=1;i++){const k=name+'_'+(y+i);if(gmap[k]){jeolJDN=gmap[k];break;}}}
   const approx=[6,4,6,5,6,6,7,7,8,8,7,7];
   const jdn=toJDN(y,m,d);
-  const after=jeolJDN?jdn>=jeolJDN:d>=approx[m-1];
+  // KASI 정밀: 당일 포함 ±1일 경계 경고
+  // 근사값: 절기 당일은 시각 불명 → 이전 월(보수적) + 경계 경고 필수
+  let after, warn;
+  if(jeolJDN){
+    after=jdn>jeolJDN; // KASI도 날짜만 알 때: 당일은 "전"으로 보수 처리
+    warn=Math.abs(jdn-jeolJDN)<=1;
+  } else {
+    const onBoundary=(d===approx[m-1]);
+    after=d>approx[m-1]; // 당일은 이전 월(보수적 기본값)
+    warn=onBoundary||(d===approx[m-1]+1);
+  }
   const bm=after?m%12:(m-1+12)%12;
   const mc=((ycg%5)*2+2+(bm-2+12)%12)%10;
-  return{cg:mc,jj:bm,warn:jeolJDN?Math.abs(jdn-jeolJDN)<=1:false};
+  return{cg:mc,jj:bm,warn};
 }
 function calcDay(y,m,d){const pos=(toJDN(y,m,d)+49)%60;return{cg:pos%10,jj:pos%12};}
 function calcHour(h,min,dcg){
@@ -582,7 +593,7 @@ function renderChart(s){
     const co=OH[OH_CG[p.cg]],jo=OH[OH_JJ[p.jj]];
     const jzItems=JJGAN[p.jj].map(c=>`<div class="item" style="color:${CO[OH[OH_CG[c]]].t}">${CG[c]}<span style="font-size:8px;color:#8a7a5a;margin-left:1px">${OH[OH_CG[c]]}</span></div>`).join('');
     return `<div class="pillar${isDay?' day':''}">
-      ${p.warn?'<div class="warn">경계</div>':''}
+      ${p.warn?'<div class="warn">절기경계<br>KASI필요</div>':''}
       <div class="col-label">${p.label}</div>
       <div class="ss">${p.ss}</div>
       <div class="hj" style="color:${CO[co].t}">${CG[p.cg]}</div>
