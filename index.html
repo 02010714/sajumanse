@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI시대 사주문해력 — 독자 전용</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#c9a227;--gold-dark:#9a7010;--brown:#5a3e00;--cream:#f4f0e8;--text:#2c2416;--text-light:#6b5a3a}
+body{background:var(--cream);color:var(--text);font-family:"Malgun Gothic","Apple SD Gothic Neo",serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;position:relative;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 20% 20%,rgba(201,162,39,.06) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(201,162,39,.06) 0%,transparent 50%);pointer-events:none}
+body::after{content:'';position:fixed;inset:16px;border:1px solid rgba(201,162,39,.2);border-radius:4px;pointer-events:none}
+.wrap{max-width:420px;width:100%;position:relative;z-index:1}
+.header{text-align:center;margin-bottom:40px;animation:fadeDown .8s ease both}
+.header .badge{display:inline-block;font-size:9px;letter-spacing:.5em;color:var(--gold);border:1px solid rgba(201,162,39,.4);padding:4px 14px;border-radius:2px;margin-bottom:16px}
+.header h1{font-size:26px;font-weight:700;color:var(--brown);line-height:1.4;margin-bottom:8px;letter-spacing:-.5px}
+.header .subtitle{font-size:12px;color:var(--gold-dark);font-weight:600;margin-bottom:10px;letter-spacing:.05em}
+.header p{font-size:10px;color:var(--text-light);line-height:1.8}
+.divider{display:flex;align-items:center;gap:12px;margin:0 auto 32px;width:80%;animation:fadeUp .8s .2s ease both}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(201,162,39,.4),transparent)}
+.divider span{font-size:14px;color:var(--gold);opacity:.6}
+.apps{display:flex;flex-direction:column;gap:14px}
+.app-card{background:#fff;border:1px solid #ddd5c0;border-radius:14px;padding:22px 20px;text-decoration:none;color:inherit;display:flex;align-items:center;gap:18px;transition:all .3s ease;position:relative;overflow:hidden}
+.app-card:nth-child(1){animation:fadeUp .7s .1s ease both}
+.app-card:nth-child(2){animation:fadeUp .7s .2s ease both}
+.app-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,162,39,.04),transparent);opacity:0;transition:opacity .3s}
+.app-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,162,39,.15)}
+.app-card:hover::before{opacity:1}
+.app-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.app-icon.gold{background:linear-gradient(135deg,#f4e4a0,#e8c840)}
+.app-icon.blue{background:linear-gradient(135deg,#d0e8ff,#a8c8f0)}
+.app-info{flex:1}
+.app-tag{font-size:8px;letter-spacing:.12em;color:var(--gold-dark);font-weight:700;margin-bottom:4px;text-transform:uppercase}
+.app-title{font-size:15px;font-weight:700;color:var(--brown);margin-bottom:4px;line-height:1.3}
+.app-desc{font-size:10px;color:var(--text-light);line-height:1.6}
+.app-arrow{font-size:16px;color:var(--gold);opacity:.5;transition:all .3s;flex-shrink:0}
+.app-card:hover .app-arrow{opacity:1;transform:translateX(3px)}
+.footer{text-align:center;margin-top:36px;animation:fadeUp .8s .4s ease both}
+.footer p{font-size:9px;color:#9a8a6a;line-height:2;letter-spacing:.03em}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:360px){.header h1{font-size:22px}.app-card{padding:18px 16px;gap:14px}.app-icon{width:44px;height:44px;font-size:20px}.app-title{font-size:14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="badge">독자 전용 · READER ONLY</div>
+    <h1>AI시대<br>사주문해력</h1>
+    <div class="subtitle">나는 왜 이런 사람이 되었을까</div>
+    <p>時雨(시우) 저 · 독자 전용 앱 모음</p>
+  </div>
+  <div class="divider"><span>✦</span></div>
+  <div class="apps">
+    <a href="saju-mbti.html" class="app-card">
+      <div class="app-icon gold">⚡</div>
+      <div class="app-info">
+        <div class="app-tag">통합 분석</div>
+        <div class="app-title">사주 × MBTI 통합</div>
+        <div class="app-desc">나의 에너지 코드 완전 분석<br>사주 원국과 MBTI를 함께 읽는다</div>
+      </div>
+      <div class="app-arrow">→</div>
+    </a>
+    <a href="mbti-energy.html" class="app-card">
+      <div class="app-icon blue">🧭</div>
+      <div class="app-info">
+        <div class="app-tag">에너지 유형</div>
+        <div class="app-title">나의 에너지 유형</div>
+        <div class="app-desc">MBTI × 사주 에너지<br>나는 어떤 에너지로 살아가는가</div>
+      </div>
+      <div class="app-arrow">→</div>
+    </a>
+  </div>
+  <div class="footer">
+    <p>『AI시대 사주문해력』 독자 전용 서비스<br>時雨(시우) 저 · 무단 배포 금지</p>
+  </div>
+</div>
+</body>
+</html>
