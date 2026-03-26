@@ -1,10 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>나의 에너지 코드 — 사주 × MBTI × 건강</title>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" crossorigin="anonymous"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f4f0e8;color:#2c2416;font-family:"Malgun Gothic","Apple SD Gothic Neo",serif;padding:20px 14px;min-height:100vh}
@@ -177,6 +177,22 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .gut-synergy{background:#fdf9ee;border:1px solid #e0c870;border-radius:7px;padding:8px 11px;font-size:11px;color:#5a4020;line-height:1.7;margin-top:10px}
 .gut-synergy .gs-label{font-size:9px;font-weight:700;color:#8a6200;margin-bottom:3px;letter-spacing:.05em}
 .no-health{text-align:center;padding:40px 20px;color:#9a8a6a;font-size:13px}
+
+/* ── 주문 CTA ── */
+.order-box{background:linear-gradient(135deg,#fffbf0,#fff5e0);border:2px solid #c9a227;border-radius:14px;padding:16px;margin-top:14px}
+.order-box .ob-title{font-size:13px;font-weight:700;color:#5a3e00;margin-bottom:4px}
+.order-box .ob-sub{font-size:11px;color:#8a6200;margin-bottom:12px;line-height:1.6}
+.order-menu{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.order-item{background:#fff;border:1px solid #e0c870;border-radius:9px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.order-item .oi-info{flex:1}
+.order-item .oi-name{font-size:12px;font-weight:700;color:#2c2416;margin-bottom:2px}
+.order-item .oi-desc{font-size:10px;color:#8a7a5a}
+.order-item .oi-btn{background:#c9a227;color:#fff;border:none;border-radius:7px;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0}
+.order-item .oi-btn:hover{background:#9a7010}
+.btn-kakao{width:100%;background:#FEE500;color:#3A1D1D;border:none;border-radius:9px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:8px}
+.btn-kakao:hover{background:#f0d800}
+.btn-share{width:100%;background:#fff;border:1.5px solid #ddd0b0;border-radius:9px;padding:11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;color:#7a6040}
+.btn-share:hover{background:#f5edd8}
 
 #result{margin-top:0}
 </style>
@@ -517,6 +533,51 @@ const SEASON_BOOST={
   환절기:{note:"환절기 비위(脾胃) 점검이 핵심입니다. 단맛·노란색 식품으로 소화기를 다스리세요."}
 };
 
+// ── 카페 메뉴 & 주문 링크 (오행별) ──
+// ※ 아래 orderUrl 값을 실제 주문 링크(카카오채널, 스마트스토어 등)로 교체하세요
+const CAFE_MENU={
+  목:{
+    title:"木 오행 — 간·담 보강 추천",
+    items:[
+      {name:"민들레 녹차 블렌드",desc:"간 해독 + 항산화 · 따뜻하게 제공",price:"6,500",orderUrl:"#"},
+      {name:"사과·셀러리·레몬 주스",desc:"간 해독 시너지 트리오 · 당일 착즙",price:"7,000",orderUrl:"#"},
+      {name:"밀크시슬 에너지볼",desc:"실리마린 함유 건강 간식",price:"4,500",orderUrl:"#"},
+    ]
+  },
+  화:{
+    title:"火 오행 — 심장·소장 보강 추천",
+    items:[
+      {name:"대추·히비스커스 블렌드",desc:"심신 안정 + 혈액순환 · 따뜻하게 제공",price:"6,500",orderUrl:"#"},
+      {name:"비트·석류·체리 주스",desc:"심혈관 폴리페놀 트리오 · 당일 착즙",price:"7,500",orderUrl:"#"},
+      {name:"CoQ10 + 유산균 세트",desc:"심장 에너지 + 소장 유산균 패키지",price:"28,000",orderUrl:"#"},
+    ]
+  },
+  토:{
+    title:"土 오행 — 비위 보강 추천",
+    items:[
+      {name:"생강·진피·계피 블렌드",desc:"위장 온열 + 소화 촉진 · 따뜻하게 제공",price:"6,000",orderUrl:"#"},
+      {name:"당근·생강·꿀 주스",desc:"비위 보강 + 장 점막 보호 · 당일 착즙",price:"6,500",orderUrl:"#"},
+      {name:"소화효소 + 프로바이오틱스",desc:"비위 맞춤 소화 지원 패키지",price:"22,000",orderUrl:"#"},
+    ]
+  },
+  금:{
+    title:"金 오행 — 폐·대장 보강 추천",
+    items:[
+      {name:"도라지·배·유자 블렌드",desc:"폐 윤택 + 기관지 보호 · 따뜻하게 제공",price:"6,500",orderUrl:"#"},
+      {name:"배·무·생강 주스",desc:"윤폐 + 가래 제거 · 당일 착즙",price:"7,000",orderUrl:"#"},
+      {name:"낙산균(미야리산) + 이눌린",desc:"대장 낙산균 + 프리바이오틱스 세트",price:"25,000",orderUrl:"#"},
+    ]
+  },
+  수:{
+    title:"水 오행 — 신장·방광 보강 추천",
+    items:[
+      {name:"구기자·두충·맥문동 블렌드",desc:"신음 보충 + 항노화 · 따뜻하게 제공",price:"7,000",orderUrl:"#"},
+      {name:"블루베리·검정콩·크랜베리",desc:"신장 보호 안토시아닌 주스 · 당일 착즙",price:"7,500",orderUrl:"#"},
+      {name:"CoQ10 + 비타민D3K2 세트",desc:"신장 에너지 + 골밀도 패키지",price:"30,000",orderUrl:"#"},
+    ]
+  }
+};
+
 // 용신 → 오행 변환
 const YONGSIN_TO_OH={甲:"목",乙:"목",丙:"화",丁:"화",戊:"토",己:"토",庚:"금",辛:"금",壬:"수",癸:"수"};
 function yongsinToOH(str){
@@ -647,7 +708,30 @@ function renderHealth(s){
     ${gutHtml}
     ${secondaryHtml}
 
-    <div style="background:#faf8f4;border:1px solid #e0d0b0;border-radius:8px;padding:9px 12px;font-size:10px;color:#9a8a6a;line-height:1.7;margin-top:6px">
+    <!-- 주문 CTA -->
+    ${(()=>{
+      const menu=CAFE_MENU[oh1];
+      if(!menu)return'';
+      const items=menu.items.map(it=>`
+        <div class="order-item">
+          <div class="oi-info">
+            <div class="oi-name">${it.name}</div>
+            <div class="oi-desc">${it.desc} &nbsp;·&nbsp; <b>${it.price}원</b></div>
+          </div>
+          <button class="oi-btn" onclick="orderItem('${it.orderUrl}','${it.name}')">${it.orderUrl==='#'?'준비중':'주문하기'}</button>
+        </div>`).join('');
+      return`<div class="order-box">
+        <div class="ob-title">✦ 내 오행에 맞는 메뉴 주문</div>
+        <div class="ob-sub">${menu.title}<br>지금 바로 주문하거나 카운터에서 오행 코드를 보여주세요.</div>
+        <div class="order-menu">${items}</div>
+        <button class="btn-kakao" onclick="shareKakao()">
+          <span style="font-size:18px;line-height:1">💬</span> 카카오톡으로 결과 공유하기
+        </button>
+        <button class="btn-share" onclick="shareResult()">📋 내 에너지 코드 복사해서 공유</button>
+      </div>`;
+    })()}
+
+    <div style="background:#faf8f4;border:1px solid #e0d0b0;border-radius:8px;padding:9px 12px;font-size:10px;color:#9a8a6a;line-height:1.7;margin-top:10px">
       ⚠️ 주의: ${rec1.caution}<br>
       이 추천은 사주 에너지 관점의 일상 습관 가이드입니다. 질병 치료 목적으로 사용하지 마시고, 기저 질환이 있으신 분은 반드시 전문의와 상담하세요.
     </div>
@@ -659,6 +743,58 @@ function toggleSecondary(){
   const body=document.getElementById('sec-body');
   btn.classList.toggle('open');
   body.classList.toggle('open');
+}
+
+function orderItem(url, name){
+  if(url==='#'){
+    alert(`"${name}" 주문 기능 준비 중입니다.\n카운터에서 오행 코드를 보여주세요! 😊`);
+    return;
+  }
+  window.open(url,'_blank');
+}
+
+function shareKakao(){
+  if(!currentSaju){alert('먼저 원국을 뽑아주세요.');return;}
+  if(!window.Kakao){alert('카카오 SDK 로딩 중입니다. 잠시 후 다시 시도해주세요.');return;}
+  if(!Kakao.isInitialized()) Kakao.init('1e949e3ffc63fa45564c57e4a1093064');
+
+  const s=currentSaju;
+  const dc=s.dc;
+  const moJJ=s.pillars[1].jj;
+  const moIdx=jjToMoIdx(moJJ);
+  const gek=getGekInfo(dc,moJJ);
+  const yong=YONGSIN_DATA[dc][moIdx];
+  const oh1=yongsinToOH(yong.yongsin);
+  const rec=oh1?OH_HEALTH[oh1]:null;
+  const pageUrl='https://02010714.github.io/sajumanse/saju-mbti.html';
+
+  Kakao.Share.sendDefault({
+    objectType:'feed',
+    content:{
+      title:`✦ 나의 에너지 코드 — ${ILGAN_NAME[dc]} × ${gek.label}`,
+      description:`용신 오행: ${oh1||''}(${rec?rec.organ:''})\n에너지 밸런스 카페에서 내 오행 맞춤 건강 음료를 확인해보세요 🌿`,
+      imageUrl:'https://via.placeholder.com/800x400/c9a227/ffffff?text=Energy+Balance+Cafe',
+      link:{mobileWebUrl:pageUrl,webUrl:pageUrl}
+    },
+    buttons:[{
+      title:'내 에너지 코드 확인하기',
+      link:{mobileWebUrl:pageUrl,webUrl:pageUrl}
+    }]
+  });
+}
+
+function shareResult(){
+  if(!currentSaju){alert('먼저 원국을 뽑아주세요.');return;}
+  const s=currentSaju;
+  const dc=s.dc;
+  const moJJ=s.pillars[1].jj;
+  const moIdx=jjToMoIdx(moJJ);
+  const gek=getGekInfo(dc,moJJ);
+  const yong=YONGSIN_DATA[dc][moIdx];
+  const oh1=yongsinToOH(yong.yongsin);
+  const rec=oh1?OH_HEALTH[oh1]:null;
+  const text=`✦ 나의 에너지 코드\n━━━━━━━━━━━━━━\n일간: ${ILGAN_NAME[dc]} (${ILGAN_NAT[dc]})\n格 방향: ${gek.label}\n용신 오행: ${oh1||'미정'} · ${rec?rec.organ:''}\n용신: ${yong.yongsin} · 희신: ${yong.hesin}\n\n추천 차: ${rec?rec.teas[0].name:''}·${rec?rec.teas[1].name:''}\n추천 주스: ${rec?rec.juices[0].name:''}·${rec?rec.juices[1].name:''}\n━━━━━━━━━━━━━━\n에너지 밸런스 카페 · 사주 × 건강식품`;
+  navigator.clipboard.writeText(text).then(()=>alert('복사됐습니다! 카카오톡이나 SNS에 붙여넣기 하세요.')).catch(()=>prompt('아래 내용을 복사하세요:',text));
 }
 
 // ── 기존 코드 (십신, 운성, 사주 계산) ──
