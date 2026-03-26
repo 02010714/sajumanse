@@ -719,11 +719,17 @@ function renderHealth(s){
 
   return`<div class="health-panel">
     <div class="health-hero" style="background:${c1.bg};border:1.5px solid ${c1.b}">
-      <div class="hh-title" style="color:${c1.t}">✦ 용신 오행 건강 추천</div>
+      <div class="hh-title" style="color:${c1.t}">✦ 밸런스 오행 건강 추천</div>
       <div class="hh-main" style="color:${c1.t}">${oh1} (${rec1.organ})</div>
       <div class="hh-organ" style="color:${c1.t}">${rec1.taste} · ${rec1.color}</div>
       <div class="hh-season" style="color:${c1.t}">${rec1.principle}</div>
       <div class="hh-deco" style="color:${c1.t}">${rec1.deco}</div>
+    </div>
+
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px">
+      <span style="background:#fffbf0;border:1px solid #e0c870;border-radius:5px;padding:3px 9px;font-size:10px;color:#8a6200">📖 황제내경 — ${oh1}은 ${rec1.organ}을 주관한다</span>
+      <span style="background:#fffbf0;border:1px solid #e0c870;border-radius:5px;padding:3px 9px;font-size:10px;color:#8a6200">📖 동의보감 — ${rec1.taste}은 ${rec1.organ.split('·')[0].trim()}으로 들어간다</span>
+      <span style="background:#fffbf0;border:1px solid #e0c870;border-radius:5px;padding:3px 9px;font-size:10px;color:#8a6200">📖 궁통보감 — 계절·일간 기준 밸런스 오행 도출</span>
     </div>
 
     <div class="season-note-box">
