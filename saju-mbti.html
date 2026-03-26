@@ -838,18 +838,31 @@ function shareKakao(){
   const juice=rec?rec.juices[0].name:'';
   const supp=rec?rec.supps[0].name:'';
 
-  Kakao.Share.sendDefault({
-    objectType:'feed',
-    content:{
-      title:`나의 본캐 💎${ilganName} ${gekEmoji}${gek.label}${mbtiInfo}`,
-      description:`${ohEmoji} 밸런스 오행: ${oh1}(${ohHanja})\n☕ 추천식품: ${tea} · ${juice} · ${supp}\n\n에너지 밸런스 카페에서 내 오행 맞춤 건강 음료를 확인해보세요 🌿`,
-      link:{mobileWebUrl:pageUrl,webUrl:pageUrl}
-    },
-    buttons:[{
-      title:'내 본캐 확인하기 →',
-      link:{mobileWebUrl:pageUrl,webUrl:pageUrl}
-    }]
-  });
+  const shareText=`나의 본캐 ${ilganEmoji}${ilganName} ${gekEmoji}${gek.label}${mbtiInfo} | ${ohEmoji}밸런스 오행: ${oh1}(${ohHanja}) | ☕${tea} · ${juice}`;
+
+  // sendScrap 방식 — URL만 넘기면 카드+링크 자동 생성
+  try {
+    Kakao.Share.sendDefault({
+      objectType:'text',
+      text:shareText,
+      link:{
+        mobileWebUrl:pageUrl,
+        webUrl:pageUrl
+      },
+      buttons:[{
+        title:'내 본캐 확인하기 →',
+        link:{mobileWebUrl:pageUrl,webUrl:pageUrl}
+      }]
+    });
+  } catch(e) {
+    // 실패 시 네이티브 공유로 폴백
+    if(navigator.share){
+      navigator.share({title:'나의 본캐',text:shareText,url:pageUrl});
+    } else {
+      navigator.clipboard.writeText(shareText+'\n'+pageUrl)
+        .then(()=>alert('복사됐습니다! 카카오톡에 붙여넣기 하세요.'));
+    }
+  }
 }
 
 function shareResult(){
