@@ -194,6 +194,31 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .btn-share{width:100%;background:#fff;border:1.5px solid #ddd0b0;border-radius:9px;padding:11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;color:#7a6040}
 .btn-share:hover{background:#f5edd8}
 
+/* ── MBTI 퀴즈 모달 ── */
+.mbti-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;padding:16px}
+.mbti-modal.open{display:flex}
+.mbti-box{background:#fff;border-radius:16px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;padding:20px}
+.mbti-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.mbti-header .mh-title{font-size:16px;font-weight:700;color:#5b21b6}
+.mbti-header .mh-close{background:none;border:none;font-size:22px;cursor:pointer;color:#9a8a6a;padding:0 4px}
+.mbti-progress{background:#e8e0f0;border-radius:10px;height:6px;margin-bottom:20px}
+.mbti-progress-bar{background:linear-gradient(90deg,#5b21b6,#7c3aed);border-radius:10px;height:6px;transition:width .3s}
+.mbti-qnum{font-size:10px;color:#9a7a9a;margin-bottom:6px;letter-spacing:.05em}
+.mbti-question{font-size:15px;font-weight:700;color:#1a1a2e;line-height:1.6;margin-bottom:18px}
+.mbti-options{display:flex;flex-direction:column;gap:10px}
+.mbti-opt{background:#faf8ff;border:1.5px solid #d4c8f0;border-radius:10px;padding:12px 14px;cursor:pointer;font-size:13px;color:#3a2060;line-height:1.5;transition:all .15s;text-align:left;font-family:inherit}
+.mbti-opt:hover{background:#ede8ff;border-color:#7c3aed;color:#5b21b6}
+.mbti-opt.selected{background:#5b21b6;border-color:#5b21b6;color:#fff;font-weight:700}
+.mbti-nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px}
+.mbti-nav-btn{background:#5b21b6;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.mbti-nav-btn.prev{background:#f0ece0;color:#7a6040}
+.mbti-nav-btn:disabled{opacity:.4;cursor:not-allowed}
+.mbti-result-box{text-align:center;padding:10px 0}
+.mbti-result-type{font-size:48px;font-weight:700;color:#5b21b6;margin-bottom:4px}
+.mbti-result-name{font-size:18px;font-weight:700;color:#1a1a2e;margin-bottom:8px}
+.mbti-result-desc{font-size:13px;color:#5a4a7a;line-height:1.8;margin-bottom:16px}
+.mbti-result-apply{width:100%;background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+
 #result{margin-top:0}
 </style>
 </head>
@@ -229,26 +254,30 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
     <div><label>성별</label><select id="gd"><option value="남">남성</option><option value="여">여성</option></select></div>
   </div>
   <div class="grid2" style="margin-bottom:9px">
-    <div><label class="em">MBTI (선택)</label>
-      <select id="mbti">
-        <option value="">— MBTI 모르면 건너뜀 —</option>
-        <optgroup label="분석가형 (NT)">
-          <option value="INTJ">INTJ — 전략가</option><option value="INTP">INTP — 논리학자</option>
-          <option value="ENTJ">ENTJ — 통솔자</option><option value="ENTP">ENTP — 변론가</option>
-        </optgroup>
-        <optgroup label="외교관형 (NF)">
-          <option value="INFJ">INFJ — 옹호자</option><option value="INFP">INFP — 중재자</option>
-          <option value="ENFJ">ENFJ — 선도자</option><option value="ENFP">ENFP — 활동가</option>
-        </optgroup>
-        <optgroup label="관리자형 (SJ)">
-          <option value="ISTJ">ISTJ — 현실주의자</option><option value="ISFJ">ISFJ — 수호자</option>
-          <option value="ESTJ">ESTJ — 경영자</option><option value="ESFJ">ESFJ — 집정관</option>
-        </optgroup>
-        <optgroup label="탐험가형 (SP)">
-          <option value="ISTP">ISTP — 장인</option><option value="ISFP">ISFP — 모험가</option>
-          <option value="ESTP">ESTP — 사업가</option><option value="ESFP">ESFP — 연예인</option>
-        </optgroup>
-      </select>
+    <div>
+      <label class="em">MBTI (선택)</label>
+      <div style="display:flex;gap:6px;align-items:center">
+        <select id="mbti" style="flex:1">
+          <option value="">— MBTI 모르면 건너뜀 —</option>
+          <optgroup label="분석가형 (NT)">
+            <option value="INTJ">INTJ — 전략가</option><option value="INTP">INTP — 논리학자</option>
+            <option value="ENTJ">ENTJ — 통솔자</option><option value="ENTP">ENTP — 변론가</option>
+          </optgroup>
+          <optgroup label="외교관형 (NF)">
+            <option value="INFJ">INFJ — 옹호자</option><option value="INFP">INFP — 중재자</option>
+            <option value="ENFJ">ENFJ — 선도자</option><option value="ENFP">ENFP — 활동가</option>
+          </optgroup>
+          <optgroup label="관리자형 (SJ)">
+            <option value="ISTJ">ISTJ — 현실주의자</option><option value="ISFJ">ISFJ — 수호자</option>
+            <option value="ESTJ">ESTJ — 경영자</option><option value="ESFJ">ESFJ — 집정관</option>
+          </optgroup>
+          <optgroup label="탐험가형 (SP)">
+            <option value="ISTP">ISTP — 장인</option><option value="ISFP">ISFP — 모험가</option>
+            <option value="ESTP">ESTP — 사업가</option><option value="ESFP">ESFP — 연예인</option>
+          </optgroup>
+        </select>
+        <button onclick="openMbtiQuiz()" style="background:#5b21b6;color:#fff;border:none;border-radius:7px;padding:8px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0">🧠 테스트</button>
+      </div>
     </div>
     <div style="display:flex;align-items:flex-end">
       <div style="width:100%;background:#fdf9f0;border:1px solid #ddd0b0;border-radius:7px;padding:7px 10px;font-size:10px;color:#7a6040;line-height:1.6">
@@ -285,6 +314,18 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 </div>
 
 <div class="footer"><p>『나의 에너지 코드』 독자 전용 · 사주 × MBTI × 건강식품 통합 추천</p></div>
+
+<!-- MBTI 퀴즈 모달 -->
+<div class="mbti-modal" id="mbti-modal">
+  <div class="mbti-box">
+    <div class="mbti-header">
+      <span class="mh-title">🧠 MBTI 빠른 테스트</span>
+      <button class="mh-close" onclick="closeMbtiQuiz()">✕</button>
+    </div>
+    <div class="mbti-progress"><div class="mbti-progress-bar" id="mbti-prog"></div></div>
+    <div id="mbti-quiz-area"></div>
+  </div>
+</div>
 </div>
 
 <script>
@@ -753,6 +794,21 @@ function orderItem(url, name){
   window.open(url,'_blank');
 }
 
+// 일간별 이모지
+const ILGAN_EMOJI={
+  갑목:'🌳',을목:'🌿',병화:'☀️',정화:'🕯️',
+  무토:'⛰️',기토:'🌾',경금:'⚔️',신금:'💎',
+  임수:'🌊',계수:'🌧️'
+};
+// 오행별 이모지
+const OH_EMOJI={목:'🌿',화:'🔥',토:'🌍',금:'💎',수:'💧'};
+// 格방향별 이모지
+const GEK_EMOJI={
+  '독립·자생':'🦅','경쟁·도전':'⚡','표현·생산':'🎨',
+  '혁신·자유':'🚀','행동·현실':'💪','안정·성실':'🏛️',
+  '단련·극복':'🔥','규범·책임':'⚖️','직관·탐구':'🔭','수용·배움':'📚'
+};
+
 function shareKakao(){
   if(!currentSaju){alert('먼저 원국을 뽑아주세요.');return;}
   if(!window.Kakao){alert('카카오 SDK 로딩 중입니다. 잠시 후 다시 시도해주세요.');return;}
@@ -766,18 +822,24 @@ function shareKakao(){
   const yong=YONGSIN_DATA[dc][moIdx];
   const oh1=yongsinToOH(yong.yongsin);
   const rec=oh1?OH_HEALTH[oh1]:null;
+  const mbti=document.getElementById('mbti').value;
+  const mbtiInfo=mbti&&MBTI_DATA[mbti]?` · ${mbti} ${MBTI_DATA[mbti].name}`:'';
+  const ilganName=ILGAN_NAME[dc];
+  const ilganEmoji=ILGAN_EMOJI[ilganName]||'✨';
+  const ohEmoji=OH_EMOJI[oh1]||'🌿';
+  const gekEmoji=GEK_EMOJI[gek.label]||'✦';
   const pageUrl='https://02010714.github.io/sajumanse/saju-mbti.html';
 
   Kakao.Share.sendDefault({
     objectType:'feed',
     content:{
-      title:`✦ 나의 에너지 코드 — ${ILGAN_NAME[dc]} × ${gek.label}`,
-      description:`용신 오행: ${oh1||''}(${rec?rec.organ:''})\n에너지 밸런스 카페에서 내 오행 맞춤 건강 음료를 확인해보세요 🌿`,
+      title:`${ilganEmoji} 나의 에너지 코드 — ${ilganName} ${gekEmoji} ${gek.label}${mbtiInfo}`,
+      description:`${ohEmoji} 밸런스 오행: ${oh1||''}(${rec?rec.organ:''})\n에너지 밸런스 카페에서 내 오행 맞춤 건강 음료를 확인해보세요 🌿`,
       imageUrl:'https://via.placeholder.com/800x400/c9a227/ffffff?text=Energy+Balance+Cafe',
       link:{mobileWebUrl:pageUrl,webUrl:pageUrl}
     },
     buttons:[{
-      title:'내 에너지 코드 확인하기',
+      title:'내 에너지 코드 확인하기 →',
       link:{mobileWebUrl:pageUrl,webUrl:pageUrl}
     }]
   });
@@ -793,7 +855,13 @@ function shareResult(){
   const yong=YONGSIN_DATA[dc][moIdx];
   const oh1=yongsinToOH(yong.yongsin);
   const rec=oh1?OH_HEALTH[oh1]:null;
-  const text=`✦ 나의 에너지 코드\n━━━━━━━━━━━━━━\n일간: ${ILGAN_NAME[dc]} (${ILGAN_NAT[dc]})\n格 방향: ${gek.label}\n용신 오행: ${oh1||'미정'} · ${rec?rec.organ:''}\n용신: ${yong.yongsin} · 희신: ${yong.hesin}\n\n추천 차: ${rec?rec.teas[0].name:''}·${rec?rec.teas[1].name:''}\n추천 주스: ${rec?rec.juices[0].name:''}·${rec?rec.juices[1].name:''}\n━━━━━━━━━━━━━━\n에너지 밸런스 카페 · 사주 × 건강식품`;
+  const mbti=document.getElementById('mbti').value;
+  const mbtiInfo=mbti&&MBTI_DATA[mbti]?`\n${mbti} ${MBTI_DATA[mbti].name} — ${MBTI_DATA[mbti].core}`:'';
+  const ilganName=ILGAN_NAME[dc];
+  const ilganEmoji=ILGAN_EMOJI[ilganName]||'✨';
+  const ohEmoji=OH_EMOJI[oh1]||'🌿';
+  const gekEmoji=GEK_EMOJI[gek.label]||'✦';
+  const text=`${ilganEmoji} 나의 에너지 코드\n━━━━━━━━━━━━━━\n${ilganEmoji} ${ilganName} — ${ILGAN_NAT[dc]}\n${gekEmoji} 에너지 방향: ${gek.label}${mbtiInfo}\n${ohEmoji} 밸런스 오행: ${oh1||'미정'} · ${rec?rec.organ:''}\n\n추천 차 ☕ ${rec?rec.teas[0].name:''}·${rec?rec.teas[1].name:''}\n추천 주스 🥤 ${rec?rec.juices[0].name:''}·${rec?rec.juices[1].name:''}\n━━━━━━━━━━━━━━\n🌿 에너지 밸런스 카페\nhttps://02010714.github.io/sajumanse/saju-mbti.html`;
   navigator.clipboard.writeText(text).then(()=>alert('복사됐습니다! 카카오톡이나 SNS에 붙여넣기 하세요.')).catch(()=>prompt('아래 내용을 복사하세요:',text));
 }
 
@@ -1199,6 +1267,159 @@ async function handleCalc(){
   document.getElementById('copy-btn').className='copy-btn';
   document.getElementById('copy-btn').textContent='📋 사주 원국 + 대운 복사 (채팅창 간명용)';
   btn.disabled=false;btn.textContent='✦ 원국 + 대운 + 건강 추천 뽑기';
+}
+
+// ── MBTI 빠른 테스트 (20문항 · 차원당 5문항) ──
+const MBTI_Q_BANK=[
+  // E/I (5문항)
+  {dim:'EI', q:'주말에 에너지를 충전하는 방식은?',
+   a:['친구들과 만나서 신나게 보낸다 🎉','집에서 혼자 조용히 쉰다 🏠'],dir:['E','I']},
+  {dim:'EI', q:'새로운 사람을 만날 때 나는?',
+   a:['먼저 말을 걸고 대화를 이끈다 💬','상대가 먼저 다가오길 기다린다 🤫'],dir:['E','I']},
+  {dim:'EI', q:'파티나 모임이 끝난 후 나는?',
+   a:['신이 나서 더 놀고 싶다 🥳','피곤하고 혼자 있고 싶다 😴'],dir:['E','I']},
+  {dim:'EI', q:'고민이 생겼을 때 나는?',
+   a:['친구에게 털어놓으며 이야기한다 🗣️','혼자 생각하며 정리한다 💭'],dir:['E','I']},
+  {dim:'EI', q:'새로운 환경(학교·직장)에 적응할 때?',
+   a:['먼저 다가가서 금방 친해진다 🙋','시간이 걸리지만 깊게 사귄다 🌱'],dir:['E','I']},
+  // S/N (5문항)
+  {dim:'SN', q:'새로운 정보를 받아들일 때 나는?',
+   a:['구체적 사실과 데이터를 먼저 본다 📊','전체적인 흐름과 의미를 먼저 본다 🌐'],dir:['S','N']},
+  {dim:'SN', q:'요리를 할 때 나는?',
+   a:['레시피대로 정확하게 따른다 📖','느낌대로 창의적으로 만든다 🍳'],dir:['S','N']},
+  {dim:'SN', q:'미래에 대해 생각할 때?',
+   a:['현실적으로 계획을 세운다 📅','가능성과 상상을 즐긴다 🌠'],dir:['S','N']},
+  {dim:'SN', q:'책이나 영화를 고를 때 나는?',
+   a:['현실적이고 실용적인 내용을 선호 📚','상상력을 자극하는 판타지·SF를 선호 🚀'],dir:['S','N']},
+  {dim:'SN', q:'대화할 때 나는?',
+   a:['실제 일어난 일, 경험을 주로 말한다 💬','아이디어, 가능성, 미래 이야기를 좋아한다 💡'],dir:['S','N']},
+  // T/F (5문항)
+  {dim:'TF', q:'친구가 고민을 털어놓을 때 나는?',
+   a:['해결책과 조언을 먼저 생각한다 💡','먼저 공감하고 감정을 들어준다 🤝'],dir:['T','F']},
+  {dim:'TF', q:'결정을 내릴 때 중요한 것은?',
+   a:['논리적으로 옳은지 따진다 ⚖️','주변 사람들에게 미치는 영향을 본다 💕'],dir:['T','F']},
+  {dim:'TF', q:'비판을 받았을 때 나는?',
+   a:['내용이 맞는지 분석한다 🔍','상대의 감정과 의도가 신경 쓰인다 😟'],dir:['T','F']},
+  {dim:'TF', q:'토론할 때 나는?',
+   a:['근거와 논리로 상대를 설득한다 📐','분위기를 보며 조화롭게 이끈다 🌸'],dir:['T','F']},
+  {dim:'TF', q:'영화를 볼 때 더 기억에 남는 것은?',
+   a:['설정이 얼마나 논리적인지 🎬','등장인물들의 감정과 관계 💞'],dir:['T','F']},
+  // J/P (5문항)
+  {dim:'JP', q:'여행을 계획할 때 나는?',
+   a:['일정·숙소·동선을 미리 다 짠다 🗺️','대략의 방향만 정하고 즉흥적으로 🎲'],dir:['J','P']},
+  {dim:'JP', q:'마감이 있을 때 나는?',
+   a:['미리미리 끝내야 마음이 편하다 ✅','마감 직전에 집중력이 폭발한다 ⚡'],dir:['J','P']},
+  {dim:'JP', q:'내 책상/방의 상태는?',
+   a:['정리정돈이 잘 되어 있다 🗂️','물건이 여기저기 흩어져 있다 🌀'],dir:['J','P']},
+  {dim:'JP', q:'쇼핑할 때 나는?',
+   a:['살 것을 미리 정해두고 간다 📋','가서 마음에 드는 걸 고른다 🛍️'],dir:['J','P']},
+  {dim:'JP', q:'하루 일과는?',
+   a:['계획표대로 움직이는 게 편하다 ⏰','그때그때 상황에 맞게 유연하게 🌊'],dir:['J','P']},
+];
+
+// 차원별 문항 섞기 (매 테스트마다 랜덤)
+function shuffleMbtiQ(){
+  const dims=['EI','SN','TF','JP'];
+  let result=[];
+  dims.forEach(dim=>{
+    const pool=MBTI_Q_BANK.filter(q=>q.dim===dim);
+    const shuffled=[...pool].sort(()=>Math.random()-0.5);
+    result=result.concat(shuffled.slice(0,5));
+  });
+  // 차원 순서도 살짝 섞기 (EI·SN·TF·JP 블록 순서 유지하되 각 블록 내 랜덤)
+  return result;
+}
+
+let MBTI_Q=[];
+let mbtiAnswers=[];
+let mbtiCurrent=0;
+
+function openMbtiQuiz(){
+  MBTI_Q=shuffleMbtiQ();
+  mbtiAnswers=Array(MBTI_Q.length).fill(null);
+  mbtiCurrent=0;
+  document.getElementById('mbti-modal').classList.add('open');
+  renderMbtiQ();
+}
+function closeMbtiQuiz(){
+  document.getElementById('mbti-modal').classList.remove('open');
+}
+function renderMbtiQ(){
+  const total=MBTI_Q.length;
+  const prog=document.getElementById('mbti-prog');
+  const area=document.getElementById('mbti-quiz-area');
+  prog.style.width=((mbtiCurrent/total)*100)+'%';
+
+  if(mbtiCurrent>=total){
+    const score={E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
+    mbtiAnswers.forEach((ans,i)=>{if(ans!==null)score[MBTI_Q[i].dir[ans]]++;});
+    const type=[
+      score.E>=score.I?'E':'I',
+      score.S>=score.N?'S':'N',
+      score.T>=score.F?'T':'F',
+      score.J>=score.P?'J':'P'
+    ].join('');
+    const info=MBTI_DATA[type]||{name:'',core:''};
+    const emoji={INTJ:'🔭',INTP:'🔬',ENTJ:'👑',ENTP:'💡',INFJ:'🌙',INFP:'🌸',ENFJ:'🌟',ENFP:'🦋',
+                 ISTJ:'🏛️',ISFJ:'🛡️',ESTJ:'⚖️',ESFJ:'🤝',ISTP:'🔧',ISFP:'🎨',ESTP:'⚡',ESFP:'🎭'};
+    // 차원별 퍼센트
+    const pct=(a,b)=>Math.round(a/(a+b)*100);
+    area.innerHTML=`
+      <div class="mbti-result-box">
+        <div style="font-size:44px;margin-bottom:6px">${emoji[type]||'✨'}</div>
+        <div class="mbti-result-type">${type}</div>
+        <div class="mbti-result-name">${info.name}</div>
+        <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:10px 0">
+          <span style="background:#e8f0ff;color:#2e5fa3;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700">${score.E>score.I?'E':'I'} ${pct(Math.max(score.E,score.I),Math.min(score.E,score.I))}%</span>
+          <span style="background:#e8fff0;color:#1e6b3c;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700">${score.S>score.N?'S':'N'} ${pct(Math.max(score.S,score.N),Math.min(score.S,score.N))}%</span>
+          <span style="background:#fff0e8;color:#8b3a00;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700">${score.T>score.F?'T':'F'} ${pct(Math.max(score.T,score.F),Math.min(score.T,score.F))}%</span>
+          <span style="background:#f0e8ff;color:#5b21b6;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700">${score.J>score.P?'J':'P'} ${pct(Math.max(score.J,score.P),Math.min(score.J,score.P))}%</span>
+        </div>
+        <div class="mbti-result-desc">${info.core}</div>
+        <button class="mbti-result-apply" onclick="applyMbtiResult('${type}')">
+          ✦ ${type} 적용하고 닫기
+        </button>
+        <button onclick="MBTI_Q=shuffleMbtiQ();mbtiAnswers=Array(MBTI_Q.length).fill(null);mbtiCurrent=0;renderMbtiQ()"
+          style="width:100%;background:none;border:1px solid #d4c8f0;border-radius:8px;padding:10px;font-size:12px;color:#7a6aaa;cursor:pointer;font-family:inherit;margin-top:8px">
+          🔀 문항 바꿔서 다시 풀기
+        </button>
+      </div>`;
+    prog.style.width='100%';
+    return;
+  }
+
+  const q=MBTI_Q[mbtiCurrent];
+  const sel=mbtiAnswers[mbtiCurrent];
+  area.innerHTML=`
+    <div class="mbti-qnum">Q${mbtiCurrent+1} / ${total} · ${q.dim}</div>
+    <div class="mbti-question">${q.q}</div>
+    <div class="mbti-options">
+      <button class="mbti-opt${sel===0?' selected':''}" onclick="selectMbtiAns(0)">${q.a[0]}</button>
+      <button class="mbti-opt${sel===1?' selected':''}" onclick="selectMbtiAns(1)">${q.a[1]}</button>
+    </div>
+    <div class="mbti-nav">
+      <button class="mbti-nav-btn prev" onclick="mbtiCurrent--;renderMbtiQ()" ${mbtiCurrent===0?'disabled':''}>← 이전</button>
+      <button class="mbti-nav-btn" onclick="nextMbtiQ()" ${sel===null?'disabled':''}>
+        ${mbtiCurrent===total-1?'결과 보기 🎉':'다음 →'}
+      </button>
+    </div>`;
+}
+function selectMbtiAns(idx){
+  mbtiAnswers[mbtiCurrent]=idx;
+  renderMbtiQ();
+}
+function nextMbtiQ(){
+  if(mbtiAnswers[mbtiCurrent]===null) return;
+  mbtiCurrent++;
+  renderMbtiQ();
+}
+function applyMbtiResult(type){
+  const sel=document.getElementById('mbti');
+  sel.value=type;
+  closeMbtiQuiz();
+  sel.style.background='#ede8ff';
+  sel.style.borderColor='#7c3aed';
+  setTimeout(()=>{sel.style.background='';sel.style.borderColor='';},1500);
 }
 
 updatePreview();
