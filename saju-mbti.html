@@ -802,6 +802,8 @@ const ILGAN_EMOJI={
 };
 // 오행별 이모지
 const OH_EMOJI={목:'🌿',화:'🔥',토:'🌍',금:'💎',수:'💧'};
+// 오행 한자
+const OH_HANJA={목:'木',화:'火',토:'土',금:'金',수:'水'};
 // 格방향별 이모지
 const GEK_EMOJI={
   '독립·자생':'🦅','경쟁·도전':'⚡','표현·생산':'🎨',
@@ -827,14 +829,20 @@ function shareKakao(){
   const ilganName=ILGAN_NAME[dc];
   const ilganEmoji=ILGAN_EMOJI[ilganName]||'✨';
   const ohEmoji=OH_EMOJI[oh1]||'🌿';
+  const ohHanja=OH_HANJA[oh1]||'';
   const gekEmoji=GEK_EMOJI[gek.label]||'✦';
   const pageUrl='https://02010714.github.io/sajumanse/saju-mbti.html';
+
+  // 추천식품 1종씩
+  const tea=rec?rec.teas[0].name:'';
+  const juice=rec?rec.juices[0].name:'';
+  const supp=rec?rec.supps[0].name:'';
 
   Kakao.Share.sendDefault({
     objectType:'feed',
     content:{
-      title:`${ilganEmoji} 나의 에너지 코드 — ${ilganName} ${gekEmoji} ${gek.label}${mbtiInfo}`,
-      description:`${ohEmoji} 밸런스 오행: ${oh1||''}(${rec?rec.organ:''})\n에너지 밸런스 카페에서 내 오행 맞춤 건강 음료를 확인해보세요 🌿`,
+      title:`${ilganEmoji}${ilganName} ${gekEmoji}${gek.label}${mbtiInfo}`,
+      description:`${ohEmoji} 밸런스 오행: ${oh1}(${ohHanja})\n☕ 추천식품: ${tea} · ${juice} · ${supp}\n\n에너지 밸런스 카페에서 내 오행 맞춤 건강 음료를 확인해보세요 🌿`,
       imageUrl:'https://via.placeholder.com/800x400/c9a227/ffffff?text=Energy+Balance+Cafe',
       link:{mobileWebUrl:pageUrl,webUrl:pageUrl}
     },
