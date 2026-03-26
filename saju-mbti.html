@@ -841,13 +841,13 @@ function shareKakao(){
   Kakao.Share.sendDefault({
     objectType:'feed',
     content:{
-      title:`${ilganEmoji}${ilganName} ${gekEmoji}${gek.label}${mbtiInfo}`,
+      title:`나의 본캐 💎${ilganName} ${gekEmoji}${gek.label}${mbtiInfo}`,
       description:`${ohEmoji} 밸런스 오행: ${oh1}(${ohHanja})\n☕ 추천식품: ${tea} · ${juice} · ${supp}\n\n에너지 밸런스 카페에서 내 오행 맞춤 건강 음료를 확인해보세요 🌿`,
       imageUrl:'https://via.placeholder.com/800x400/c9a227/ffffff?text=Energy+Balance+Cafe',
       link:{mobileWebUrl:pageUrl,webUrl:pageUrl}
     },
     buttons:[{
-      title:'내 에너지 코드 확인하기 →',
+      title:'내 본캐 확인하기 →',
       link:{mobileWebUrl:pageUrl,webUrl:pageUrl}
     }]
   });
@@ -869,7 +869,7 @@ function shareResult(){
   const ilganEmoji=ILGAN_EMOJI[ilganName]||'✨';
   const ohEmoji=OH_EMOJI[oh1]||'🌿';
   const gekEmoji=GEK_EMOJI[gek.label]||'✦';
-  const text=`${ilganEmoji} 나의 에너지 코드\n━━━━━━━━━━━━━━\n${ilganEmoji} ${ilganName} — ${ILGAN_NAT[dc]}\n${gekEmoji} 에너지 방향: ${gek.label}${mbtiInfo}\n${ohEmoji} 밸런스 오행: ${oh1||'미정'} · ${rec?rec.organ:''}\n\n추천 차 ☕ ${rec?rec.teas[0].name:''}·${rec?rec.teas[1].name:''}\n추천 주스 🥤 ${rec?rec.juices[0].name:''}·${rec?rec.juices[1].name:''}\n━━━━━━━━━━━━━━\n🌿 에너지 밸런스 카페\nhttps://02010714.github.io/sajumanse/saju-mbti.html`;
+  const text=`나의 본캐 🔖\n━━━━━━━━━━━━━━\n${ilganEmoji} ${ilganName} — ${ILGAN_NAT[dc]}\n${gekEmoji} ${gek.label}${mbtiInfo}\n${ohEmoji} 밸런스 오행: ${oh1||'미정'}(${OH_HANJA[oh1]||''}) · ${rec?rec.organ:''}\n\n☕ 건강차: ${rec?rec.teas[0].name:''}\n🥤 주스: ${rec?rec.juices[0].name:''}\n💊 건기품: ${rec?rec.supps[0].name:''}\n━━━━━━━━━━━━━━\n🌿 에너지 밸런스 카페\nhttps://02010714.github.io/sajumanse/saju-mbti.html`;
   navigator.clipboard.writeText(text).then(()=>alert('복사됐습니다! 카카오톡이나 SNS에 붙여넣기 하세요.')).catch(()=>prompt('아래 내용을 복사하세요:',text));
 }
 
