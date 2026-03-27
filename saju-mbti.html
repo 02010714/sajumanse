@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>나의 에너지 코드 — 사주 × MBTI × 건강</title>
+<title>본캐 (나의 에너지 코드) — 사주 × MBTI × 건강</title>
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" crossorigin="anonymous"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -88,6 +88,9 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .now-box .years{font-size:10px;color:#7a6040;margin-bottom:4px}
 .now-box .badges{display:flex;gap:5px}
 .copy-btn{width:100%;padding:13px;border-radius:9px;border:1px solid #ccc0a0;background:#fffbf0;color:#7a6040;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.03em;margin-top:14px}
+.kakao-gimyeong-btn{width:100%;padding:15px;border-radius:10px;border:none;background:linear-gradient(135deg,#3d2080 0%,#5b21b6 100%);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;margin-top:16px;box-shadow:0 4px 16px rgba(91,33,182,.35);transition:all .2s}
+.kakao-gimyeong-btn:active{transform:scale(.98);box-shadow:0 2px 8px rgba(91,33,182,.3)}
+.copy-btn-wrap{margin-top:0}
 .copy-btn.open{border-color:rgba(46,95,163,.4);background:#f0f4ff;color:#2e5fa3}
 .copy-area{margin-top:8px}
 .copy-area .hint{font-size:10px;color:#8a6200;margin-bottom:5px;font-weight:700}
@@ -225,9 +228,9 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 <body>
 <div class="wrap">
 <div class="header">
-  <div class="sub">나의 에너지 코드 × 건강</div>
+  <div class="sub">본캐 (나의 에너지 코드) × 건강</div>
   <h1>사주 × MBTI × 건강식품</h1>
-  <p>『나의 에너지 코드』 독자 전용 · 일간 × 格 × MBTI · 용신 오행 맞춤 건강 추천</p>
+  <p>『본캐』 카페 본캐 전용 · 일간 × 格 × MBTI · 용신 오행 맞춤 건강 추천</p>
 </div>
 
 <div class="kasi-box">
@@ -305,7 +308,11 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
   <div id="panel-chart"></div>
   <div id="panel-daeun" style="display:none"></div>
   <div id="panel-health" style="display:none"></div>
-  <button class="copy-btn" id="copy-btn" onclick="toggleCopy()">📋 사주 원국 + 대운 복사 (채팅창 간명용)</button>
+  <!-- 정밀 간명 신청 버튼 -->
+  <button class="kakao-gimyeong-btn" id="kakao-btn" onclick="requestGimyeong()">🔮 AI 정밀 간명 신청 (카페 본캐)</button>
+  <div class="copy-btn-wrap">
+    <button class="copy-btn" id="copy-btn" onclick="toggleCopy()">📋 사주 원국 + 대운 복사 (채팅창 간명용)</button>
+  </div>
   <div class="copy-area" id="copy-area" style="display:none">
     <div class="hint">▼ 텍스트 클릭 → 전체선택(Ctrl+A) → 복사(Ctrl+C) → 채팅창 붙여넣기</div>
     <textarea id="copy-text" readonly onclick="this.select()"></textarea>
@@ -313,7 +320,7 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
   </div>
 </div>
 
-<div class="footer"><p>『나의 에너지 코드』 독자 전용 · 사주 × MBTI × 건강식품 통합 추천</p></div>
+<div class="footer"><p>『본캐 (나의 에너지 코드)』 카페 본캐 전용 · 사주 × MBTI × 건강식품 통합 추천</p></div>
 
 <!-- MBTI 퀴즈 모달 -->
 <div class="mbti-modal" id="mbti-modal">
@@ -885,7 +892,7 @@ function shareResult(){
   const ilganEmoji=ILGAN_EMOJI[ilganName]||'✨';
   const ohEmoji=OH_EMOJI[oh1]||'🌿';
   const gekEmoji=GEK_EMOJI[gek.label]||'✦';
-  const text=`나의 본캐 🔖\n━━━━━━━━━━━━━━\n${ilganEmoji} ${ilganName} — ${ILGAN_NAT[dc]}\n${gekEmoji} ${gek.label}${mbtiInfo}\n${ohEmoji} 밸런스 오행: ${oh1||'미정'}(${OH_HANJA[oh1]||''}) · ${rec?rec.organ:''}\n\n☕ 건강차: ${rec?rec.teas[0].name:''}\n🥤 주스: ${rec?rec.juices[0].name:''}\n💊 건기품: ${rec?rec.supps[0].name:''}\n━━━━━━━━━━━━━━\n🌿 에너지 밸런스 카페\nhttps://02010714.github.io/sajumanse/saju-mbti.html`;
+  const text=`나의 본캐 🔖\n━━━━━━━━━━━━━━\n${ilganEmoji} ${ilganName} — ${ILGAN_NAT[dc]}\n${gekEmoji} ${gek.label}${mbtiInfo}\n${ohEmoji} 밸런스 오행: ${oh1||'미정'}(${OH_HANJA[oh1]||''}) · ${rec?rec.organ:''}\n\n☕ 건강차: ${rec?rec.teas[0].name:''}\n🥤 주스: ${rec?rec.juices[0].name:''}\n💊 건기품: ${rec?rec.supps[0].name:''}\n━━━━━━━━━━━━━━\n🌿 카페 본캐 (에너지 밸런스 카페)\nhttps://02010714.github.io/sajumanse/saju-mbti.html`;
   navigator.clipboard.writeText(text).then(()=>alert('복사됐습니다! 카카오톡이나 SNS에 붙여넣기 하세요.')).catch(()=>prompt('아래 내용을 복사하세요:',text));
 }
 
@@ -932,7 +939,9 @@ function calcDay(y,m,d){const pos=(toJDN(y,m,d)+49)%60;return{cg:pos%10,jj:pos%1
 
 function calcHour(h,min,dcg){
   const t=h*60+min;
-  const ji=(t>=1380||t<60)?0:t<180?1:t<300?2:t<420?3:t<540?4:t<660?5:t<780?6:t<900?7:t<1020?8:t<1140?9:t<1260?10:11;
+  // 동경시 보정: 한국 실제 태양시 = 표준시 - 30분 (경도 127.5° 기준)
+  // 자시(子) 23:30~01:30 / 이후 시진 30분씩 뒤로 이동
+  const ji=(t>=1410||t<90)?0:t<210?1:t<330?2:t<450?3:t<570?4:t<690?5:t<810?6:t<930?7:t<1050?8:t<1170?9:t<1290?10:11;
   const hc=((dcg%5)*2+ji)%10;
   return{cg:hc,jj:ji};
 }
@@ -1037,16 +1046,156 @@ function getGekInfo(dc,moJJ){
 
 // ── YONGSIN_DATA (10간 × 12월) ──
 const YONGSIN_DATA=[
-  [{byung:"한기",yongsin:"丙火",hesin:"癸水",desc:"丙癸 병존이면 부귀쌍전"},{byung:"목왕",yongsin:"庚金",hesin:"丁火",desc:"벽갑인정(劈甲引丁)"},{byung:"토다체목",yongsin:"庚金",hesin:"壬水",desc:"소토(疎土)가 핵심"},{byung:"조열",yongsin:"癸水",hesin:"庚金",desc:"癸水가 생명수"},{byung:"극열",yongsin:"癸水",hesin:"庚金",desc:"癸水 하나가 열 용신보다 값짐"},{byung:"화토조열",yongsin:"癸水",hesin:"庚金",desc:"癸水 주용신"},{byung:"관살과다",yongsin:"丁火",hesin:"甲木",desc:"제살(制殺)"},{byung:"금왕극제",yongsin:"丁火",hesin:"丙火",desc:"丁 하나가 재능 결정"},{byung:"토다목고",yongsin:"壬水",hesin:"庚金",desc:"수기 없으면 고목"},{byung:"수다목부",yongsin:"丙火",hesin:"戊土",desc:"丙火로 한기 제거"},{byung:"극한",yongsin:"丁火",hesin:"丙火",desc:"癸水는 이달 금물"},{byung:"한습",yongsin:"丙火",hesin:"庚金",desc:"丙火 태양 절대적"}],
-  [{byung:"한기",yongsin:"丙火",hesin:"癸水",desc:"화초는 태양이 급함"},{byung:"목성유동",yongsin:"丙火",hesin:"癸水",desc:"목화통명(木火通明)"},{byung:"최적환경",yongsin:"丙火",hesin:"癸水",desc:"辰土가 乙木의 집"},{byung:"조열",yongsin:"癸水",hesin:"丙火",desc:"맑은 癸水가 제격"},{byung:"극열",yongsin:"癸水",hesin:"丙火",desc:"癸水 한 모금이 화초를 살림"},{byung:"화토조열",yongsin:"癸水",hesin:"己土",desc:"癸水로 수분"},{byung:"관살태왕",yongsin:"丙火",hesin:"癸水",desc:"상관제살(傷官制殺)"},{byung:"금왕극제",yongsin:"丙火",hesin:"癸水",desc:"丙으로 금기 누그러뜨림"},{byung:"토조목고",yongsin:"癸水",hesin:"辛金",desc:"辛은 이슬 수원"},{byung:"수다목부",yongsin:"丙火",hesin:"戊土",desc:"丙火로 습기 제거"},{byung:"극한",yongsin:"丙火",hesin:"癸水",desc:"뿌리는 살아있음"},{byung:"한습",yongsin:"丙火",hesin:"庚金",desc:"丙火로 해동"}],
-  [{byung:"화약",yongsin:"壬水",hesin:"庚金",desc:"강휘상영(江暉相映)"},{byung:"목다화색",yongsin:"壬水",hesin:"甲木",desc:"壬水로 균형"},{byung:"습기",yongsin:"壬水",hesin:"甲木",desc:"壬 투간이면 귀격"},{byung:"화왕",yongsin:"壬水",hesin:"庚金",desc:"壬丙 함께면 문무겸비"},{byung:"극성",yongsin:"壬水",hesin:"庚金",desc:"겸손이 핵심"},{byung:"화토조열",yongsin:"壬水",hesin:"甲木",desc:"壬 한 줄기가 모두 해결"},{byung:"화쇠",yongsin:"甲木",hesin:"壬水",desc:"원숙한 노을빛"},{byung:"금왕화쇠",yongsin:"甲木",hesin:"壬水",desc:"甲木이 마지막 연료"},{byung:"토다회광",yongsin:"甲木",hesin:"壬水",desc:"황혼의 미학"},{byung:"수왕냉습",yongsin:"甲木",hesin:"戊土",desc:"甲木으로 수기 소통"},{byung:"극약",yongsin:"甲木",hesin:"戊土",desc:"동지 후 반드시 상승"},{byung:"한기",yongsin:"甲木",hesin:"壬水",desc:"반전의 에너지"}],
-  [{byung:"풍취화약",yongsin:"甲木",hesin:"庚金",desc:"甲木 연료+庚金 다듬기"},{byung:"병화엄폐",yongsin:"庚金",hesin:"甲木",desc:"제련 전문가로 틈새"},{byung:"습기심지",yongsin:"甲木",hesin:"庚金",desc:"환경 불리해도 재료가 변화"},{byung:"이중열기",yongsin:"庚金",hesin:"甲木",desc:"혹독한 환경에서 전문성"},{byung:"과열자소",yongsin:"壬水",hesin:"庚金",desc:"과유불급"},{byung:"화토조열",yongsin:"庚金",hesin:"壬水",desc:"극한이 최고 제련사"},{byung:"금다화식",yongsin:"甲木",hesin:"丙火",desc:"강한 쇠엔 뜨거운 불"},{byung:"금다화식",yongsin:"甲木",hesin:"丙火",desc:"丁辛 제련 전문성"},{byung:"화묘입묘",yongsin:"甲木",hesin:"庚金",desc:"불씨 살아있음"},{byung:"수왕풍취",yongsin:"甲木",hesin:"戊土",desc:"지키는 것이 승리"},{byung:"극한암야",yongsin:"甲木",hesin:"戊土",desc:"丁火만이 밤을 밝힘"},{byung:"한기장야",yongsin:"甲木",hesin:"庚金",desc:"소리 없이 강한 존재"}],
-  [{byung:"목왕극토",yongsin:"丙火",hesin:"甲木",desc:"木→火→土 살인상생"},{byung:"목왕토쇠",yongsin:"丙火",hesin:"庚金",desc:"상격(上格)"},{byung:"토중자비",yongsin:"丙火",hesin:"甲木",desc:"자기 역할 찾기"},{byung:"화토조열",yongsin:"壬水",hesin:"甲木",desc:"壬水 냉각수"},{byung:"화토동근극조",yongsin:"壬水",hesin:"甲木",desc:"극강의 역설"},{byung:"화토조열",yongsin:"壬水",hesin:"甲木",desc:"先潤後疎"},{byung:"금다토설",yongsin:"丙火",hesin:"壬水",desc:"베풀수록 풍요"},{byung:"금왕토허",yongsin:"丙火",hesin:"甲木",desc:"균형 배우기"},{byung:"토왕과강",yongsin:"甲木",hesin:"壬水",desc:"가장 강할 때 겸손"},{byung:"수왕토류",yongsin:"丙火",hesin:"戊土",desc:"제방 역할이 사명"},{byung:"수왕극한",yongsin:"丙火",hesin:"甲木",desc:"내면에 에너지 축적"},{byung:"한습극강",yongsin:"丙火",hesin:"甲木",desc:"불변의 위대함"}],
-  [{byung:"한기",yongsin:"丙火",hesin:"癸水",desc:"丙癸 조화가 핵심"},{byung:"목왕토허",yongsin:"丙火",hesin:"癸水",desc:"丙火로 포용"},{byung:"최적환경",yongsin:"丙火",hesin:"癸水",desc:"무엇이든 자라는 흙"},{byung:"조열",yongsin:"癸水",hesin:"丙火",desc:"수분 관리가 기본"},{byung:"극조",yongsin:"癸水",hesin:"丙火",desc:"단비 한 줄기"},{byung:"토중조열",yongsin:"癸水",hesin:"丙火",desc:"강함과 부드러움"},{byung:"최적환경",yongsin:"癸水",hesin:"丙火",desc:"풍성한 수확"},{byung:"금왕토허",yongsin:"丙火",hesin:"癸水",desc:"비워야 다시 채움"},{byung:"토조목고",yongsin:"甲木",hesin:"癸水",desc:"깊어지는 달"},{byung:"수왕토류",yongsin:"丙火",hesin:"戊土",desc:"한계 아는 것이 지혜"},{byung:"수왕극한",yongsin:"丙火",hesin:"戊土",desc:"씨앗을 품는 달"},{byung:"한습극강",yongsin:"丙火",hesin:"甲木",desc:"기다림이 사랑"}],
-  [{byung:"화약미련",yongsin:"丁火",hesin:"甲木",desc:"丁火로 날 벼림"},{byung:"용다도둔",yongsin:"丁火",hesin:"壬水",desc:"관리 없는 능력은 소모"},{byung:"충전기",yongsin:"丁火",hesin:"甲木",desc:"에너지 비축"},{byung:"화강도용",yongsin:"壬水",hesin:"丁火",desc:"시련이 강함 만듦"},{byung:"극열용해",yongsin:"壬水",hesin:"戊土",desc:"고통이 성장"},{byung:"화토잔열",yongsin:"壬水",hesin:"甲木",desc:"단련 완성기"},{byung:"금왕무방",yongsin:"甲木",hesin:"丁火",desc:"쓰임새가 핵심"},{byung:"금왕극강",yongsin:"甲木",hesin:"丁火",desc:"올바른 방향으로"},{byung:"금기하강",yongsin:"壬水",hesin:"丁火",desc:"원숙한 광채"},{byung:"금수설기",yongsin:"丙火",hesin:"戊土",desc:"광채 유지"},{byung:"극한중침",yongsin:"丙火",hesin:"甲木",desc:"고요 속 단련"},{byung:"한기동결",yongsin:"丁火",hesin:"甲木",desc:"봄에 먼저 일어섬"}],
-  [{byung:"한기",yongsin:"己土",hesin:"丙火",desc:"己土 보호 우선"},{byung:"목왕재다",yongsin:"壬水",hesin:"甲木",desc:"도세주옥(淘洗珠玉)"},{byung:"토다매금",yongsin:"甲木",hesin:"壬水",desc:"흙에서 꺼낸 보석"},{byung:"화강변색",yongsin:"壬水",hesin:"庚金",desc:"壬水가 방어막"},{byung:"극열손상",yongsin:"壬水",hesin:"癸水",desc:"녹아내림 방지"},{byung:"화토조열",yongsin:"壬水",hesin:"庚金",desc:"광채 관리"},{byung:"최적환경",yongsin:"壬水",hesin:"戊土",desc:"자기다움"},{byung:"금왕극강",yongsin:"壬水",hesin:"甲木",desc:"고향에서 극성"},{byung:"토다매금",yongsin:"甲木",hesin:"壬水",desc:"깊이 보존"},{byung:"수다금침",yongsin:"丙火",hesin:"壬水",desc:"줄수록 맑아짐"},{byung:"극한동결",yongsin:"丙火",hesin:"戊土",desc:"따뜻하면 드러남"},{byung:"한습동토",yongsin:"丙火",hesin:"壬水",desc:"스스로 빛남"}],
-  [{byung:"목다수설",yongsin:"庚金",hesin:"丙火",desc:"수원 확보 우선"},{byung:"목다수설",yongsin:"庚金",hesin:"丙火",desc:"베풀수록 풍성"},{byung:"풍성기",yongsin:"庚金",hesin:"甲木",desc:"흐름 잃지 않기"},{byung:"화열증발",yongsin:"庚金",hesin:"戊土",desc:"가진 것 지키기"},{byung:"극열건고",yongsin:"庚金",hesin:"辛金",desc:"극한 속 근원"},{byung:"화토흡수",yongsin:"庚金",hesin:"甲木",desc:"깊어지는 지하수"},{byung:"수왕과강",yongsin:"甲木",hesin:"戊土",desc:"방향 전환"},{byung:"수왕과강",yongsin:"甲木",hesin:"戊土",desc:"투명함이 아름다움"},{byung:"조토흡수",yongsin:"庚金",hesin:"甲木",desc:"넓이보다 깊이"},{byung:"수왕홍수",yongsin:"戊土",hesin:"丙火",desc:"강할 때 방향 잡기"},{byung:"수왕결빙",yongsin:"丙火",hesin:"甲木",desc:"흐름이 본질"},{byung:"표면동결",yongsin:"丙火",hesin:"庚金",desc:"속은 흐름"}],
-  [{byung:"한기",yongsin:"丙火",hesin:"庚金",desc:"작은 이슬이 씨앗 깨움"},{byung:"목다수설",yongsin:"庚金",hesin:"丙火",desc:"수원이 절실"},{byung:"최적환경",yongsin:"丙火",hesin:"甲木",desc:"대지를 생명으로"},{byung:"화열증발",yongsin:"庚金",hesin:"辛金",desc:"든든한 지원"},{byung:"극열순증",yongsin:"庚金",hesin:"壬水",desc:"변화가 생존"},{byung:"화토희소",yongsin:"庚金",hesin:"辛金",desc:"존재 자체가 기적"},{byung:"부활기",yongsin:"辛金",hesin:"庚金",desc:"가을에 아름다운 부활"},{byung:"극미기",yongsin:"辛金",hesin:"丙火",desc:"가장 아름다운 달"},{byung:"건조희소",yongsin:"辛金",hesin:"庚金",desc:"정확히 필요한 곳"},{byung:"수왕합류",yongsin:"庚金",hesin:"戊土",desc:"본질 잃지 말 것"},{byung:"한기서리",yongsin:"丙火",hesin:"庚金",desc:"형태 바뀌어도 본질"},{byung:"극한",yongsin:"丙火",hesin:"庚金",desc:"가장 질긴 존재"}]
+  // 甲木 [寅卯辰巳午未申酉戌亥子丑]
+  [
+    {byung:"한기잔존",yongsin:"丙火",hesin:"癸水",desc:"丙癸 병존이면 부귀쌍전"},
+    {byung:"목기최왕",yongsin:"庚金",hesin:"丙火",desc:"庚丙 병존 부귀격"},
+    {byung:"토왕체목",yongsin:"庚金",hesin:"壬水",desc:"庚壬 소토가 핵심"},
+    {byung:"화왕목조",yongsin:"癸水",hesin:"庚金",desc:"癸水가 없으면 빈명"},
+    {byung:"염열극심",yongsin:"癸水",hesin:"庚金",desc:"癸水 하나가 열 용신보다 값짐"},
+    {byung:"화토극조",yongsin:"癸水",hesin:"庚金",desc:"癸庚 병존이면 길"},
+    {byung:"금왕한기",yongsin:"丁火",hesin:"庚金",desc:"丁庚 병존 문무겸비 귀격"},
+    {byung:"신금극목",yongsin:"丁火",hesin:"丙火",desc:"丁火가 재능 결정"},
+    {byung:"토왕목고",yongsin:"庚金",hesin:"甲木",desc:"庚甲壬 삼위 핵심"},
+    {byung:"수왕목부",yongsin:"戊土",hesin:"庚金",desc:"戊없으면 水旺木漂"},
+    {byung:"한동극심",yongsin:"丁火",hesin:"庚金",desc:"丁甲있으면 동목이 쓰임"},
+    {byung:"한극토동",yongsin:"丙火",hesin:"丁火",desc:"丙火가 첫 번째 급무"}
+  ],
+  // 乙木 [寅卯辰巳午未申酉戌亥子丑]
+  [
+    {byung:"한기잔존",yongsin:"丙火",hesin:"癸水",desc:"화초는 太陽(丙)이 급함"},
+    {byung:"목기최강",yongsin:"丙火",hesin:"癸水",desc:"음목은 丙이 庚보다 우선"},
+    {byung:"을목입묘",yongsin:"癸水",hesin:"丙火",desc:"癸丙 순서 주의·입묘 해소"},
+    {byung:"화왕목조",yongsin:"癸水",hesin:"丙火",desc:"癸水가 핵심"},
+    {byung:"염열목초",yongsin:"癸水",hesin:"丙火",desc:"癸水 없으면 초목이 타죽음"},
+    {byung:"토왕을쇠",yongsin:"癸水",hesin:"丙火",desc:"癸丙 병존이면 귀격"},
+    {byung:"경금왕합",yongsin:"丙火",hesin:"癸水",desc:"한기시작·乙庚합거 주의"},
+    {byung:"신금극을",yongsin:"丙火",hesin:"癸水",desc:"丙癸 병존이면 안정"},
+    {byung:"토왕을약",yongsin:"癸水",hesin:"辛金",desc:"辛은 이슬 수원·입묘 주의"},
+    {byung:"수왕목부",yongsin:"丙火",hesin:"戊土",desc:"丙戊 병존이면 길"},
+    {byung:"한동수왕",yongsin:"丙火",hesin:"戊土",desc:"丙이 없으면 동사"},
+    {byung:"한극토동",yongsin:"丙火",hesin:"戊土",desc:"丙火가 절대적 우선"}
+  ],
+  // 丙火 [寅卯辰巳午未申酉戌亥子丑]
+  [
+    {byung:"목왕생화",yongsin:"壬水",hesin:"庚金",desc:"壬庚이 기본 조합"},
+    {byung:"목왕화성",yongsin:"壬水",hesin:"庚金",desc:"壬庚 병존 귀격"},
+    {byung:"토왕설화",yongsin:"壬水",hesin:"甲木",desc:"土旺이면 甲木 추가"},
+    {byung:"화왕설기",yongsin:"壬水",hesin:"庚金",desc:"壬庚 없으면 불꽃만"},
+    {byung:"제왕염열",yongsin:"壬水",hesin:"庚金",desc:"壬庚이 없으면 범인"},
+    {byung:"화토조열",yongsin:"辛金",hesin:"甲木",desc:"辛甲 병존이면 길"},
+    {byung:"병지한시",yongsin:"壬水",hesin:"戊土",desc:"丙이 약해지나 壬은 필요"},
+    {byung:"사지금왕",yongsin:"壬水",hesin:"甲木",desc:"甲木으로 火 보강"},
+    {byung:"묘지토왕",yongsin:"甲木",hesin:"壬水",desc:"甲木이 먼저 필요"},
+    {byung:"절지수왕",yongsin:"甲木",hesin:"戊土",desc:"甲木이 최우선"},
+    {byung:"태지한동",yongsin:"甲木",hesin:"壬水",desc:"甲없으면 丙이 꺼짐"},
+    {byung:"한극토동",yongsin:"甲木",hesin:"壬水",desc:"甲木 우선 丙火보강"}
+  ],
+  // 丁火 [寅卯辰巳午未申酉戌亥子丑]
+  [
+    {byung:"사지한잔",yongsin:"甲木",hesin:"庚金",desc:"甲庚 병존이면 길"},
+    {byung:"병지목왕",yongsin:"甲木",hesin:"庚金",desc:"甲庚 함께면 귀격"},
+    {byung:"쇠지토왕",yongsin:"甲木",hesin:"庚金",desc:"甲으로 土克 해결"},
+    {byung:"제왕화왕",yongsin:"甲木",hesin:"庚金",desc:"庚壬 조절 필요"},
+    {byung:"건록염열",yongsin:"壬水",hesin:"庚金",desc:"壬水로 과열 제어"},
+    {byung:"관대토다",yongsin:"甲木",hesin:"壬水",desc:"甲木이 우선"},
+    {byung:"목욕금왕",yongsin:"甲木",hesin:"庚金",desc:"甲庚 병존 귀격"},
+    {byung:"장생신금",yongsin:"甲木",hesin:"庚金",desc:"甲庚 병존 귀격"},
+    {byung:"양지토왕",yongsin:"甲木",hesin:"庚金",desc:"甲木이 최우선"},
+    {byung:"태지수왕",yongsin:"甲木",hesin:"庚金",desc:"甲木이 가장 급함"},
+    {byung:"절지한동",yongsin:"甲木",hesin:"庚金",desc:"甲없으면 촛불이 꺼짐"},
+    {byung:"묘지한극",yongsin:"甲木",hesin:"庚金",desc:"甲木이 생명줄"}
+  ],
+  // 戊土 [寅卯辰巳午未申酉戌亥子丑]
+  [
+    {byung:"장생목왕",yongsin:"丙火",hesin:"甲木",desc:"丙甲 병존이면 길"},
+    {byung:"목욕목왕",yongsin:"丙火",hesin:"甲木",desc:"庚으로 甲制 가능"},
+    {byung:"관대토왕",yongsin:"甲木",hesin:"丙火",desc:"甲丙癸 삼위"},
+    {byung:"건록화조",yongsin:"甲木",hesin:"癸水",desc:"甲癸 병존이면 길"},
+    {byung:"제왕화조",yongsin:"甲木",hesin:"癸水",desc:"癸水가 없으면 조토"},
+    {byung:"쇠토조열",yongsin:"甲木",hesin:"癸水",desc:"甲癸 병존 필수"},
+    {byung:"병지금설",yongsin:"丙火",hesin:"癸水",desc:"丙癸 조화"},
+    {byung:"사지금설",yongsin:"丙火",hesin:"癸水",desc:"丙癸 병존"},
+    {byung:"묘지토왕",yongsin:"甲木",hesin:"丙火",desc:"甲이 최우선"},
+    {byung:"절지수왕",yongsin:"丙火",hesin:"甲木",desc:"丙甲 병존 필요"},
+    {byung:"태지한동",yongsin:"丙火",hesin:"甲木",desc:"丙火가 급함"},
+    {byung:"양지한극",yongsin:"丙火",hesin:"甲木",desc:"丙火 절대적"}
+  ],
+  // 己土 [寅卯辰巳午未申酉戌亥子丑]
+  [
+    {byung:"사지한잔",yongsin:"丙火",hesin:"癸水",desc:"丙癸 조화가 핵심"},
+    {byung:"병지목왕",yongsin:"丙火",hesin:"癸水",desc:"丙癸 병존"},
+    {byung:"쇠지토왕",yongsin:"丙火",hesin:"癸水",desc:"丙癸 균형"},
+    {byung:"제왕화조",yongsin:"癸水",hesin:"丙火",desc:"癸水가 우선"},
+    {byung:"건록염열",yongsin:"癸水",hesin:"丙火",desc:"癸水 없으면 조토"},
+    {byung:"관대토조",yongsin:"癸水",hesin:"丙火",desc:"癸丙 병존이면 길"},
+    {byung:"목욕금왕",yongsin:"丙火",hesin:"癸水",desc:"丙癸 병존"},
+    {byung:"장생금왕",yongsin:"丙火",hesin:"癸水",desc:"丙癸 조화"},
+    {byung:"양지토왕",yongsin:"甲木",hesin:"癸水",desc:"甲癸 병존이면 길"},
+    {byung:"태지수왕",yongsin:"丙火",hesin:"甲木",desc:"丙甲 병존"},
+    {byung:"절지한동",yongsin:"丙火",hesin:"甲木",desc:"丙火 급무"},
+    {byung:"묘지한극",yongsin:"丙火",hesin:"甲木",desc:"丙火 절대적"}
+  ],
+  // 庚金 [寅卯辰巳午未申酉戌亥子丑]
+  [
+    {byung:"절지목왕",yongsin:"戊土",hesin:"丙火",desc:"庚이 약하므로 戊土 생조 우선"},
+    {byung:"태지목왕",yongsin:"丁火",hesin:"甲木",desc:"丁甲 조합이 이상적"},
+    {byung:"양지토왕",yongsin:"甲木",hesin:"丁火",desc:"甲丁 병존이면 길"},
+    {byung:"장생화왕",yongsin:"壬水",hesin:"戊土",desc:"壬水로 과열 방지"},
+    {byung:"목욕염열",yongsin:"壬水",hesin:"戊土",desc:"壬水 없으면 金이 녹음"},
+    {byung:"관대조열",yongsin:"丁火",hesin:"甲木",desc:"丁甲이 핵심"},
+    {byung:"건록금왕",yongsin:"丁火",hesin:"甲木",desc:"丁甲 병존 문무귀격"},
+    {byung:"제왕금극",yongsin:"丁火",hesin:"甲木",desc:"丁甲 병존 귀격"},
+    {byung:"쇠토왕",yongsin:"甲木",hesin:"壬水",desc:"甲壬丁 삼위"},
+    {byung:"병지수왕",yongsin:"丁火",hesin:"甲木",desc:"丁甲 병존이면 길"},
+    {byung:"사지한동",yongsin:"丁火",hesin:"丙火",desc:"丁丙 병존이면 좋음"},
+    {byung:"묘지한극",yongsin:"丙火",hesin:"丁火",desc:"丙丁 병존 길"}
+  ],
+  // 辛金 [寅卯辰巳午未申酉戌亥子丑]
+  [
+    {byung:"태지목왕",yongsin:"己土",hesin:"壬水",desc:"己土 보호가 우선"},
+    {byung:"절지목왕",yongsin:"壬水",hesin:"甲木",desc:"壬水가 핵심"},
+    {byung:"묘지토왕",yongsin:"壬水",hesin:"甲木",desc:"壬甲 병존이면 길"},
+    {byung:"사지화왕",yongsin:"壬水",hesin:"庚金",desc:"壬水가 방어막"},
+    {byung:"병지염열",yongsin:"壬水",hesin:"庚金",desc:"壬水 없으면 玉이 녹음"},
+    {byung:"쇠지조열",yongsin:"壬水",hesin:"庚金",desc:"壬庚 병존이면 길"},
+    {byung:"제왕금왕",yongsin:"壬水",hesin:"甲木",desc:"壬甲 병존 귀격"},
+    {byung:"건록금왕",yongsin:"壬水",hesin:"甲木",desc:"壬甲 병존"},
+    {byung:"관대토왕",yongsin:"壬水",hesin:"甲木",desc:"壬甲 조합"},
+    {byung:"목욕수왕",yongsin:"甲木",hesin:"丙火",desc:"丙甲 병존이면 길"},
+    {byung:"장생한동",yongsin:"丙火",hesin:"壬水",desc:"丙火로 온난 필수"},
+    {byung:"양지한극",yongsin:"丙火",hesin:"壬水",desc:"丙火가 절대적"}
+  ],
+  // 壬水 [寅卯辰巳午未申酉戌亥子丑]
+  [
+    {byung:"병지목설",yongsin:"庚金",hesin:"戊土",desc:"庚戊 병존이면 길"},
+    {byung:"사지목설",yongsin:"庚金",hesin:"戊土",desc:"庚戊 조합"},
+    {byung:"묘지토극",yongsin:"甲木",hesin:"庚金",desc:"甲庚 병존이면 길"},
+    {byung:"절지화극",yongsin:"庚金",hesin:"癸水",desc:"庚이 수원을 유지"},
+    {byung:"태지염열",yongsin:"庚金",hesin:"辛金",desc:"金生水가 핵심"},
+    {byung:"양지조열",yongsin:"辛金",hesin:"甲木",desc:"辛甲 병존이면 길"},
+    {byung:"장생금왕",yongsin:"戊土",hesin:"甲木",desc:"戊甲 조합으로 제어"},
+    {byung:"목욕금성",yongsin:"戊土",hesin:"甲木",desc:"戊甲 병존 필수"},
+    {byung:"관대토왕",yongsin:"甲木",hesin:"丙火",desc:"甲丙 병존이면 길"},
+    {byung:"건록수왕",yongsin:"戊土",hesin:"甲木",desc:"戊없으면 범람"},
+    {byung:"제왕극한",yongsin:"戊土",hesin:"丙火",desc:"戊丙 병존 귀격"},
+    {byung:"쇠한동결",yongsin:"丙火",hesin:"甲木",desc:"丙火가 급무"}
+  ],
+  // 癸水 [寅卯辰巳午未申酉戌亥子丑]
+  [
+    {byung:"목욕목설",yongsin:"辛金",hesin:"庚金",desc:"辛庚 병존이면 길"},
+    {byung:"장생목설",yongsin:"辛金",hesin:"庚金",desc:"辛庚 조합"},
+    {byung:"양지토극",yongsin:"甲木",hesin:"丙火",desc:"甲丙 병존이면 길"},
+    {byung:"태지화극",yongsin:"庚金",hesin:"甲木",desc:"金生水가 핵심"},
+    {byung:"절지염열",yongsin:"庚金",hesin:"辛金",desc:"金없으면 癸水 고갈"},
+    {byung:"묘지조열",yongsin:"庚金",hesin:"甲木",desc:"庚辛 병존이면 길"},
+    {byung:"사지금왕",yongsin:"辛金",hesin:"丙火",desc:"辛丙 조합"},
+    {byung:"병지금왕",yongsin:"辛金",hesin:"丙火",desc:"辛丙 병존이면 귀격"},
+    {byung:"쇠토극수",yongsin:"辛金",hesin:"甲木",desc:"辛甲 병존이면 길"},
+    {byung:"제왕수왕",yongsin:"庚金",hesin:"丙火",desc:"庚丙 조합"},
+    {byung:"건록한동",yongsin:"丙火",hesin:"辛金",desc:"丙火가 절대 우선"},
+    {byung:"관대한극",yongsin:"丙火",hesin:"辛金",desc:"丙火 없으면 泉이 얼음"}
+  ]
 ];
 
 // ── 에너지 이야기 (축약 — 앱 용량 최적화) ──
@@ -1076,7 +1225,7 @@ function renderEnergyCode(s){
   const story=MONTHLY_STORY[dc][moIdx];
   const id=`s${dc}_${moIdx}`;
   return`<div class="energy-code-box">
-    <div class="ec-title">✦ 나의 에너지 코드</div>
+    <div class="ec-title">✦ 본캐 (나의 에너지 코드)</div>
     <div class="energy-code-main">
       <span class="ec-badge" style="background:${co.bg};color:${co.t};border:1px solid ${co.b}">${ILGAN_NAME[dc]} (${ILGAN_NAT[dc]})</span>
       <span class="ec-cross">×</span>
@@ -1210,7 +1359,7 @@ function buildCopyText(s){
   const dir=daeun.forward?'순행':'역행';
   const healthStr=oh1?`\n[용신 건강 추천 오행: ${oh1}(${OH_HEALTH[oh1]?.organ||''})]`:'';
   return'아래 사주를 종합 간명해주세요.\n\n'+
-    '[나의 에너지 코드]\n일간: '+ILGAN_NAME[dc]+' ('+ILGAN_NAT[dc]+')\n'+
+    '[본캐 (나의 에너지 코드)]\n일간: '+ILGAN_NAME[dc]+' ('+ILGAN_NAT[dc]+')\n'+
     '格 방향: '+gek.sipsin+' → '+gek.label+'\n'+
     (mbti&&MBTI_DATA[mbti]?'MBTI: '+mbti+' ('+MBTI_DATA[mbti].name+')\n':'')+
     '[용신 (병약론)]\n병(病): '+yong.byung+' | 용신: '+yong.yongsin+(yong.hesin&&yong.hesin!=='-'?' | 희신: '+yong.hesin:'')+'\n'+
@@ -1228,13 +1377,15 @@ function updatePreview(){
   const h=parseInt(document.getElementById('hr').value)||0;
   const min=parseInt(document.getElementById('min').value)||0;
   const t=h*60+min;
-  const ji=(t>=1380||t<60)?0:t<180?1:t<300?2:t<420?3:t<540?4:t<660?5:t<780?6:t<900?7:t<1020?8:t<1140?9:t<1260?10:11;
+  // 동경시 보정: 자시 23:30~01:30 기준
+  const ji=(t>=1410||t<90)?0:t<210?1:t<330?2:t<450?3:t<570?4:t<690?5:t<810?6:t<930?7:t<1050?8:t<1170?9:t<1290?10:11;
   const oh=OH[OH_JJ[ji]];const c=CO[oh];
   document.getElementById('pv-time').textContent=h+'시 '+String(min).padStart(2,'0')+'분 →';
   document.getElementById('pv-jj').textContent=JJ[ji];
   document.getElementById('pv-jj').style.color=c.t;
   document.getElementById('pv-name').textContent=JJ_KR[ji]+'시';
-  const boundaries=[0,60,150,270,390,510,630,750,870,990,1110,1290,1410,1440];
+  // 경계 근처(±10분) 경고 — 동경시 보정 기준
+  const boundaries=[90,210,330,450,570,690,810,930,1050,1170,1290,1410];
   const near=boundaries.some(b=>Math.abs(t-b)<=10);
   document.getElementById('pv-warn').style.display=near?'':'none';
 }
@@ -1255,6 +1406,28 @@ function setTab(t){
     document.getElementById('tab-'+id).className='tab-btn'+(t===id?' active':'');
   });
   if(t==='daeun'){setTimeout(()=>{const el=document.getElementById('daeun-scroll');if(el)el.scrollLeft=el.scrollWidth;},50);}
+}
+
+function requestGimyeong(){
+  if(!currentSaju){
+    alert('먼저 생년월일시를 입력하고 분석을 완료해주세요.');
+    return;
+  }
+  // 원국 텍스트 클립보드 복사
+  const txt = buildCopyText(currentSaju);
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(txt).then(()=>{
+      alert('✅ 사주 원국이 복사됐습니다!\n\n카카오톡 채널에서 붙여넣기 하시면\nAI 정밀 간명을 받으실 수 있습니다.\n\n※ 간명 비용: 2만원 (카카오페이)');
+    }).catch(()=>{
+      alert('카카오톡 채널로 이동합니다.\n사주 원국을 직접 전송해주세요.');
+    });
+  } else {
+    alert('카카오톡 채널로 이동합니다.\n사주 원국을 직접 전송해주세요.');
+  }
+  // 카카오톡 채널로 이동
+  setTimeout(()=>{
+    window.open('http://pf.kakao.com/_GrHVX/chat','_blank');
+  }, 1500);
 }
 
 function toggleCopy(){
