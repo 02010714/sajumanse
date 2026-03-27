@@ -696,22 +696,25 @@ function renderHealth(s){
     </div>`;
   }
 
-  // 2순위 희신 섹션
+  // 제2 밸런스 오행 섹션 (희신 → 바로 표시)
   let secondaryHtml='';
   if(rec2){
     const c2=CO[oh2];
     secondaryHtml=`
-      <button class="secondary-toggle" id="sec-toggle" onclick="toggleSecondary()">
-        <span>희신 오행 <b style="color:${c2.t}">${oh2}(${rec2.organ})</b> 보조 추천</span>
-        <span class="st-arrow">▼</span>
-      </button>
-      <div class="secondary-body" id="sec-body">
+      <div style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div style="background:${c2.bg};border:1.5px solid ${c2.b};border-radius:10px;padding:10px 14px;flex:1">
+            <div style="font-size:9px;font-weight:700;color:${c2.t};letter-spacing:.08em;margin-bottom:3px">✦ 제2 밸런스 오행</div>
+            <div style="font-size:14px;font-weight:700;color:${c2.t}">${oh2} (${rec2.organ})</div>
+            <div style="font-size:10px;color:${c2.t};opacity:.8;margin-top:2px">${rec2.taste} · ${rec2.principle.slice(0,20)}...</div>
+          </div>
+        </div>
         <div class="health-section">
-          <div class="health-section-title" style="color:${c2.t}">차 (茶)</div>
+          <div class="health-section-title" style="color:${c2.t}">제2 오행 — 차 (茶)</div>
           <div class="health-cards">${makeHCards(rec2.teas,3,c2)}</div>
         </div>
         <div class="health-section">
-          <div class="health-section-title" style="color:${c2.t}">건강기능식품</div>
+          <div class="health-section-title" style="color:${c2.t}">제2 오행 — 건강기능식품</div>
           <div class="health-cards">${makeHCards(rec2.supps,3,c2)}</div>
         </div>
       </div>`;
@@ -730,11 +733,6 @@ function renderHealth(s){
       <span style="background:#fffbf0;border:1px solid #e0c870;border-radius:5px;padding:3px 9px;font-size:10px;color:#8a6200">📖 황제내경 — ${oh1}은 ${rec1.organ}을 주관한다</span>
       <span style="background:#fffbf0;border:1px solid #e0c870;border-radius:5px;padding:3px 9px;font-size:10px;color:#8a6200">📖 동의보감 — ${rec1.taste}은 ${rec1.organ.split('·')[0].trim()}으로 들어간다</span>
       <span style="background:#fffbf0;border:1px solid #e0c870;border-radius:5px;padding:3px 9px;font-size:10px;color:#8a6200">📖 궁통보감 — 계절·일간 기준 밸런스 오행 도출</span>
-    </div>
-
-    <div class="season-note-box">
-      <div class="sn-label">계절 포인트 (${season})</div>
-      ${seasonBoost.note}
     </div>
 
     <div class="health-section">
