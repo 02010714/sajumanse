@@ -246,7 +246,7 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 
 <div class="card">
   <div class="card-title">생년월일시 입력</div>
-  <div style="font-size:10px;color:#2e5fa3;background:#e8f0ff;border-radius:6px;padding:6px 10px;margin-bottom:10px;font-weight:700;letter-spacing:.03em">📅 양력(양력)으로 입력해 주세요</div>
+  <div style="font-size:10px;color:#2e5fa3;background:#e8f0ff;border-radius:6px;padding:6px 10px;margin-bottom:10px;font-weight:700;letter-spacing:.03em">📅 양력으로 입력해 주세요</div>
   <div class="grid3">
     <div><label>년도</label><input type="number" id="yr" value="1990" min="1900" max="2100"></div>
     <div><label>월</label><input type="number" id="mo" value="6" min="1" max="12"></div>
@@ -1349,19 +1349,16 @@ function buildCopyText(s){
   const gd=document.getElementById('gd').value;
   const pillarStr=pillars.map(p=>
     p.label+': '+CG[p.cg]+JJ[p.jj]+
-    ' ['+CG_KR[p.cg]+'('+OH[OH_CG[p.cg]]+') / '+JJ_KR[p.jj]+'('+OH[OH_JJ[p.jj]]+')] 십신: '+p.ss
+    ' ['+CG_KR[p.cg]+'('+OH[OH_CG[p.cg]]+') / '+JJ_KR[p.jj]+'('+OH[OH_JJ[p.jj]]+')]'
   ).join('\n');
-  const ohCnt={목:0,화:0,토:0,금:0,수:0};
-  pillars.forEach(p=>{ohCnt[OH[OH_CG[p.cg]]]++;ohCnt[OH[OH_JJ[p.jj]]]++;});
-  const ohStr=Object.entries(ohCnt).map(e=>e[0]+e[1]).join(' ');
-  const dStr=daeun.daeuns.slice(0,8).map(d=>d.age+'세 '+CG[d.cg]+JJ[d.jj]+'('+d.ss+')').join(' / ');
+  const dStr=daeun.daeuns.slice(0,8).map(d=>d.age+'세 '+CG[d.cg]+JJ[d.jj]).join(' / ');
   const cd=daeun.daeuns.find(d=>nowYear>=yr+d.age&&nowYear<=yr+d.age+9);
   const dir=daeun.forward?'순행':'역행';
   return'아래 사주를 종합 간명해주세요.\n\n'+
-    '[사주 원국]\n'+pillarStr+'\n일간: '+CG[dc]+CG_KR[dc]+' ('+OH[OH_CG[dc]]+') | 성별: '+gd+'성\n'+
-    '오행분포: '+ohStr+'\n\n'+
+    '성별: '+gd+'성\n\n'+
+    '[사주 원국]\n'+pillarStr+'\n\n'+
     '[대운] '+dir+' | '+daeun.sy+'세 시작\n'+dStr+
-    (cd?'\n현재 대운('+nowYear+'): '+CG[cd.cg]+JJ[cd.jj]+'('+cd.ss+')':'');
+    (cd?'\n현재 대운('+nowYear+'): '+CG[cd.cg]+JJ[cd.jj]:'');
 }
 
 let currentSaju=null;
