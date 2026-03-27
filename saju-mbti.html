@@ -88,8 +88,8 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .now-box .years{font-size:10px;color:#7a6040;margin-bottom:4px}
 .now-box .badges{display:flex;gap:5px}
 .copy-btn{width:100%;padding:13px;border-radius:9px;border:1px solid #ccc0a0;background:#fffbf0;color:#7a6040;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.03em;margin-top:14px}
-.kakao-gimyeong-btn{width:100%;padding:15px;border-radius:10px;border:none;background:linear-gradient(135deg,#3d2080 0%,#5b21b6 100%);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;margin-top:16px;box-shadow:0 4px 16px rgba(91,33,182,.35);transition:all .2s}
-.kakao-gimyeong-btn:active{transform:scale(.98);box-shadow:0 2px 8px rgba(91,33,182,.3)}
+.kakao-gimyeong-btn{width:100%;padding:11px;border-radius:8px;border:1px solid #b0a0d0;background:#f5f0ff;color:#5b21b6;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.03em;margin-top:10px;transition:all .2s}
+.kakao-gimyeong-btn:active{transform:scale(.98)}
 .copy-btn-wrap{margin-top:0}
 .copy-btn.open{border-color:rgba(46,95,163,.4);background:#f0f4ff;color:#2e5fa3}
 .copy-area{margin-top:8px}
@@ -246,6 +246,7 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 
 <div class="card">
   <div class="card-title">생년월일시 입력</div>
+  <div style="font-size:10px;color:#2e5fa3;background:#e8f0ff;border-radius:6px;padding:6px 10px;margin-bottom:10px;font-weight:700;letter-spacing:.03em">📅 양력(양력)으로 입력해 주세요</div>
   <div class="grid3">
     <div><label>년도</label><input type="number" id="yr" value="1990" min="1900" max="2100"></div>
     <div><label>월</label><input type="number" id="mo" value="6" min="1" max="12"></div>
@@ -308,16 +309,17 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
   <div id="panel-chart"></div>
   <div id="panel-daeun" style="display:none"></div>
   <div id="panel-health" style="display:none"></div>
-  <!-- 정밀 간명 신청 버튼 -->
-  <button class="kakao-gimyeong-btn" id="kakao-btn" onclick="requestGimyeong()">🔮 AI 정밀 간명 — 오픈 준비 중 (채널 추가 후 알림 받기)</button>
+  <!-- 채팅창 간명용 (위) -->
   <div class="copy-btn-wrap">
-    <button class="copy-btn" id="copy-btn" onclick="toggleCopy()">📋 사주 원국 + 대운 복사 (채팅창 간명용)</button>
+    <button class="copy-btn" id="copy-btn" onclick="toggleCopy()">📋 사주 원국 + 대운 복사 (AI 채팅창 간명용)</button>
   </div>
   <div class="copy-area" id="copy-area" style="display:none">
-    <div class="hint">▼ 텍스트 클릭 → 전체선택(Ctrl+A) → 복사(Ctrl+C) → 채팅창 붙여넣기</div>
+    <div class="hint">▼ 텍스트 클릭 → 전체선택(Ctrl+A) → 복사(Ctrl+C) → Claude 채팅창 붙여넣기</div>
     <textarea id="copy-text" readonly onclick="this.select()"></textarea>
-    <div class="hint2">복사 후 Claude 채팅창에 붙여넣으면 종합 간명을 받을 수 있습니다</div>
+    <div class="hint2">복사 후 Claude 채팅창에 붙여넣으면 정밀 간명을 받을 수 있습니다</div>
   </div>
+  <!-- AI 정밀 간명 (아래, 조용하게) -->
+  <button class="kakao-gimyeong-btn" id="kakao-btn" onclick="requestGimyeong()">🔮 AI 정밀 간명 — 오픈 준비 중 (채널 추가 후 알림 받기)</button>
 </div>
 
 <div class="footer"><p>『본캐 (나의 에너지 코드)』 카페 본캐 전용 · 사주 × MBTI × 건강식품 통합 추천</p></div>
@@ -1345,25 +1347,17 @@ function buildCopyText(s){
   const{pillars,dc,daeun}=s;
   const yr=parseInt(document.getElementById('yr').value);
   const gd=document.getElementById('gd').value;
-  const mbti=document.getElementById('mbti').value;
-  const moJJ=pillars[1].jj;const moIdx=jjToMoIdx(moJJ);
-  const gek=getGekInfo(dc,moJJ);
-  const yong=YONGSIN_DATA[dc][moIdx];
-  const oh1=yongsinToOH(yong.yongsin);
-  const pillarStr=pillars.map(p=>p.label+': '+CG[p.cg]+JJ[p.jj]+' ['+CG_KR[p.cg]+'('+OH[OH_CG[p.cg]]+') / '+JJ_KR[p.jj]+'('+OH[OH_JJ[p.jj]]+')] 십신: '+p.ss).join('\n');
+  const pillarStr=pillars.map(p=>
+    p.label+': '+CG[p.cg]+JJ[p.jj]+
+    ' ['+CG_KR[p.cg]+'('+OH[OH_CG[p.cg]]+') / '+JJ_KR[p.jj]+'('+OH[OH_JJ[p.jj]]+')] 십신: '+p.ss
+  ).join('\n');
   const ohCnt={목:0,화:0,토:0,금:0,수:0};
   pillars.forEach(p=>{ohCnt[OH[OH_CG[p.cg]]]++;ohCnt[OH[OH_JJ[p.jj]]]++;});
   const ohStr=Object.entries(ohCnt).map(e=>e[0]+e[1]).join(' ');
   const dStr=daeun.daeuns.slice(0,8).map(d=>d.age+'세 '+CG[d.cg]+JJ[d.jj]+'('+d.ss+')').join(' / ');
   const cd=daeun.daeuns.find(d=>nowYear>=yr+d.age&&nowYear<=yr+d.age+9);
   const dir=daeun.forward?'순행':'역행';
-  const healthStr=oh1?`\n[용신 건강 추천 오행: ${oh1}(${OH_HEALTH[oh1]?.organ||''})]`:'';
   return'아래 사주를 종합 간명해주세요.\n\n'+
-    '[본캐 (나의 에너지 코드)]\n일간: '+ILGAN_NAME[dc]+' ('+ILGAN_NAT[dc]+')\n'+
-    '格 방향: '+gek.sipsin+' → '+gek.label+'\n'+
-    (mbti&&MBTI_DATA[mbti]?'MBTI: '+mbti+' ('+MBTI_DATA[mbti].name+')\n':'')+
-    '[용신 (병약론)]\n병(病): '+yong.byung+' | 용신: '+yong.yongsin+(yong.hesin&&yong.hesin!=='-'?' | 희신: '+yong.hesin:'')+'\n'+
-    yong.desc+healthStr+'\n\n'+
     '[사주 원국]\n'+pillarStr+'\n일간: '+CG[dc]+CG_KR[dc]+' ('+OH[OH_CG[dc]]+') | 성별: '+gd+'성\n'+
     '오행분포: '+ohStr+'\n\n'+
     '[대운] '+dir+' | '+daeun.sy+'세 시작\n'+dStr+
@@ -1421,7 +1415,7 @@ function toggleCopy(){
   const show=area.style.display==='none';
   area.style.display=show?'':'none';
   btn.className='copy-btn'+(show?' open':'');
-  btn.textContent=show?'▲ 텍스트 닫기':'📋 사주 원국 + 대운 복사 (채팅창 간명용)';
+  btn.textContent=show?'▲ 텍스트 닫기':'📋 사주 원국 + 대운 복사 (AI 채팅창 간명용)';
   if(show&&currentSaju)document.getElementById('copy-text').value=buildCopyText(currentSaju);
 }
 
@@ -1447,7 +1441,7 @@ async function handleCalc(){
   setTab('chart');
   document.getElementById('copy-area').style.display='none';
   document.getElementById('copy-btn').className='copy-btn';
-  document.getElementById('copy-btn').textContent='📋 사주 원국 + 대운 복사 (채팅창 간명용)';
+  document.getElementById('copy-btn').textContent='📋 사주 원국 + 대운 복사 (AI 채팅창 간명용)';
   btn.disabled=false;btn.textContent='✦ 원국 + 대운 + 건강 추천 뽑기';
 }
 
