@@ -5,6 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>본캐 (나의 에너지 코드) — 사주 × MBTI × 건강</title>
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" crossorigin="anonymous"></script>
+<!-- 카카오 우편번호 (무료) -->
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<!-- Firebase SDK (모듈) -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,getDocs,doc,updateDoc,query,orderBy,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+// ★ Firebase 콘솔 > 프로젝트 설정 > 웹앱 > Config 복사 후 아래에 붙여넣으세요 ★
+const firebaseConfig={
+  apiKey:"YOUR_API_KEY",
+  authDomain:"YOUR_PROJECT_ID.firebaseapp.com",
+  projectId:"YOUR_PROJECT_ID",
+  storageBucket:"YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId:"YOUR_SENDER_ID",
+  appId:"YOUR_APP_ID"
+};
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+window._db=db;window._fbCol=collection;window._fbAddDoc=addDoc;
+window._fbGetDocs=getDocs;window._fbDoc=doc;window._fbUpdate=updateDoc;
+window._fbQuery=query;window._fbOrderBy=orderBy;window._fbTS=serverTimestamp;
+window._fbReady=true;document.dispatchEvent(new Event('fbReady'));
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f4f0e8;color:#2c2416;font-family:"Malgun Gothic","Apple SD Gothic Neo",serif;padding:20px 14px;min-height:100vh}
@@ -223,6 +245,59 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .mbti-result-apply{width:100%;background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
 
 #result{margin-top:0}
+
+/* ── 주문 모달 ── */
+.order-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.65);z-index:2000;align-items:flex-end;justify-content:center;padding:0}
+.order-modal.open{display:flex}
+.order-sheet{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:440px;max-height:92vh;overflow-y:auto;padding:22px 18px 32px}
+.order-sheet-handle{width:40px;height:4px;background:#e0d0b0;border-radius:2px;margin:0 auto 18px}
+.order-sheet-title{font-size:15px;font-weight:700;color:#5a3e00;margin-bottom:4px}
+.order-sheet-sub{font-size:11px;color:#8a7a5a;margin-bottom:18px;line-height:1.5}
+.order-product-card{background:#fffbf0;border:1.5px solid #e0c870;border-radius:10px;padding:12px 14px;margin-bottom:18px;display:flex;align-items:center;gap:12px}
+.order-product-card .opc-emoji{font-size:28px}
+.order-product-card .opc-body{flex:1}
+.order-product-card .opc-name{font-size:13px;font-weight:700;color:#2c2416;margin-bottom:2px}
+.order-product-card .opc-desc{font-size:10px;color:#8a7a5a}
+.order-product-card .opc-price{font-size:15px;font-weight:700;color:#c9a227;white-space:nowrap}
+.order-field{margin-bottom:14px}
+.order-field label{font-size:10px;color:#8a6200;font-weight:700;display:block;margin-bottom:5px}
+.order-field input,.order-field textarea{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-radius:8px;padding:10px 12px;font-size:13px;outline:none;width:100%;font-family:inherit}
+.order-field input:focus,.order-field textarea:focus{border-color:#c9a227;background:#fffbf0}
+.order-field .addr-row{display:flex;gap:7px}
+.order-field .addr-row input{flex:1}
+.order-field .btn-addr{background:#c9a227;color:#fff;border:none;border-radius:8px;padding:10px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0}
+.order-divider{height:1px;background:#e0d0b0;margin:18px 0}
+.bank-info-box{background:#f0f7ff;border:1.5px solid #a8c8f0;border-radius:10px;padding:14px 16px;margin-bottom:16px}
+.bank-info-box .bi-title{font-size:11px;font-weight:700;color:#1a4c80;margin-bottom:8px}
+.bank-info-box .bi-account{font-size:16px;font-weight:700;color:#1a4c80;letter-spacing:.03em;margin-bottom:4px}
+.bank-info-box .bi-name{font-size:12px;color:#2e5fa3;margin-bottom:6px}
+.bank-info-box .bi-note{font-size:10px;color:#5a7a9a;line-height:1.6}
+.btn-submit-order{width:100%;background:linear-gradient(135deg,#c9a227,#9a7010);color:#fff;font-weight:700;font-size:14px;border:none;border-radius:10px;padding:14px;cursor:pointer;font-family:inherit;margin-top:4px}
+.btn-submit-order:disabled{opacity:.5;cursor:not-allowed}
+.btn-cancel-order{width:100%;background:none;border:1px solid #ddd0b0;border-radius:10px;padding:12px;color:#8a7a5a;font-size:13px;cursor:pointer;font-family:inherit;margin-top:8px}
+/* 주문 완료 화면 */
+.order-done{text-align:center;padding:20px 0 10px}
+.order-done .od-icon{font-size:52px;margin-bottom:12px}
+.order-done .od-title{font-size:18px;font-weight:700;color:#5a3e00;margin-bottom:6px}
+.order-done .od-sub{font-size:12px;color:#8a7a5a;line-height:1.7;margin-bottom:20px}
+/* 관리자 화면 */
+.admin-wrap{max-width:440px;margin:0 auto;padding:20px 14px}
+.admin-header{background:linear-gradient(135deg,#1f3864,#2e5fa3);color:#fff;border-radius:12px;padding:16px 18px;margin-bottom:18px}
+.admin-header h2{font-size:16px;font-weight:700;margin-bottom:3px}
+.admin-header p{font-size:11px;opacity:.8}
+.order-card{background:#fff;border:1px solid #ddd5c0;border-radius:11px;padding:14px 16px;margin-bottom:11px}
+.order-card .oc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.order-card .oc-no{font-size:10px;color:#9a8a6a}
+.order-card .oc-status{font-size:10px;font-weight:700;border-radius:4px;padding:2px 8px}
+.oc-status.wait{background:#fff3cd;color:#856404}
+.oc-status.done{background:#d4edda;color:#155724}
+.order-card .oc-product{font-size:13px;font-weight:700;color:#2c2416;margin-bottom:4px}
+.order-card .oc-price{font-size:12px;color:#c9a227;font-weight:700;margin-bottom:8px}
+.order-card .oc-info{font-size:11px;color:#5a4a2a;line-height:1.7}
+.order-card .oc-addr{font-size:11px;color:#7a6040;margin-top:4px;line-height:1.5}
+.btn-done{background:#1f3864;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:10px}
+.admin-empty{text-align:center;padding:40px 20px;color:#9a8a6a;font-size:13px}
+
 </style>
 </head>
 <body>
@@ -323,6 +398,15 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 </div>
 
 <div class="footer"><p>『본캐 (나의 에너지 코드)』 카페 본캐 전용 · 사주 × MBTI × 건강식품 통합 추천</p></div>
+
+
+<!-- ── 주문 모달 ── -->
+<div class="order-modal" id="order-modal">
+  <div class="order-sheet" id="order-sheet">
+    <div class="order-sheet-handle"></div>
+    <div id="order-form-area"></div>
+  </div>
+</div>
 
 <!-- MBTI 퀴즈 모달 -->
 <div class="mbti-modal" id="mbti-modal">
@@ -584,46 +668,46 @@ const SEASON_BOOST={
 };
 
 // ── 카페 메뉴 & 주문 링크 (오행별) ──
-// ※ 아래 orderUrl 값을 실제 주문 링크(카카오채널, 스마트스토어 등)로 교체하세요
+// delivery:true = 택배 가능 (주문 모달 연결) / false = 카페 현장 전용
 const CAFE_MENU={
   목:{
-    title:"木 오행 — 간·담 보강 추천",
+    title:"木 오행 — 간·담 보강 추천", oh:"목",
     items:[
-      {name:"민들레 녹차 블렌드",desc:"간 해독 + 항산화 · 따뜻하게 제공",price:"6,500",orderUrl:"#"},
-      {name:"사과·셀러리·레몬 주스",desc:"간 해독 시너지 트리오 · 당일 착즙",price:"7,000",orderUrl:"#"},
-      {name:"밀크시슬 에너지볼",desc:"실리마린 함유 건강 간식",price:"4,500",orderUrl:"#"},
+      {name:"민들레 녹차 블렌드",desc:"간 해독 + 항산화 · 따뜻하게 제공",price:"6,500",delivery:false},
+      {name:"사과·셀러리·레몬 주스",desc:"간 해독 시너지 트리오 · 당일 착즙",price:"7,000",delivery:false},
+      {name:"밀크시슬 에너지 세트",desc:"밀크시슬(실리마린) + NAC + 강황 1개월분",price:"28,000",delivery:true},
     ]
   },
   화:{
-    title:"火 오행 — 심장·소장 보강 추천",
+    title:"火 오행 — 심장·소장 보강 추천", oh:"화",
     items:[
-      {name:"대추·히비스커스 블렌드",desc:"심신 안정 + 혈액순환 · 따뜻하게 제공",price:"6,500",orderUrl:"#"},
-      {name:"비트·석류·체리 주스",desc:"심혈관 폴리페놀 트리오 · 당일 착즙",price:"7,500",orderUrl:"#"},
-      {name:"CoQ10 + 유산균 세트",desc:"심장 에너지 + 소장 유산균 패키지",price:"28,000",orderUrl:"#"},
+      {name:"대추·히비스커스 블렌드",desc:"심신 안정 + 혈액순환 · 따뜻하게 제공",price:"6,500",delivery:false},
+      {name:"비트·석류·체리 주스",desc:"심혈관 폴리페놀 트리오 · 당일 착즙",price:"7,500",delivery:false},
+      {name:"CoQ10 + 유산균 세트",desc:"심장 에너지(CoQ10) + 소장 유산균 1개월분",price:"28,000",delivery:true},
     ]
   },
   토:{
-    title:"土 오행 — 비위 보강 추천",
+    title:"土 오행 — 비위 보강 추천", oh:"토",
     items:[
-      {name:"생강·진피·계피 블렌드",desc:"위장 온열 + 소화 촉진 · 따뜻하게 제공",price:"6,000",orderUrl:"#"},
-      {name:"당근·생강·꿀 주스",desc:"비위 보강 + 장 점막 보호 · 당일 착즙",price:"6,500",orderUrl:"#"},
-      {name:"소화효소 + 프로바이오틱스",desc:"비위 맞춤 소화 지원 패키지",price:"22,000",orderUrl:"#"},
+      {name:"생강·진피·계피 블렌드",desc:"위장 온열 + 소화 촉진 · 따뜻하게 제공",price:"6,000",delivery:false},
+      {name:"당근·생강·꿀 주스",desc:"비위 보강 + 장 점막 보호 · 당일 착즙",price:"6,500",delivery:false},
+      {name:"소화효소 + 프로바이오틱스",desc:"소화효소 복합 + 비피더스 프로바이오틱스 1개월분",price:"22,000",delivery:true},
     ]
   },
   금:{
-    title:"金 오행 — 폐·대장 보강 추천",
+    title:"金 오행 — 폐·대장 보강 추천", oh:"금",
     items:[
-      {name:"도라지·배·유자 블렌드",desc:"폐 윤택 + 기관지 보호 · 따뜻하게 제공",price:"6,500",orderUrl:"#"},
-      {name:"배·무·생강 주스",desc:"윤폐 + 가래 제거 · 당일 착즙",price:"7,000",orderUrl:"#"},
-      {name:"낙산균(미야리산) + 이눌린",desc:"대장 낙산균 + 프리바이오틱스 세트",price:"25,000",orderUrl:"#"},
+      {name:"도라지·배·유자 블렌드",desc:"폐 윤택 + 기관지 보호 · 따뜻하게 제공",price:"6,500",delivery:false},
+      {name:"배·무·생강 주스",desc:"윤폐 + 가래 제거 · 당일 착즙",price:"7,000",delivery:false},
+      {name:"낙산균(미야리산) + 이눌린",desc:"대장 낙산균(CBM588) + 프리바이오틱스 1개월분",price:"25,000",delivery:true},
     ]
   },
   수:{
-    title:"水 오행 — 신장·방광 보강 추천",
+    title:"水 오행 — 신장·방광 보강 추천", oh:"수",
     items:[
-      {name:"구기자·두충·맥문동 블렌드",desc:"신음 보충 + 항노화 · 따뜻하게 제공",price:"7,000",orderUrl:"#"},
-      {name:"블루베리·검정콩·크랜베리",desc:"신장 보호 안토시아닌 주스 · 당일 착즙",price:"7,500",orderUrl:"#"},
-      {name:"CoQ10 + 비타민D3K2 세트",desc:"신장 에너지 + 골밀도 패키지",price:"30,000",orderUrl:"#"},
+      {name:"구기자·두충·맥문동 블렌드",desc:"신음 보충 + 항노화 · 따뜻하게 제공",price:"7,000",delivery:false},
+      {name:"블루베리·검정콩·크랜베리",desc:"신장 보호 안토시아닌 주스 · 당일 착즙",price:"7,500",delivery:false},
+      {name:"CoQ10 + 비타민D3K2 세트",desc:"신장 에너지(CoQ10) + 골밀도(D3K2) 1개월분",price:"30,000",delivery:true},
     ]
   }
 };
@@ -766,18 +850,32 @@ function renderHealth(s){
     ${(()=>{
       const menu=CAFE_MENU[oh1];
       if(!menu)return'';
-      const items=menu.items.map(it=>`
-        <div class="order-item">
+
+      // onclick 속성 안에 JSON 넣으면 따옴표·콜론이 HTML을 깨뜨림
+      // → 전역 레지스트리에 저장하고 인덱스만 넘김
+      if(!window._orderRegistry) window._orderRegistry=[];
+      const items2=menu.items.map(it=>{
+        const isDelivery=it.delivery;
+        let btnHtml;
+        if(isDelivery){
+          const idx=window._orderRegistry.length;
+          window._orderRegistry.push({product:it, oh:menu.oh});
+          btnHtml=`<button class="oi-btn" onclick="openOrderModal(${idx})">📦 주문하기</button>`;
+        } else {
+          btnHtml=`<button class="oi-btn" style="background:#e0d0b0;color:#7a6040;cursor:default">카운터 주문</button>`;
+        }
+        return`<div class="order-item">
           <div class="oi-info">
             <div class="oi-name">${it.name}</div>
             <div class="oi-desc">${it.desc} &nbsp;·&nbsp; <b>${it.price}원</b></div>
           </div>
-          <button class="oi-btn" onclick="orderItem('${it.orderUrl}','${it.name}')">${it.orderUrl==='#'?'준비중':'주문하기'}</button>
-        </div>`).join('');
+          ${btnHtml}
+        </div>`;
+      }).join('');
       return`<div class="order-box">
         <div class="ob-title">✦ 내 오행에 맞는 메뉴 주문</div>
-        <div class="ob-sub">${menu.title}<br>지금 바로 주문하거나 카운터에서 오행 코드를 보여주세요.</div>
-        <div class="order-menu">${items}</div>
+        <div class="ob-sub">${menu.title}<br>📦 건강기능식품은 택배 주문 가능 · 음료는 카운터에서 주문하세요</div>
+        <div class="order-menu">${items2}</div>
         <button class="btn-kakao" onclick="shareKakao()">
           <span style="font-size:18px;line-height:1">💬</span> 카카오톡으로 결과 공유하기
         </button>
@@ -799,12 +897,263 @@ function toggleSecondary(){
   body.classList.toggle('open');
 }
 
-function orderItem(url, name){
-  if(url==='#'){
-    alert(`"${name}" 주문 기능 준비 중입니다.\n카운터에서 오행 코드를 보여주세요! 😊`);
+// ────────────────────────────────────────────────
+// 주문 시스템
+// ────────────────────────────────────────────────
+
+// ★★★ 아래 계좌 정보를 실제 정보로 바꿔주세요 ★★★
+const SHOP_CONFIG = {
+  bankName:    "국민은행",
+  bankAccount: "000000-00-000000",
+  accountHolder:"카페본캐",
+  kakaoChannel:"http://pf.kakao.com/_GrHVX"
+};
+
+const OH_EMOJI_MAP={목:"🌿",화:"🔥",토:"🌍",금:"💎",수:"💧"};
+let _currentOrderProduct = null;
+let _currentOrderOh = null;
+
+function openOrderModal(idx) {
+  const entry = window._orderRegistry[idx];
+  if(!entry){ alert('상품 정보를 불러올 수 없습니다. 다시 시도해 주세요.'); return; }
+  const product = entry.product;
+  const oh = entry.oh;
+  _currentOrderProduct = product;
+  _currentOrderOh = oh;
+  const area = document.getElementById('order-form-area');
+  const emoji = OH_EMOJI_MAP[oh] || "🌿";
+  area.innerHTML = `
+    <div class="order-sheet-title">📦 배송 주문</div>
+    <div class="order-sheet-sub">주문 후 계좌이체로 입금하시면 1~3 영업일 내 발송됩니다</div>
+
+    <div class="order-product-card">
+      <div class="opc-emoji">${emoji}</div>
+      <div class="opc-body">
+        <div class="opc-name">${product.name}</div>
+        <div class="opc-desc">${product.desc}</div>
+      </div>
+      <div class="opc-price">${product.price}원</div>
+    </div>
+
+    <div class="order-field">
+      <label>수령인 이름 *</label>
+      <input type="text" id="ord-name" placeholder="홍길동">
+    </div>
+    <div class="order-field">
+      <label>연락처 (휴대폰) *</label>
+      <input type="tel" id="ord-phone" placeholder="010-0000-0000" oninput="autoHyphen(this)">
+    </div>
+    <div class="order-field">
+      <label>배송 주소 *</label>
+      <div class="addr-row" style="margin-bottom:6px">
+        <input type="text" id="ord-postcode" placeholder="우편번호" readonly>
+        <button class="btn-addr" onclick="searchAddress()">주소 검색</button>
+      </div>
+      <input type="text" id="ord-addr1" placeholder="도로명 주소 (검색 후 자동 입력)" readonly style="margin-bottom:6px">
+      <input type="text" id="ord-addr2" placeholder="상세 주소 (동/호수 등)">
+    </div>
+    <div class="order-field">
+      <label>배송 메모 (선택)</label>
+      <input type="text" id="ord-memo" placeholder="예) 부재시 문 앞에 놓아주세요">
+    </div>
+
+    <div class="order-divider"></div>
+    <div class="bank-info-box">
+      <div class="bi-title">💳 입금 계좌 안내</div>
+      <div class="bi-account">${SHOP_CONFIG.bankName} ${SHOP_CONFIG.bankAccount}</div>
+      <div class="bi-name">예금주: ${SHOP_CONFIG.accountHolder}</div>
+      <div class="bi-note">• 주문 완료 후 <b>${product.price}원</b>을 위 계좌로 입금해주세요<br>
+      • 입금 확인 후 1~3 영업일 내 발송<br>
+      • 카카오 채널로 운송장 번호를 알려드립니다</div>
+    </div>
+
+    <button class="btn-submit-order" id="btn-submit" onclick="submitOrder()">✦ 주문 완료하기</button>
+    <button class="btn-cancel-order" onclick="closeOrderModal()">취소</button>
+  `;
+  document.getElementById('order-modal').classList.add('open');
+  // 모달 열릴 때 배경 스크롤 막기
+  document.body.style.overflow = 'hidden';
+}
+
+function closeOrderModal() {
+  document.getElementById('order-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function searchAddress() {
+  new daum.Postcode({
+    oncomplete: function(data) {
+      document.getElementById('ord-postcode').value = data.zonecode;
+      document.getElementById('ord-addr1').value = data.roadAddress || data.jibunAddress;
+      document.getElementById('ord-addr2').focus();
+    }
+  }).open();
+}
+
+function autoHyphen(el) {
+  let v = el.value.replace(/[^0-9]/g,'');
+  if(v.length<=3) el.value=v;
+  else if(v.length<=7) el.value=v.slice(0,3)+'-'+v.slice(3);
+  else el.value=v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7,11);
+}
+
+async function submitOrder() {
+  const name   = document.getElementById('ord-name').value.trim();
+  const phone  = document.getElementById('ord-phone').value.trim();
+  const post   = document.getElementById('ord-postcode').value.trim();
+  const addr1  = document.getElementById('ord-addr1').value.trim();
+  const addr2  = document.getElementById('ord-addr2').value.trim();
+  const memo   = document.getElementById('ord-memo').value.trim();
+
+  if(!name)  { alert('수령인 이름을 입력해주세요.'); document.getElementById('ord-name').focus(); return; }
+  if(!phone || phone.length < 12) { alert('연락처를 정확히 입력해주세요.'); document.getElementById('ord-phone').focus(); return; }
+  if(!post || !addr1) { alert('배송 주소를 검색해서 입력해주세요.'); return; }
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = '처리 중...';
+
+  const orderData = {
+    product:  _currentOrderProduct.name,
+    price:    _currentOrderProduct.price,
+    oh:       _currentOrderOh,
+    name, phone,
+    address:  `[${post}] ${addr1} ${addr2}`.trim(),
+    memo,
+    status:   'wait',   // wait = 입금 대기 / done = 발송 완료
+    createdAt: window._fbTS ? window._fbTS() : new Date().toISOString()
+  };
+
+  // Firebase 저장 시도
+  let orderId = 'local-' + Date.now();
+  try {
+    if(window._fbReady && window._db) {
+      const ref = await window._fbAddDoc(window._fbCol(window._db, 'orders'), orderData);
+      orderId = ref.id;
+    } else {
+      // Firebase 미설정 시 로컬 저장 (임시)
+      const orders = JSON.parse(localStorage.getItem('cafeOrders')||'[]');
+      orderData.id = orderId;
+      orders.push(orderData);
+      localStorage.setItem('cafeOrders', JSON.stringify(orders));
+    }
+  } catch(e) {
+    console.warn('Firebase save failed, using local:', e);
+    const orders = JSON.parse(localStorage.getItem('cafeOrders')||'[]');
+    orderData.id = orderId;
+    orders.push(orderData);
+    localStorage.setItem('cafeOrders', JSON.stringify(orders));
+  }
+
+  // 완료 화면
+  const shortId = orderId.slice(-6).toUpperCase();
+  document.getElementById('order-form-area').innerHTML = `
+    <div class="order-done">
+      <div class="od-icon">✅</div>
+      <div class="od-title">주문이 접수됐습니다!</div>
+      <div class="od-sub">
+        주문번호: <b>${shortId}</b><br><br>
+        아래 계좌로 <b>${_currentOrderProduct.price}원</b>을 입금해주세요.<br>
+        입금 확인 후 1~3 영업일 내 발송됩니다.
+      </div>
+      <div class="bank-info-box" style="text-align:left">
+        <div class="bi-title">💳 입금 계좌</div>
+        <div class="bi-account">${SHOP_CONFIG.bankName} ${SHOP_CONFIG.bankAccount}</div>
+        <div class="bi-name">예금주: ${SHOP_CONFIG.accountHolder}</div>
+        <div class="bi-note">• 입금자명에 <b>${name}</b>으로 입금해주세요<br>
+        • 운송장 번호는 카카오 채널로 안내드립니다</div>
+      </div>
+      <button class="btn-submit-order" onclick="window.open('${SHOP_CONFIG.kakaoChannel}','_blank')">
+        💬 카카오 채널에서 입금 확인 요청
+      </button>
+      <button class="btn-cancel-order" onclick="closeOrderModal()">닫기</button>
+    </div>
+  `;
+}
+
+// ────────────────────────────────────────────────
+// 관리자 화면 (?admin=1 로 접근)
+// ────────────────────────────────────────────────
+async function loadAdminView() {
+  const pw = prompt('관리자 비밀번호를 입력하세요:');
+  // ★ 아래 비밀번호를 원하는 값으로 바꿔주세요 ★
+  if(pw !== 'cafe1234') { alert('비밀번호가 틀렸습니다.'); return; }
+
+  document.body.innerHTML = '';
+  const wrap = document.createElement('div');
+  wrap.className = 'admin-wrap';
+  wrap.innerHTML = `
+    <div class="admin-header">
+      <h2>🏪 카페 본캐 — 주문 관리</h2>
+      <p>건강기능식품 주문 목록</p>
+    </div>
+    <div id="admin-list">불러오는 중...</div>
+  `;
+  document.body.appendChild(wrap);
+  document.body.style.background = '#f4f0e8';
+
+  let orders = [];
+
+  // Firebase에서 불러오기
+  try {
+    if(window._fbReady && window._db) {
+      const q = window._fbQuery(window._fbCol(window._db,'orders'), window._fbOrderBy('createdAt','desc'));
+      const snap = await window._fbGetDocs(q);
+      snap.forEach(d => orders.push({id:d.id,...d.data()}));
+    } else {
+      orders = JSON.parse(localStorage.getItem('cafeOrders')||'[]').reverse();
+    }
+  } catch(e) {
+    orders = JSON.parse(localStorage.getItem('cafeOrders')||'[]').reverse();
+  }
+
+  const list = document.getElementById('admin-list');
+  if(!orders.length) {
+    list.innerHTML = '<div class="admin-empty">📭 주문 내역이 없습니다</div>';
     return;
   }
-  window.open(url,'_blank');
+
+  list.innerHTML = orders.map(o => {
+    const statusLabel = o.status==='done' ? '발송완료' : '입금대기';
+    const statusClass = o.status==='done' ? 'done' : 'wait';
+    const date = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleDateString('ko-KR') : (o.createdAt||'').slice(0,10);
+    return `<div class="order-card">
+      <div class="oc-top">
+        <span class="oc-no">${date} · ${(o.id||'').slice(-6).toUpperCase()}</span>
+        <span class="oc-status ${statusClass}">${statusLabel}</span>
+      </div>
+      <div class="oc-product">${o.product}</div>
+      <div class="oc-price">${o.price}원</div>
+      <div class="oc-info">👤 ${o.name} &nbsp;📱 ${o.phone}</div>
+      <div class="oc-addr">📦 ${o.address}${o.memo?'<br>💬 '+o.memo:''}</div>
+      ${o.status!=='done'?`<button class="btn-done" onclick="markDone('${o.id}',this)">✅ 발송 완료 처리</button>`:''}
+    </div>`;
+  }).join('');
+}
+
+async function markDone(id, btn) {
+  if(!confirm('발송 완료로 처리하시겠습니까?')) return;
+  try {
+    if(window._fbReady && window._db) {
+      await window._fbUpdate(window._fbDoc(window._db,'orders',id), {status:'done'});
+    } else {
+      const orders = JSON.parse(localStorage.getItem('cafeOrders')||'[]');
+      const o = orders.find(x=>x.id===id);
+      if(o) o.status='done';
+      localStorage.setItem('cafeOrders', JSON.stringify(orders));
+    }
+    btn.closest('.order-card').querySelector('.oc-status').textContent='발송완료';
+    btn.closest('.order-card').querySelector('.oc-status').className='oc-status done';
+    btn.remove();
+  } catch(e) { alert('처리 실패: '+e.message); }
+}
+
+// 관리자 모드 진입 감지
+if(location.search.includes('admin=1')){
+  document.addEventListener('DOMContentLoaded', ()=>{
+    setTimeout(loadAdminView, 500);
+  });
+  document.addEventListener('fbReady', ()=>{ loadAdminView(); }, {once:true});
 }
 
 // 일간별 이모지
