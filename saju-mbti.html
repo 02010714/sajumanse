@@ -308,16 +308,7 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
   <p>『본캐』 카페 본캐 전용 · 일간 × 格 × MBTI · 용신 오행 맞춤 건강 추천</p>
 </div>
 
-<div class="kasi-box">
-  <div class="kasi-hdr" onclick="toggleKasi()">
-    <span>🔑 KASI API 키 (선택) <span id="kasi-status"></span></span>
-    <span id="kasi-arrow">▼</span>
-  </div>
-  <div class="kasi-body" id="kasi-body" style="display:none">
-    <input type="password" id="kKey" placeholder="data.go.kr 서비스키...">
-    <div class="kasi-hint">없으면 근사값 계산 (±1일 오차) · 절기 당일 출생 시 월주가 달라질 수 있음</div>
-  </div>
-</div>
+<!-- KASI 키 입력 UI 제거 (키 하드코딩으로 대체) -->
 
 <div class="card">
   <div class="card-title">생년월일시 입력</div>
@@ -1730,13 +1721,6 @@ function updatePreview(){
   document.getElementById('pv-warn').style.display=near?'':'none';
 }
 
-function toggleKasi(){
-  const body=document.getElementById('kasi-body');
-  const arrow=document.getElementById('kasi-arrow');
-  const show=body.style.display==='none';
-  body.style.display=show?'':'none';
-  arrow.textContent=show?'▲':'▼';
-}
 
 function setTab(t){
   document.getElementById('panel-chart').style.display=t==='chart'?'':'none';
@@ -1774,7 +1758,7 @@ async function handleCalc(){
   const hr=parseInt(document.getElementById('hr').value)||0;
   const min=parseInt(document.getElementById('min').value)||0;
   const gd=document.getElementById('gd').value;
-  const kKey=document.getElementById('kKey').value.trim();
+  const kKey="79e483305b7596b2c4a250019e939e2905479d81da503925540603ecab48580c";
   let gmap=null;
   if(kKey){try{gmap=await fetchKasi(yr,kKey);if(Object.keys(gmap).length===0)gmap=null;}catch(e){}}
   const s=buildSaju(yr,mo,dy,hr,min,gd,gmap);
