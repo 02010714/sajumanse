@@ -1267,7 +1267,7 @@ function calcYear(y,m,d,gmap){
 
 function calcMonth(y,m,d,ycg,gmap){
   const name=JD_NAME[m-1];let jeolJDN=null;
-  if(gmap){for(let i=-1;i<=1;i++){const k=name+'_'+(y+i);if(gmap[k]){jeolJDN=gmap[k];break;}}}
+  if(gmap){for(let i=0;i>=-1;i--){const k=name+'_'+(y+i);if(gmap[k]){jeolJDN=gmap[k];break;}}}
   const approx=[6,4,6,5,6,6,7,7,8,8,7,7];
   const jdn=toJDN(y,m,d);
   let after,warn;
@@ -1304,7 +1304,7 @@ function calcGongmang(y,m,d){const pos=(toJDN(y,m,d)+49)%60,sun=Math.floor(pos/1
 
 function getJeolJDN(year,month,gmap){
   const name=JD_NAME[month-1];
-  if(gmap){for(let i=-1;i<=1;i++){const k=name+'_'+(year+i);if(gmap[k])return{j:gmap[k],p:true};}}
+  if(gmap){for(let i=0;i>=-1;i--){const k=name+'_'+(year+i);if(gmap[k])return{j:gmap[k],p:true};}}
   const approx=[6,4,6,5,6,6,7,7,8,8,7,7];
   return{j:toJDN(year,month,approx[month-1]),p:false};
 }
