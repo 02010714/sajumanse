@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>InnerME — 나의 에너지 코드</title>
-
+<title>나의 에너지 코드 — 사주 × MBTI × 건강</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f4f0e8;color:#2c2416;font-family:"Malgun Gothic","Apple SD Gothic Neo",serif;padding:20px 14px;min-height:100vh}
@@ -13,8 +12,8 @@ body{background:#f4f0e8;color:#2c2416;font-family:"Malgun Gothic","Apple SD Goth
 .header .sub{font-size:9px;letter-spacing:.4em;color:#8a6200;margin-bottom:6px}
 .header h1{font-size:22px;font-weight:700;color:#5a3e00}
 .header p{font-size:10px;color:#6b5a3a;margin-top:5px;line-height:1.7}
-.card{background:#fff;border:1px solid #ddd5c0;border-radius:13px;padding:22px;margin-bottom:16px}
-.card-title{font-size:12px;color:#7a5200;letter-spacing:.08em;margin-bottom:15px;font-weight:700}
+.card{background:#fff;border:1px solid #ddd5c0;border-radius:13px;padding:20px;margin-bottom:14px}
+.card-title{font-size:11px;color:#8a6200;letter-spacing:.1em;margin-bottom:13px;font-weight:700}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:9px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
 label{font-size:9px;color:#7a6040;display:block;margin-bottom:3px}
@@ -30,21 +29,65 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .tabs{display:flex;gap:2px;margin-bottom:13px;background:#e8e0d0;border-radius:9px;padding:3px}
 .tab-btn{flex:1;padding:7px 4px;border-radius:7px;border:none;cursor:pointer;font-size:11px;font-family:inherit;background:transparent;color:#7a6040;font-weight:400}
 .tab-btn.active{background:#fff;color:#8a6200;font-weight:700}
-.summary-box{background:#fffbf0;border:1.5px solid #d0b850;border-radius:9px;padding:14px 16px;margin-bottom:15px}
+/* ── 궁합 탭 스타일 ── */
+.gh-form-card{background:#fff;border:1px solid #ddd5c0;border-radius:13px;padding:18px;margin-bottom:14px}
+.gh-result-card{background:#fff;border:1px solid #ddd5c0;border-radius:13px;padding:16px;margin-bottom:10px}
+.gh-rank{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:9px;margin-bottom:8px}
+.gh-rank.r1{background:rgba(192,57,43,0.06);border:1px solid rgba(192,57,43,0.22)}
+.gh-rank.r2{background:rgba(138,98,0,0.06);border:1px solid rgba(138,98,0,0.22)}
+.gh-rank.r3{background:rgba(46,95,163,0.06);border:1px solid rgba(46,95,163,0.22)}
+.gh-rank-num{font-size:10px;font-weight:700;min-width:40px;padding-top:1px;text-align:center;line-height:1.5}
+.gh-rank-body{flex:1}
+.gh-rank-title{font-size:11px;font-weight:700;margin-bottom:4px}
+.gh-rank-detail{font-size:10px;color:#6b5a3a;line-height:1.7}
+.gh-rank-detail.ok{color:#2e7d4f;font-weight:600}
+.gh-rank-detail.ng{color:#9a8a6a}
+.gh-verdict{text-align:center;padding:15px;border-radius:11px;margin:12px 0;border:2px solid}
+.gh-verdict-stars{font-size:20px;margin-bottom:3px}
+.gh-verdict-label{font-size:15px;font-weight:700;margin-bottom:3px}
+.gh-verdict-sub{font-size:10px;opacity:.8}
+.gh-vs{display:flex;align-items:center;gap:6px;padding:10px 12px;background:#faf8f4;border-radius:9px;margin-bottom:10px;flex-wrap:wrap}
+.gh-badge{padding:3px 9px;border-radius:4px;font-weight:700;font-size:10px;line-height:1.6}
+.gh-vs-sep{font-size:15px;color:#c9a227;font-weight:700}
+.gh-meta{font-size:9px;color:#8a7a5a;margin-bottom:11px;line-height:1.7;padding:7px 10px;background:#fdf9f0;border-radius:7px;border:1px solid #e8dfc8}
+.gh-prompt-btn{width:100%;background:#2c2416;color:#c9a227;border:none;border-radius:8px;padding:10px;font-size:11px;cursor:pointer;font-family:inherit;margin-top:6px;font-weight:700;letter-spacing:.03em}
+.gh-prompt-ta{width:100%;height:110px;font-size:9px;border-radius:7px;border:1px solid #ccc0a0;padding:8px;background:#faf8f4;font-family:inherit;resize:none;margin-top:6px;line-height:1.6}
+.summary-box{background:#fffbf0;border:1px solid #e0c870;border-radius:9px;padding:11px 14px;margin-bottom:13px}
 .summary-box .lbl{font-size:9px;color:#8a7a5a;margin-bottom:2px}
-.pillar-section{margin-bottom:18px}
-.pillar-row{display:flex;gap:7px;margin-bottom:0}
+.pillar-section{margin-bottom:13px}
+.pillar-direction{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;padding:0 2px}
+.pillar-direction .dir-label{font-size:8px;color:#9a8a6a;letter-spacing:.05em}
+.pillar-direction .dir-arrow{font-size:9px;color:#c9a227}
+.pillar-row{display:flex;gap:5px;margin-bottom:0}
 .pillar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 5px;border-radius:10px;position:relative;background:#faf8f4;border:1px solid #ddd0b0}
 .pillar.day{background:#fffbf0;border:1px solid #e0c870}
 .pillar .col-label{font-size:8px;color:#9a8a6a;letter-spacing:.05em;padding-bottom:3px;border-bottom:1px solid #e8e0d0;width:100%;text-align:center}
 .pillar.day .col-label{color:#8a6200;font-weight:700;border-bottom-color:#e0c870}
-.pillar .ss{font-size:11px;color:#5a4a2a;min-height:15px;font-weight:600}
+.pillar .ss{font-size:10px;color:#8a7a5a;min-height:14px}
 .pillar.day .ss{color:#8a6200;font-weight:700}
 .pillar .hj{font-size:30px;font-weight:700;font-family:serif;line-height:1}
-.pillar .kr{font-size:11px;color:#4a3a1a}
+.pillar .kr{font-size:10px;color:#8a7a5a}
 .pillar .divider{width:100%;height:1px;background:#e0d8c8;margin:2px 0}
+.pillar .jzgan{width:100%;border-top:1px solid #e0d8c8;padding-top:6px;display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:2px}
+.pillar .jzgan .lbl{font-size:8px;color:#8a7a5a;margin-bottom:1px}
+.pillar .jzgan .item{font-size:10px}
 .pillar .warn{position:absolute;top:3px;right:3px;font-size:7px;color:#e07070;background:rgba(224,112,112,.15);border-radius:2px;padding:1px 3px}
 .oh-badge{font-size:9px;font-weight:700;border-radius:3px;padding:1px 5px;letter-spacing:.02em;display:inline-block}
+.sipsin-box{background:#faf8f4;border:1px solid #ddd0b0;border-radius:9px;padding:12px 14px;margin-bottom:10px}
+.sipsin-box .lbl{font-size:9px;color:#8a7a5a;margin-bottom:7px}
+.sipsin-row{display:flex;gap:7px;flex-wrap:wrap}
+.sipsin-item{font-size:11px;background:#f0ece0;border-radius:5px;padding:4px 9px}
+.sipsin-item .k{color:#8a7a5a;margin-right:3px}
+.sipsin-item .v{color:#8a6200;font-weight:700}
+.gm-box{background:#faf8f4;border:1px solid #ddd0b0;border-radius:9px;padding:12px 14px}
+.gm-box .lbl{font-size:9px;color:#8a7a5a;margin-bottom:7px}
+.gm-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.gm-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 12px;border-radius:7px;background:#f0ece0;border:1px solid #ddd0b0}
+.gm-item.in-chart{background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.35)}
+.gm-item .hj{font-size:22px;font-weight:700;font-family:serif}
+.gm-item .kr{font-size:9px;color:#8a7a5a}
+.gm-item .star{font-size:8px;color:#c0392b;font-weight:700}
+.gm-note{font-size:10px;color:#9a8a6a;line-height:1.7;flex:1}
 .daeun-summary{background:#fffbf0;border:1px solid #e0c870;border-radius:9px;padding:13px 15px;margin-bottom:14px}
 .daeun-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .daeun-hdr .tit{font-size:12px;color:#8a6200;font-weight:700}
@@ -67,7 +110,6 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .now-box .years{font-size:10px;color:#7a6040;margin-bottom:4px}
 .now-box .badges{display:flex;gap:5px}
 .copy-btn{width:100%;padding:13px;border-radius:9px;border:1px solid #ccc0a0;background:#fffbf0;color:#7a6040;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.03em;margin-top:14px}
-.copy-btn-wrap{margin-top:0}
 .copy-btn.open{border-color:rgba(46,95,163,.4);background:#f0f4ff;color:#2e5fa3}
 .copy-area{margin-top:8px}
 .copy-area .hint{font-size:10px;color:#8a6200;margin-bottom:5px;font-weight:700}
@@ -80,7 +122,7 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .kasi-hdr span{font-size:11px;color:#5a4a2a}
 .kasi-body{margin-top:10px}
 .kasi-hint{font-size:9px;color:#8a7a5a;margin-top:3px}
-.energy-code-box{background:linear-gradient(135deg,#fffbf0,#fff8e8);border:2px solid #e0c870;border-radius:12px;padding:16px 18px;margin-bottom:16px}
+.energy-code-box{background:linear-gradient(135deg,#fffbf0,#fff8e8);border:2px solid #e0c870;border-radius:12px;padding:14px 16px;margin-bottom:13px}
 .energy-code-box .ec-title{font-size:10px;color:#8a6200;font-weight:700;letter-spacing:.08em;margin-bottom:8px}
 .energy-code-main{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .ec-badge{border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;letter-spacing:.02em}
@@ -104,7 +146,7 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .story-sec:last-child{margin-bottom:0}
 .story-sec-title{font-size:9px;font-weight:700;color:#8a6200;letter-spacing:.07em;margin-bottom:7px;display:flex;align-items:center;gap:5px}
 .story-sec-title::after{content:'';flex:1;height:1px;background:#e8d8a0}
-.story-text{font-size:12px;color:#2a1a00;line-height:2.1;white-space:pre-wrap}
+.story-text{font-size:11px;color:#3a2a10;line-height:2;white-space:pre-wrap}
 .story-keyword-tag{display:inline-block;background:linear-gradient(135deg,#f0e8c0,#e8d8a0);border-radius:4px;padding:2px 9px;font-size:10px;color:#6a4000;font-weight:700;margin-bottom:7px;border:1px solid #d8c880}
 .yongsin-pills{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px}
 .yongsin-pill{border-radius:5px;padding:4px 11px;font-size:11px;font-weight:700;letter-spacing:.02em}
@@ -113,37 +155,6 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .yongsin-pill.hes{background:rgba(21,101,160,.1);color:#1a4c80;border:1px solid rgba(21,101,160,.3)}
 .yongsin-oh-pill{border-radius:4px;padding:3px 9px;font-size:10px;font-weight:700;display:inline-block}
 .yongsin-desc{font-size:11px;color:#4a3820;line-height:1.9}
-
-/* ── 궁합 탭 스타일 ── */
-.compat-input-box{background:#faf8f4;border:1.5px solid #e0d0b0;border-radius:12px;padding:16px;margin-bottom:14px}
-.compat-input-box h3{font-size:13px;font-weight:700;color:#6a4200;margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.compat-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
-.compat-row label{font-size:10px;color:#9a8a6a;min-width:28px}
-.compat-row input{flex:1;padding:5px 8px;border:1px solid #ddd0b0;border-radius:7px;font-size:12px;font-family:inherit;background:#fff}
-.compat-gd-row{display:flex;gap:6px;margin-bottom:8px;align-items:center}
-.compat-gd-row label{font-size:10px;color:#9a8a6a;min-width:28px}
-.compat-gd-btn{flex:1;padding:5px 4px;border:1.5px solid #ddd0b0;border-radius:7px;font-size:11px;font-family:inherit;cursor:pointer;background:#faf8f4;color:#7a6040}
-.compat-gd-btn.active{background:#c9a227;border-color:#c9a227;color:#fff;font-weight:700}
-.compat-calc-btn{width:100%;padding:10px;background:linear-gradient(135deg,#8a6200,#c9a227);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:6px;letter-spacing:.05em}
-.compat-result{background:#fff;border:1.5px solid #e0d0b0;border-radius:12px;padding:16px;margin-bottom:14px}
-.compat-result h3{font-size:13px;font-weight:700;color:#6a4200;margin-bottom:14px;text-align:center}
-.compat-score-ring{width:90px;height:90px;margin:0 auto 14px;position:relative}
-.compat-score-ring svg{width:100%;height:100%}
-.compat-score-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:22px;font-weight:700;color:#8a6200;text-align:center;line-height:1.1}
-.compat-score-num span{display:block;font-size:9px;color:#9a8a6a;font-weight:400}
-.compat-grade{text-align:center;font-size:14px;font-weight:700;color:#8a6200;margin-bottom:14px}
-.compat-items{display:flex;flex-direction:column;gap:10px}
-.compat-item{background:#faf8f4;border-radius:9px;padding:11px 13px}
-.compat-item-title{font-size:11px;font-weight:700;color:#6a4200;margin-bottom:6px;display:flex;align-items:center;gap:5px}
-.compat-item-bar{height:6px;border-radius:3px;background:#e8e0d0;margin-bottom:6px;overflow:hidden}
-.compat-item-bar-fill{height:100%;border-radius:3px;transition:width .6s ease}
-.compat-item-desc{font-size:10px;color:#7a6040;line-height:1.6}
-.compat-two-pillars{display:flex;gap:8px;margin-bottom:14px}
-.compat-mini-card{flex:1;background:#faf8f4;border-radius:9px;padding:10px;text-align:center;border:1.5px solid #e8e0d0}
-.compat-mini-card .lbl{font-size:9px;color:#9a8a6a;margin-bottom:4px}
-.compat-mini-card .hj{font-size:18px;font-weight:700}
-.compat-mini-card .kr{font-size:9px;color:#9a8a6a;margin-top:2px}
-.compat-tip{background:#fff8e8;border-left:3px solid #c9a227;border-radius:0 8px 8px 0;padding:10px 12px;font-size:10px;color:#6a4200;line-height:1.7;margin-top:10px}
 
 /* ── 건강 추천 탭 스타일 ── */
 .health-panel{padding-bottom:8px}
@@ -154,7 +165,7 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .health-hero .hh-season{font-size:10px;opacity:.7}
 .health-hero .hh-deco{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:48px;opacity:.12;font-family:serif;line-height:1}
 .health-section{margin-bottom:16px}
-.health-section-title{font-size:12px;font-weight:700;color:#6a4200;letter-spacing:.05em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.health-section-title{font-size:10px;font-weight:700;color:#8a6200;letter-spacing:.08em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
 .health-section-title::after{content:'';flex:1;height:1px;background:#e0d0b0}
 .health-cards{display:flex;flex-direction:column;gap:7px}
 .hcard{background:#fff;border:1px solid #ddd5c0;border-radius:9px;padding:10px 12px;display:flex;align-items:flex-start;gap:10px}
@@ -189,121 +200,44 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .gut-synergy .gs-label{font-size:9px;font-weight:700;color:#8a6200;margin-bottom:3px;letter-spacing:.05em}
 .no-health{text-align:center;padding:40px 20px;color:#9a8a6a;font-size:13px}
 
-/* ── 건강추천 아코디언 ── */
-.acc-wrap{margin-bottom:8px;border-radius:9px;overflow:hidden;border:1px solid #e0d0b0}
-.acc-hdr{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;cursor:pointer;background:#faf8f4;user-select:none}
-.acc-hdr:active{background:#f0ece0}
-.acc-hdr .acc-label{font-size:12px;font-weight:700;color:#5a4020}
-.acc-hdr .acc-arrow{font-size:10px;color:#c9a227;transition:transform .2s;flex-shrink:0}
-.acc-hdr.open{background:#fffbf0;border-bottom:1px solid #e8d8a0}
-.acc-hdr.open .acc-arrow{transform:rotate(180deg)}
-.acc-body{display:none;padding:12px 14px 14px;background:#fff}
-.acc-body.open{display:block}
-.oh-section-hdr{border-radius:10px;padding:13px 15px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
-.oh-section-hdr .ohs-badge{font-size:10px;font-weight:700;letter-spacing:.06em;padding:2px 8px;border-radius:4px}
-.oh-section-hdr .ohs-title{font-size:15px;font-weight:700}
-.oh-section-hdr .ohs-sub{font-size:10px;opacity:.8;margin-top:2px}
-
-/* ── 오늘의 특별 추천 ── */
-.today-rec-box{border-radius:12px;padding:15px 16px;margin-bottom:16px;position:relative;overflow:hidden}
-.today-rec-box .tr-date{font-size:9px;font-weight:700;letter-spacing:.1em;margin-bottom:5px;opacity:.8}
-.today-rec-box .tr-title{font-size:13px;font-weight:700;margin-bottom:6px}
-.today-rec-box .tr-reason{font-size:11px;line-height:1.8;margin-bottom:10px;opacity:.9}
-.today-rec-box .tr-drinks{display:flex;flex-direction:column;gap:6px}
-.today-rec-drink{background:rgba(255,255,255,0.65);border-radius:8px;padding:8px 11px;display:flex;align-items:center;gap:8px}
-.today-rec-drink .trd-icon{font-size:18px;flex-shrink:0}
-.today-rec-drink .trd-name{font-size:12px;font-weight:700;margin-bottom:1px}
-.today-rec-drink .trd-effect{font-size:10px;opacity:.8}
-.today-rec-deco{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:52px;opacity:.1;font-family:serif}
-
-/* ── MBTI 퀴즈 모달 ── */
-.mbti-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;padding:16px}
-.mbti-modal.open{display:flex}
-.mbti-box{background:#fff;border-radius:16px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;padding:20px}
-.mbti-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.mbti-header .mh-title{font-size:16px;font-weight:700;color:#5b21b6}
-.mbti-header .mh-close{background:none;border:none;font-size:22px;cursor:pointer;color:#9a8a6a;padding:0 4px}
-.mbti-progress{background:#e8e0f0;border-radius:10px;height:6px;margin-bottom:20px}
-.mbti-progress-bar{background:linear-gradient(90deg,#5b21b6,#7c3aed);border-radius:10px;height:6px;transition:width .3s}
-.mbti-qnum{font-size:10px;color:#9a7a9a;margin-bottom:6px;letter-spacing:.05em}
-.mbti-question{font-size:15px;font-weight:700;color:#1a1a2e;line-height:1.6;margin-bottom:18px}
-.mbti-options{display:flex;flex-direction:column;gap:10px}
-.mbti-opt{background:#faf8ff;border:1.5px solid #d4c8f0;border-radius:10px;padding:12px 14px;cursor:pointer;font-size:13px;color:#3a2060;line-height:1.5;transition:all .15s;text-align:left;font-family:inherit}
-.mbti-opt:hover{background:#ede8ff;border-color:#7c3aed;color:#5b21b6}
-.mbti-opt.selected{background:#5b21b6;border-color:#5b21b6;color:#fff;font-weight:700}
-.mbti-nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px}
-.mbti-nav-btn{background:#5b21b6;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
-.mbti-nav-btn.prev{background:#f0ece0;color:#7a6040}
-.mbti-nav-btn:disabled{opacity:.4;cursor:not-allowed}
-.mbti-result-box{text-align:center;padding:10px 0}
-.mbti-result-type{font-size:48px;font-weight:700;color:#5b21b6;margin-bottom:4px}
-.mbti-result-name{font-size:18px;font-weight:700;color:#1a1a2e;margin-bottom:8px}
-.mbti-result-desc{font-size:13px;color:#5a4a7a;line-height:1.8;margin-bottom:16px}
-.mbti-result-apply{width:100%;background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
-
 #result{margin-top:0}
-
-/* ── 주문 모달 ── */
-.order-sheet{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:440px;max-height:92vh;overflow-y:auto;padding:22px 18px 32px}
-.order-sheet-handle{width:40px;height:4px;background:#e0d0b0;border-radius:2px;margin:0 auto 18px}
-.order-sheet-title{font-size:15px;font-weight:700;color:#5a3e00;margin-bottom:4px}
-.order-sheet-sub{font-size:11px;color:#8a7a5a;margin-bottom:18px;line-height:1.5}
-.order-product-card{background:#fffbf0;border:1.5px solid #e0c870;border-radius:10px;padding:12px 14px;margin-bottom:18px;display:flex;align-items:center;gap:12px}
-.order-product-card .opc-emoji{font-size:28px}
-.order-product-card .opc-body{flex:1}
-.order-product-card .opc-name{font-size:13px;font-weight:700;color:#2c2416;margin-bottom:2px}
-.order-product-card .opc-desc{font-size:10px;color:#8a7a5a}
-.order-product-card .opc-price{font-size:15px;font-weight:700;color:#c9a227;white-space:nowrap}
-.order-field{margin-bottom:14px}
-.order-field label{font-size:10px;color:#8a6200;font-weight:700;display:block;margin-bottom:5px}
-.order-field input,.order-field textarea{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-radius:8px;padding:10px 12px;font-size:13px;outline:none;width:100%;font-family:inherit}
-.order-field input:focus,.order-field textarea:focus{border-color:#c9a227;background:#fffbf0}
-.order-field .addr-row{display:flex;gap:7px}
-.order-field .addr-row input{flex:1}
-.order-field .btn-addr{background:#c9a227;color:#fff;border:none;border-radius:8px;padding:10px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0}
-.order-divider{height:1px;background:#e0d0b0;margin:18px 0}
-.bank-info-box{background:#f0f7ff;border:1.5px solid #a8c8f0;border-radius:10px;padding:14px 16px;margin-bottom:16px}
-.bank-info-box .bi-title{font-size:11px;font-weight:700;color:#1a4c80;margin-bottom:8px}
-.bank-info-box .bi-account{font-size:16px;font-weight:700;color:#1a4c80;letter-spacing:.03em;margin-bottom:4px}
-.bank-info-box .bi-name{font-size:12px;color:#2e5fa3;margin-bottom:6px}
-.bank-info-box .bi-note{font-size:10px;color:#5a7a9a;line-height:1.6}
-.btn-submit-order{width:100%;background:linear-gradient(135deg,#c9a227,#9a7010);color:#fff;font-weight:700;font-size:14px;border:none;border-radius:10px;padding:14px;cursor:pointer;font-family:inherit;margin-top:4px}
-.btn-submit-order:disabled{opacity:.5;cursor:not-allowed}
-.btn-cancel-order{width:100%;background:none;border:1px solid #ddd0b0;border-radius:10px;padding:12px;color:#8a7a5a;font-size:13px;cursor:pointer;font-family:inherit;margin-top:8px}
-/* 주문 완료 화면 */
-.order-done{text-align:center;padding:20px 0 10px}
-.order-done .od-icon{font-size:52px;margin-bottom:12px}
-.order-done .od-title{font-size:18px;font-weight:700;color:#5a3e00;margin-bottom:6px}
-.order-done .od-sub{font-size:12px;color:#8a7a5a;line-height:1.7;margin-bottom:20px}
 </style>
 </head>
 <body>
 <div class="wrap">
 <div class="header">
-  <h1 style="font-size:26px;letter-spacing:.05em">InnerME</h1>
-  <p style="font-size:12px;color:#8a6200;margin-top:5px;letter-spacing:.02em">나의 에너지 코드</p>
+  <div class="sub">나의 에너지 코드 × 건강</div>
+  <h1>사주 × MBTI × 건강식품</h1>
+  <p>『나의 에너지 코드』 독자 전용 · 일간 × 格 × MBTI · 용신 오행 맞춤 건강 추천</p>
 </div>
 
-<!-- KASI 키 입력 UI 제거 (키 하드코딩으로 대체) -->
+<div class="kasi-box">
+  <div class="kasi-hdr" onclick="toggleKasi()">
+    <span>🔑 KASI API 키 (선택) <span id="kasi-status"></span></span>
+    <span id="kasi-arrow">▼</span>
+  </div>
+  <div class="kasi-body" id="kasi-body" style="display:none">
+    <input type="password" id="kKey" placeholder="data.go.kr 서비스키...">
+    <div class="kasi-hint">없으면 근사값 계산 (±1일 오차) · 절기 당일 출생 시 월주가 달라질 수 있음</div>
+  </div>
+</div>
 
 <div class="card">
   <div class="card-title">생년월일시 입력</div>
-  <div style="font-size:10px;color:#2e5fa3;background:#e8f0ff;border-radius:6px;padding:6px 10px;margin-bottom:10px;font-weight:700;letter-spacing:.03em">📅 양력으로 입력해 주세요</div>
   <div class="grid3">
     <div><label>년도</label><input type="number" id="yr" value="1990" min="1900" max="2100"></div>
     <div><label>월</label><input type="number" id="mo" value="6" min="1" max="12"></div>
     <div><label>일</label><input type="number" id="dy" value="15" min="1" max="31"></div>
   </div>
   <div class="grid3">
-    <div><label>시 (0~23)</label><input type="number" id="hr" value="10" min="0" max="23"></div>
-    <div><label class="em">분 (0~59)</label><input type="number" id="min" value="30" min="0" max="59"></div>
+    <div><label>시 (0~23)</label><input type="number" id="hr" value="10" min="0" max="23" oninput="updatePreview()"></div>
+    <div><label class="em">분 (0~59)</label><input type="number" id="min" value="30" min="0" max="59" oninput="updatePreview()"></div>
     <div><label>성별</label><select id="gd"><option value="남">남성</option><option value="여">여성</option></select></div>
   </div>
-  <div class="grid3" style="margin-bottom:9px">
-    <div>
-      <label class="em">MBTI (선택)</label>
-      <select id="mbti" onchange="refreshEnergyCode()">
-        <option value="">— 알면 선택 —</option>
+  <div class="grid2" style="margin-bottom:9px">
+    <div><label class="em">MBTI (선택)</label>
+      <select id="mbti">
+        <option value="">— MBTI 모르면 건너뜀 —</option>
         <optgroup label="분석가형 (NT)">
           <option value="INTJ">INTJ — 전략가</option><option value="INTP">INTP — 논리학자</option>
           <option value="ENTJ">ENTJ — 통솔자</option><option value="ENTP">ENTP — 변론가</option>
@@ -322,121 +256,43 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
         </optgroup>
       </select>
     </div>
-    <div>
-      <label>MBTI 테스트</label>
-      <button onclick="openMbtiQuiz()" style="width:100%;background:#faf8f4;border:1px solid #ccc0a0;color:#5a3e00;border-radius:7px;padding:8px 10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🧠 테스트</button>
+    <div style="display:flex;align-items:flex-end">
+      <div style="width:100%;background:#fdf9f0;border:1px solid #ddd0b0;border-radius:7px;padding:7px 10px;font-size:10px;color:#7a6040;line-height:1.6">
+        용신 오행에 맞는 차·주스·건강기능식품을 추천받으세요
+      </div>
     </div>
-    <div></div>
   </div>
-
-  <button class="btn-main" onclick="handleCalc()">✦ 나의 에너지 코드 확인하기</button>
+  <div class="preview">
+    <span class="preview-time">
+      <span id="pv-time"></span>
+      <span class="preview-jj" id="pv-jj"></span>
+      <span class="preview-name" id="pv-name"></span>
+    </span>
+    <span class="warn-badge" id="pv-warn" style="display:none">시경계 ±10분</span>
+  </div>
+  <button class="btn-main" onclick="handleCalc()">✦ 원국 + 대운 + 건강 추천 뽑기</button>
 </div>
 
 <div id="result" style="display:none">
   <div class="tabs">
-    <button class="tab-btn active" id="tab-chart" onclick="setTab('chart')">원국·대운</button>
-    <button class="tab-btn" id="tab-compat" onclick="setTab('compat')">💑 궁합</button>
+    <button class="tab-btn active" id="tab-chart" onclick="setTab('chart')">원국</button>
+    <button class="tab-btn" id="tab-daeun" onclick="setTab('daeun')">대운</button>
     <button class="tab-btn" id="tab-health" onclick="setTab('health')">건강추천</button>
+    <button class="tab-btn" id="tab-gunghap" onclick="setTab('gunghap')">궁합</button>
   </div>
   <div id="panel-chart"></div>
-  <div id="panel-compat" style="display:none"></div>
+  <div id="panel-daeun" style="display:none"></div>
   <div id="panel-health" style="display:none"></div>
-  <!-- AI에게 사주 물어보기 아코디언 -->
-  <div style="margin-top:14px;border:1.5px solid #c9a227;border-radius:13px;overflow:hidden;background:#fffbf0">
-    <!-- 타이틀 헤더 -->
-    <div onclick="toggleAiMenu()" id="ai-menu-hdr"
-      style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;background:linear-gradient(135deg,#fffbf0,#fff5e0)">
-      <div>
-        <div style="font-size:10px;color:#8a6200;letter-spacing:.08em;font-weight:700;margin-bottom:3px">✦ AI에게 사주 물어보기</div>
-        <div style="font-size:13px;font-weight:700;color:#5a3e00">사주 데이터 복사 → AI 채팅창에 붙여넣기</div>
-      </div>
-      <span id="ai-menu-arrow" style="font-size:12px;color:#c9a227;transition:transform .2s">▼</span>
-    </div>
-
-    <!-- 아코디언 바디 -->
-    <div id="ai-menu-body" style="display:none;padding:12px 14px 16px;border-top:1px solid #e8d8a0">
-
-      <!-- 1. 나의 사주 종합간명 -->
-      <div style="margin-bottom:10px">
-        <div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px;letter-spacing:.04em">
-          1 · 나의 사주 종합간명
-          <span style="font-size:9px;color:#9a8a6a;font-weight:400;margin-left:4px">사주원국 + 대운</span>
-        </div>
-        <button class="copy-btn" id="copy-btn" onclick="toggleCopy()" style="margin-bottom:0">
-          📋 텍스트 복사하기
-        </button>
-        <div class="copy-area" id="copy-area" style="display:none;margin-top:8px">
-          <div class="hint">▼ 텍스트 클릭 → 전체선택(Ctrl+A) → 복사(Ctrl+C) → AI 채팅창 붙여넣기</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:7px 10px;background:#fdf9f0;border:1px solid #e0c870;border-radius:7px">
-            <span style="font-size:10px;color:#8a6200;font-weight:700;white-space:nowrap">성별 확인</span>
-            <button onclick="setCopyGender('남')" id="gd-btn-m"
-              style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #c9a227;background:#c9a227;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">
-              남성
-            </button>
-            <button onclick="setCopyGender('여')" id="gd-btn-f"
-              style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #ddd0b0;background:#faf8f4;color:#7a6040;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">
-              여성
-            </button>
-          </div>
-          <textarea id="copy-text" readonly onclick="this.select()"></textarea>
-          <div class="hint2">복사 후 AI 채팅창에 붙여넣으면 인생 전체 흐름 간명을 받을 수 있습니다</div>
-        </div>
-      </div>
-
-      <div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>
-
-      <!-- 2. 오늘 나의 인생전략 -->
-      <div style="margin-bottom:10px">
-        <div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px;letter-spacing:.04em">
-          2 · 오늘 나의 인생전략
-          <span style="font-size:9px;color:#9a8a6a;font-weight:400;margin-left:4px">사주원국 + 대운 + 세운 + 월운 + 일진</span>
-        </div>
-        <button class="copy-btn" id="today-btn" onclick="toggleToday()"
-          style="margin-bottom:0;background:linear-gradient(135deg,#fffbf0,#fff8e8);border-color:#e0c870;color:#5a3e00">
-          📅 텍스트 복사하기
-        </button>
-        <div class="copy-area" id="today-area" style="display:none;margin-top:8px">
-          <div class="hint" style="color:#8a6200">▼ 텍스트 클릭 → 전체선택(Ctrl+A) → 복사(Ctrl+C) → AI 채팅창 붙여넣기</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:7px 10px;background:#fdf9f0;border:1px solid #e0c870;border-radius:7px">
-            <span style="font-size:10px;color:#8a6200;font-weight:700;white-space:nowrap">성별 확인</span>
-            <button onclick="setTodayGender('남')" id="tgd-btn-m"
-              style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #c9a227;background:#c9a227;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">
-              남성
-            </button>
-            <button onclick="setTodayGender('여')" id="tgd-btn-f"
-              style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #ddd0b0;background:#faf8f4;color:#7a6040;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">
-              여성
-            </button>
-          </div>
-          <textarea id="today-text" readonly onclick="this.select()" style="height:280px"></textarea>
-          <div class="hint2">오늘 날짜 기준 5층 자동 계산 — 매일 새로운 내용</div>
-        </div>
-      </div>
-      </div>
-    </div>
-</div>
-
-<div class="footer">
-  <p>InnerME — 나의 에너지 코드</p>
-  <p>© 2026 김준범 (시우 時雨). All rights reserved.</p>
-  <p>본 앱은 《AI한테 사주 물어보는 법》의 저자가 개발한 전용 도구입니다.<br>
-  무단 복제·배포·상업적 이용을 금합니다.</p>
-  <p>카카오채널 <a href="http://pf.kakao.com/_GrHVX" style="color:#9a8a6a;">@이너미</a></p>
-</div>
-
-
-
-<!-- MBTI 퀴즈 모달 -->
-<div class="mbti-modal" id="mbti-modal">
-  <div class="mbti-box">
-    <div class="mbti-header">
-      <span class="mh-title">🧠 MBTI 빠른 테스트</span>
-      <button class="mh-close" onclick="closeMbtiQuiz()">✕</button>
-    </div>
-    <div class="mbti-progress"><div class="mbti-progress-bar" id="mbti-prog"></div></div>
-    <div id="mbti-quiz-area"></div>
+  <div id="panel-gunghap" style="display:none"></div>
+  <button class="copy-btn" id="copy-btn" onclick="toggleCopy()">📋 사주 원국 + 대운 복사 (채팅창 간명용)</button>
+  <div class="copy-area" id="copy-area" style="display:none">
+    <div class="hint">▼ 텍스트 클릭 → 전체선택(Ctrl+A) → 복사(Ctrl+C) → 채팅창 붙여넣기</div>
+    <textarea id="copy-text" readonly onclick="this.select()"></textarea>
+    <div class="hint2">복사 후 Claude 채팅창에 붙여넣으면 종합 간명을 받을 수 있습니다</div>
   </div>
 </div>
+
+<div class="footer"><p>『나의 에너지 코드』 독자 전용 · 사주 × MBTI × 건강식품 통합 추천</p></div>
 </div>
 
 <script>
@@ -470,15 +326,10 @@ const SIPSIN_MAP=[
 function jjToMoIdx(jj){return(jj-2+12)%12;}
 
 const ILGAN_NAME=["갑목","을목","병화","정화","무토","기토","경금","신금","임수","계수"];
-const ILGAN_NAT=["큰 나무","덩굴·풀","태양","촛불·등불","산·대지","밭·논","강철·도끼","보석·칼날","강·바다","빗물·샘물"];
+const ILGAN_NAT=["큰 나무","덩굴·풀","태양","촛불·등불","산·대지","밭·논","강철·도끼","보석·칼날","강·바다","이슬·안개"];
 const ILGAN_CORE=["방향이 분명할 때 아무도 막지 못하는","붙을 곳이 생기면 가장 강한","존재만으로 주변의 온도를 높이는","집중한 것은 반드시 달라지게 만드는","세상이 흔들릴 때 가장 먼저 찾게 되는","내 안에 들어온 것은 끝까지 키우는","기준이 분명할 때 가장 선명하게 빛나는","정밀하게 느끼기에 가장 아름다운 것을 만드는","방향이 생겼을 때 가장 멀리까지 흘러가는","아무도 보지 못하는 것을 보기에 아무도 이해하지 못했던"];
 
 const MO_LABEL=['인','묘','진','사','오','미','신','유','술','해','자','축'];
-const MO_DESC=["이른 봄, 아직 한기가 남아있는 계절", "꽃이 피는 완연한 봄", "봄이 저물고 토기가 왕성한 계절", "초여름, 화기가 점점 강해지는 계절", "불볕더위의 한여름", "한여름이 지나고 토기가 무거운 계절", "서늘한 초가을, 금기가 강해지는 계절", "서리가 내리는 깊은 가을", "가을이 저물고 대지가 굳어가는 계절", "초겨울, 수기가 차오르는 계절", "한겨울 혹한의 계절", "한겨울 언 땅, 추위가 극에 달한 계절"];
-const UNSUNG_12=[["건록", "제왕", "쇠", "병", "사", "묘", "절", "태", "양", "장생", "목욕", "관대"], ["제왕", "건록", "관대", "목욕", "장생", "양", "태", "절", "묘", "사", "병", "쇠"], ["장생", "목욕", "관대", "건록", "제왕", "쇠", "병", "사", "묘", "절", "태", "양"], ["사", "병", "쇠", "제왕", "건록", "관대", "목욕", "장생", "양", "태", "절", "묘"], ["장생", "목욕", "관대", "건록", "제왕", "쇠", "병", "사", "묘", "절", "태", "양"], ["사", "병", "쇠", "제왕", "건록", "관대", "목욕", "장생", "양", "태", "절", "묘"], ["절", "태", "양", "장생", "목욕", "관대", "건록", "제왕", "쇠", "병", "사", "묘"], ["태", "절", "묘", "사", "병", "쇠", "제왕", "건록", "관대", "목욕", "장생", "양"], ["병", "사", "묘", "절", "태", "양", "장생", "목욕", "관대", "건록", "제왕", "쇠"], ["목욕", "장생", "양", "태", "절", "묘", "사", "병", "쇠", "제왕", "건록", "관대"]];
-const UNSUNG_DESC={"장생": "새 생명이 싹트는 출발 단계로, 에너지가 힘차게 시작됩니다", "목욕": "막 태어나 씻기는 단계로, 순수하지만 아직 불안정합니다", "관대": "성장해 갖춰가는 단계로, 점점 힘과 형태를 갖춰갑니다", "건록": "가장 왕성하게 활동하는 단계로, 에너지가 충만합니다", "제왕": "최고 전성기로, 기운이 정점에 달해 가장 강합니다", "쇠": "전성기를 지나 서서히 기운이 약해지기 시작하는 단계입니다", "병": "기운이 많이 약해진 단계로, 쉽게 소모되고 지치기 쉽습니다", "사": "기운이 거의 다한 단계로, 고요함 속에 가라앉아 있습니다", "묘": "기운이 땅속에 묻혀 저장되는 단계로, 겉으로는 잠잠합니다", "절": "기운이 끊어지고 새로운 순환을 준비하는 전환점입니다", "태": "새로운 기운이 잉태되는 단계로, 아직 세상에 나오지 않았습니다", "양": "아직 힘을 기르는 어린 단계로, 보살핌과 지원이 필요합니다"};
-const YONG_REASON=[["봄이 왔지만 한기가 남아 얼어붙은 땅, 甲木을 깨울 햇볕(丙)이 먼저입니다", "목 기운이 최고조라 설기가 필요하고, 庚金으로 다듬어야 큰 재목이 됩니다", "토가 강해 나무 뿌리가 막히니 庚金으로 토를 파헤쳐야 합니다", "불볕이 강해 나무가 타들어 가니 癸水로 적셔줘야 합니다", "한여름 불더위에 甲木이 타니 癸水가 생명수입니다", "화토가 함께 메말라 癸水가 우선이고, 庚金으로 수원을 만들어야 합니다", "가을 庚金이 甲木을 베니 丁火로 庚金을 제압해야 합니다", "서릿발 庚辛이 강해 丁火로 금기를 눌러야 합니다", "토가 왕해 나무가 고립되니 庚金으로 소토하고 壬水로 생목합니다", "수가 넘쳐 뿌리가 떠내려가니 戊土로 수를 막아야 합니다", "한겨울 얼음 속에 갇혀 丁火로 동목을 살려야 합니다", "언 땅에서 甲木이 얼어붙어 丙火 태양이 절대 먼저입니다"], ["봄 한기에 화초가 얼어 丙火 태양이 가장 급합니다", "목 기운이 강해 화초가 넘치니 丙火로 설기해야 합니다", "乙木이 묘지에 드니 癸水로 적시고 丙火로 살려야 합니다", "초여름 열기에 화초가 시드니 癸水가 가장 먼저입니다", "한여름 불더위에 癸水 없이는 화초가 살 수 없습니다", "화토가 겹쳐 뜨겁고 메마르니 癸水로 적셔야 합니다", "가을 서릿바람에 화초가 꺾이니 丙火 온기가 필요합니다", "깊은 가을 화초가 마르니 癸水와 丙火가 함께 필요합니다", "가을이 저물어 乙木이 묻히니 癸水로 소생시켜야 합니다", "초겨울 乙木이 죽어가니 丙火 온기가 가장 급합니다", "한겨울 화초가 얼어 丙火 태양이 절대적입니다", "언 땅에 화초가 묻히니 丙火로 땅을 녹여야 합니다"], ["봄 한기가 남아 丙火를 壬水로 적셔 빛을 더 멀리 보냅니다", "봄 木이 왕해 丙火가 설기되니 壬水로 중화합니다", "토가 강해 丙火 빛이 막히니 壬水와 甲木이 필요합니다", "초여름 화기가 강해지니 壬水로 식혀야 합니다", "한여름 丙火가 너무 강해 壬水가 절대 먼저입니다", "화토가 함께 강해 壬水로 식히고 庚金으로 수원을 만듭니다", "가을 金이 丙火를 극하니 壬水와 甲木으로 돌아가야 합니다", "가을 서리에 丙火가 약해지니 甲木으로 생화합니다", "술토가 丙火를 입묘시키니 甲木으로 소통해야 합니다", "초겨울 丙火가 절지에 드니 甲木과 壬水가 필요합니다", "한겨울 丙火가 태지에 드니 甲木으로 생화해야 합니다", "축월 한겨울 丙火가 양지이니 甲木으로 살려야 합니다"], ["봄 한기에 촛불 丁火가 약하니 甲木으로 불을 살려야 합니다", "봄 木이 왕해 丁火 불꽃이 흔들리니 庚金으로 안정시킵니다", "진토가 丁火를 입고시키니 甲木으로 소통해야 합니다", "초여름 丁火가 제왕이라 庚金으로 다스려야 합니다", "한여름 丁火가 건록으로 강하나 壬水로 중화합니다", "미토가 丁火를 설기시키니 甲木으로 생화합니다", "가을 庚金이 강해 丁火를 극하니 甲木이 먼저입니다", "가을 丁火가 장생지라 庚金을 제련하는 데 씁니다", "술월 丁火가 양지이니 甲木으로 불을 키워야 합니다", "해월 丁火가 태지라 甲木이 절대 먼저입니다", "한겨울 丁火가 절지라 甲木으로 불씨를 살려야 합니다", "언 땅에 丁火가 묘지이니 甲木으로 불씨를 되살려야 합니다"], ["봄 木이 왕해 戊土를 극하니 丙火로 목기를 설기시켜야 합니다", "봄 木이 강해 戊土가 눌리니 甲木을 제어할 庚金이 필요합니다", "진토가 왕해 壬水와 甲木으로 다스려야 합니다", "초여름 戊土가 건록으로 강하나 甲木으로 소통합니다", "한여름 火土가 타오르니 壬水가 절대 먼저입니다", "미토가 너무 강해 壬水와 甲木으로 다스려야 합니다", "가을 金이 강해 戊土 기운을 설기시키니 丙火로 보완합니다", "가을 戊土가 병지라 丙火로 생토해야 합니다", "술토가 너무 강하니 甲木으로 소통하고 壬水로 촉촉하게 합니다", "초겨울 水가 강해 戊土가 떠내려가니 丙火로 건조시켜야 합니다", "한겨울 戊土가 태지라 丙火로 생토해야 합니다", "언 땅 축토에 戊土가 양지라 丙火로 녹여야 합니다"], ["봄 木이 왕해 己土가 눌리니 丙火로 목기를 설기시켜야 합니다", "봄 木이 강해 논밭이 파헤쳐지니 庚金이 필요합니다", "진토가 왕해 甲木으로 소통하고 丙火로 따뜻하게 합니다", "초여름 己土가 제왕이라 壬水로 촉촉하게 해야 합니다", "한여름 火土가 너무 뜨겁니 癸水로 식혀야 합니다", "미토가 강해 壬水와 甲木으로 다스려야 합니다", "가을 金이 己土를 설기시키니 丙火로 보완합니다", "가을 己土가 장생지라 丙火와 癸水로 중화합니다", "술토가 강해 甲木으로 소통하고 癸水로 적셔야 합니다", "초겨울 水가 강해 논밭이 잠기니 丙火로 건조시켜야 합니다", "한겨울 己土가 절지라 丙火로 생토해야 합니다", "언 땅에 己土가 묘지이니 丙火로 녹여야 합니다"], ["봄 木이 왕해 庚金이 절지라 丁火로 단련해야 합니다", "봄 木이 강해 庚金이 태지라 丁火가 필요합니다", "庚金이 양지이니 丁火와 甲木으로 키워야 합니다", "초여름 庚金이 장생지라 丁火와 壬水로 단련합니다", "한여름 열기에 庚金이 목욕지라 壬水로 식혀야 합니다", "미월 庚金이 관대지라 丁火로 단련하고 壬水로 씻어야 합니다", "가을 庚金이 건록으로 강하니 丁火와 甲木으로 다스립니다", "가을 庚金이 제왕이라 丁火로 단련해야 진가가 납니다", "庚金이 쇠지라 丁火와 甲木으로 활기를 불어넣어야 합니다", "초겨울 庚金이 병지라 丁火로 다시 살려야 합니다", "한겨울 庚金이 사지라 丁火가 절대 먼저입니다", "언 땅에 庚金이 묘지이니 丁火로 달구어야 합니다"], ["봄 木이 강해 辛金이 태지라 丁火로 단련해야 합니다", "봄 辛金이 절지라 丁火와 壬水가 필요합니다", "辛金이 묘지라 壬水로 씻고 丙火로 빛나게 합니다", "사월 辛金이 사지라 壬水로 식히고 丙火로 빛을 냅니다", "한여름 辛金이 병지라 壬水로 식혀야 합니다", "辛金이 쇠지라 壬水와 甲木으로 중화합니다", "가을 辛金이 제왕이라 壬水로 씻어야 보석이 빛납니다", "가을 辛金이 건록이라 壬水와 甲木이 필요합니다", "辛金이 관대지라 壬水로 씻고 丙火로 빛나게 합니다", "초겨울 辛金이 목욕지라 壬水로 씻어 빛을 내야 합니다", "한겨울 辛金이 장생지라 壬水와 丙火로 빛나게 합니다", "한겨울 언 땅에 辛金이 양지라 아직 어리고 약합니다. 언 땅을 녹일 丙火가 먼저입니다"], ["봄 壬水가 병지라 庚金으로 수원을 만들어야 합니다", "봄 壬水가 사지라 庚金이 절대 먼저입니다", "壬水가 묘지라 甲木과 庚金으로 소통해야 합니다", "사월 壬水가 절지라 庚金과 辛金으로 수원을 만들어야 합니다", "한여름 壬水가 태지라 庚金과 辛金이 필요합니다", "壬水가 양지라 庚金으로 수원을 만들어야 합니다", "가을 壬水가 장생지라 戊土로 제방을 쌓아야 합니다", "가을 壬水가 목욕지라 戊土와 庚金으로 다스립니다", "壬水가 관대지라 甲木으로 설기하고 庚金으로 보완합니다", "초겨울 壬水가 건록으로 강하니 戊土로 제방을 쌓아야 합니다", "한겨울 壬水가 제왕이라 戊土로 막아야 합니다", "壬水가 쇠지이나 한겨울 넘쳐흐르니 戊土와 丙火가 필요합니다"], ["봄 癸水가 목욕지라 辛金으로 수원을 보완합니다", "봄 癸水가 장생지라 庚辛金으로 수원을 키웁니다", "癸水가 양지라 辛金으로 수원을 만들어야 합니다", "사월 癸水가 태지라 辛金이 절대 먼저입니다", "한여름 癸水가 절지라 庚辛金이 절대 먼저입니다", "癸水가 묘지라 辛金과 甲木으로 소통해야 합니다", "가을 癸水가 사지라 辛金으로 수원을 보충해야 합니다", "가을 癸水가 병지라 辛金과 庚金이 필요합니다", "癸水가 쇠지라 辛金으로 보완하고 甲木으로 설기합니다", "초겨울 癸水가 제왕이라 丙火와 戊土로 중화합니다", "한겨울 癸水가 건록으로 강하니 丙火와 戊土가 필요합니다", "癸水가 관대지이나 한겨울이라 丙火로 온기를 더해야 합니다"]];
-const BYUNG_MAP={"한기잔존": "봄이 왔지만 한기가 아직 남아 있어 한습합니다", "목기최왕": "목 기운이 가장 왕성해 나무가 우거진 시절입니다", "토왕체목": "토 기운이 강해 목 기운을 눌러버리는 계절입니다", "화왕목조": "화 기운이 넘쳐 뜨겁고 건조한 계절입니다", "염열극심": "불볕더위가 극에 달해 몸이 타들어 가는 계절입니다", "화토극조": "화와 토가 겹쳐 극도로 뜨겁고 메마른 계절입니다", "금왕한기": "금 기운이 강해지며 서늘한 기운이 밀려오는 계절입니다", "신금극목": "서릿발 같은 금 기운이 목 기운을 베어버리는 계절입니다", "토왕목고": "토 기운이 왕성해 목이 고립되는 계절입니다", "수왕목부": "물이 넘쳐 뿌리가 떠내려갈 위기의 계절입니다", "한동극심": "강추위로 만물이 꽁꽁 얼어붙는 계절입니다", "한극토동": "극심한 추위로 토까지 얼어버리는 계절입니다", "양지한극": "일간의 에너지가 아직 자라나는 단계인데 한기까지 극심해 이중으로 버거운 계절입니다", "금왕체목": "금 기운이 강해 목을 억누르는 계절입니다", "건록한동": "건록지이지만 한기가 가득한 겨울입니다", "관대한극": "관대지이지만 한기가 극심한 계절입니다", "쇠토극수": "토 기운이 수를 억제하는 계절입니다", "제왕수왕": "수 기운이 제왕처럼 강한 계절입니다", "목다화식": "목이 너무 많아 화 기운을 소진시키는 계절입니다", "수왕금침": "수 기운이 넘쳐 금이 가라앉는 계절입니다"};
 const MO_JJ_CHAR=['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];
 
 const MBTI_DATA={
@@ -690,9 +541,6 @@ const SEASON_BOOST={
   환절기:{note:"환절기 비위(脾胃) 점검이 핵심입니다. 단맛·노란색 식품으로 소화기를 다스리세요."}
 };
 
-// ── 카페 메뉴 & 주문 링크 (오행별) ──
-// delivery:true = 택배 가능 (주문 모달 연결) / false = 카페 현장 전용
-
 // 용신 → 오행 변환
 const YONGSIN_TO_OH={甲:"목",乙:"목",丙:"화",丁:"화",戊:"토",己:"토",庚:"금",辛:"금",壬:"수",癸:"수"};
 function yongsinToOH(str){
@@ -706,89 +554,8 @@ function getSeasonFromMoIdx(moIdx){
   if(moIdx<=2)return"봄";if(moIdx<=5)return"여름";if(moIdx<=8)return"가을";return"겨울";
 }
 
-// ── 12운성 용어 → 에너지 상태 친화적 표현 치환 ──
-function friendlyEnergyText(str){
-  if(!str) return str;
-  return str
-    // ── 천간 표현 ──
-    .replace(/甲木/g,'갑목(큰 나무·기둥목)')
-    .replace(/乙木/g,'을목(화초·덩굴)')
-    .replace(/丙火/g,'병화(태양·큰 불)')
-    .replace(/丁火/g,'정화(촛불·등불)')
-    .replace(/戊土/g,'무토(산·제방·큰 땅)')
-    .replace(/己土/g,'기토(밭·논·부드러운 흙)')
-    .replace(/庚金/g,'경금(바위·원석·쇳덩이)')
-    .replace(/辛金/g,'신금(보석·칼날·정제된 금속)')
-    .replace(/壬水/g,'임수(강·바다·큰 물)')
-    .replace(/癸水/g,'계수(이슬·빗물·샘물)')
-    .replace(/庚辛金/g,'경신금(금·바위 기운)')
-    // ── 오행 단독 표현 ──
-    .replace(/甲/g,'갑목').replace(/乙/g,'을목')
-    .replace(/丙/g,'병화').replace(/丁/g,'정화')
-    .replace(/戊/g,'무토').replace(/己/g,'기토')
-    .replace(/庚/g,'경금').replace(/辛/g,'신금')
-    .replace(/壬/g,'임수').replace(/癸/g,'계수')
-    // ── 한자 술어 → 우리말 ──
-    .replace(/수원을 만들어야/g,'물의 원천을 만들어야')
-    .replace(/수원을 보완/g,'물의 원천을 보완')
-    .replace(/수원을 보충/g,'물의 원천을 보충')
-    .replace(/수원을 키/g,'물의 원천을 키')
-    .replace(/생화해야/g,'불씨를 살려야')
-    .replace(/생화합니다/g,'불씨를 살립니다')
-    .replace(/생목합니다/g,'나무를 살립니다')
-    .replace(/생토해야/g,'흙 기운을 살려야')
-    .replace(/생토합니다/g,'흙 기운을 살립니다')
-    .replace(/설기/g,'기운을 소모')
-    .replace(/설기시키니/g,'기운을 빼앗으니')
-    .replace(/소토/g,'흙을 풀어')
-    .replace(/소통해야/g,'흐름을 터줘야')
-    .replace(/소통하고/g,'흐름을 터주고')
-    .replace(/소통합니다/g,'흐름을 터줍니다')
-    .replace(/제방을 쌓아야/g,'물길을 막아야')
-    .replace(/제압해야/g,'눌러줘야')
-    .replace(/단련해야/g,'담금질해야')
-    .replace(/단련합니다/g,'담금질합니다')
-    .replace(/단련하고/g,'담금질하고')
-    .replace(/입묘/g,'에너지가 갇힘')
-    .replace(/생명수입니다/g,'생명줄입니다')
-    .replace(/동목/g,'얼어붙은 나무')
-    .replace(/보간/g,'간 기운 보충')
-    // ── 12운성 용어 ──
-    .replace(/장생지/g,'에너지가 막 피어나는 시기')
-    .replace(/목욕지/g,'에너지가 활발하게 움직이는 시기')
-    .replace(/관대지/g,'에너지가 성장하는 시기')
-    .replace(/건록지/g,'에너지가 충만한 시기')
-    .replace(/건록으로/g,'에너지가 충만해')
-    .replace(/건록이라/g,'에너지가 충만한 시기라')
-    .replace(/제왕지/g,'에너지가 최고조인 시기')
-    .replace(/제왕이라/g,'에너지가 최고조라')
-    .replace(/제왕으로/g,'에너지가 최고조로')
-    .replace(/제왕처럼/g,'최고조로')
-    .replace(/쇠지/g,'에너지가 물러나는 시기')
-    .replace(/병지/g,'에너지가 약해지는 시기')
-    .replace(/사지/g,'에너지가 잠드는 시기')
-    .replace(/묘지/g,'에너지가 갇혀있는 시기')
-    .replace(/절지/g,'에너지가 바닥인 시기')
-    .replace(/태지/g,'에너지가 싹트는 시기')
-    .replace(/양지/g,'에너지를 키우는 시기')
-    .replace(/12운성/g,'에너지 흐름');
-}
-
 // ── 건강 추천 렌더링 ──
-let _accId=0; // 아코디언 고유 ID
-function makeAcc(label, contentHtml, color){
-  const id='acc_'+(++_accId);
-  return`<div class="acc-wrap">
-    <div class="acc-hdr" id="hdr_${id}" onclick="toggleAcc('${id}')">
-      <span class="acc-label" style="color:${color}">${label}</span>
-      <span class="acc-arrow">▼</span>
-    </div>
-    <div class="acc-body" id="body_${id}">${contentHtml}</div>
-  </div>`;
-}
-
 function renderHealth(s){
-  _accId=0; // 매 렌더 시 리셋
   const{pillars,dc}=s;
   const moJJ=pillars[1].jj;
   const moIdx=jjToMoIdx(moJJ);
@@ -807,10 +574,12 @@ function renderHealth(s){
   const gutOH=["토","화","금"];
   const involvedGut=[oh1,oh2].filter(o=>o&&gutOH.includes(o));
   const showGutChain=involvedGut.length>0;
+
   const c1=CO[oh1];
+  const seasonBoost=SEASON_BOOST[season]||SEASON_BOOST["봄"];
 
   function makeHCards(items,limit,c){
-    return`<div class="health-cards">`+items.slice(0,limit).map((it,i)=>`
+    return items.slice(0,limit).map((it,i)=>`
       <div class="hcard${i<2?' primary':''}">
         <div class="hc-dot" style="background:${c.dot}"></div>
         <div class="hc-body">
@@ -822,55 +591,16 @@ function renderHealth(s){
           <div class="hc-effect">${it.effect}</div>
           ${it.strain?`<div class="hc-strain">${it.strain}</div>`:''}
         </div>
-      </div>`).join('')+`</div>`;
+      </div>`).join('');
   }
 
-  // ── 제1 밸런스 오행 아코디언 섹션들 ──
-  const acc1Tea  = makeAcc(`☕ ${oh1} 보충 · 차 추천`, makeHCards(rec1.teas,3,c1), c1.t);
-  const acc1Juice= makeAcc(`🥤 ${oh1} 보충 · 주스 추천`, makeHCards(rec1.juices,3,c1), c1.t);
-  const acc1Supp = makeAcc(`💊 ${oh1} 보충 · 건강기능식품 추천`, makeHCards(rec1.supps,3,c1), c1.t);
-
-  // ── 제2 밸런스 오행 ──
-  let secondaryHtml='';
-  if(rec2){
-    const c2=CO[oh2];
-    const acc2Tea  = makeAcc(`☕ ${oh2} 보충 · 차 추천`, makeHCards(rec2.teas,3,c2), c2.t);
-    const acc2Juice= makeAcc(`🥤 ${oh2} 보충 · 주스 추천`, makeHCards(rec2.juices,3,c2), c2.t);
-    const acc2Supp = makeAcc(`💊 ${oh2} 보충 · 건강기능식품 추천`, makeHCards(rec2.supps,3,c2), c2.t);
-    secondaryHtml=`
-      <div style="margin-bottom:8px">
-        <div style="background:${c2.bg};border:1.5px solid ${c2.b};border-radius:11px;padding:14px 16px;margin-bottom:10px">
-          <div style="font-size:9px;font-weight:700;color:${c2.t};letter-spacing:.1em;margin-bottom:7px;opacity:.8">✦ 제2 밸런스 오행</div>
-          <div style="font-size:20px;font-weight:700;color:${c2.t};margin-bottom:8px;letter-spacing:.03em">
-            ${oh2}
-            <span style="font-size:13px;font-weight:600;margin-left:4px">(${rec2.deco[0]}${oh2} · ${rec2.deco[1]}${oh2})</span>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
-            <div style="background:rgba(255,255,255,0.55);border-radius:7px;padding:7px 9px">
-              <div style="font-size:8px;color:${c2.t};opacity:.75;margin-bottom:2px;font-weight:700">관련 장부</div>
-              <div style="font-size:11px;font-weight:700;color:${c2.t}">${rec2.organ}</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.55);border-radius:7px;padding:7px 9px">
-              <div style="font-size:8px;color:${c2.t};opacity:.75;margin-bottom:2px;font-weight:700">맛</div>
-              <div style="font-size:11px;font-weight:700;color:${c2.t}">${rec2.taste}</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.55);border-radius:7px;padding:7px 9px">
-              <div style="font-size:8px;color:${c2.t};opacity:.75;margin-bottom:2px;font-weight:700">색깔</div>
-              <div style="font-size:11px;font-weight:700;color:${c2.t}">${rec2.color}</div>
-            </div>
-          </div>
-        </div>
-        ${acc2Tea}${acc2Juice}${acc2Supp}
-      </div>`;
-  }
-
-  // ── 장 건강 사슬 아코디언 ──
+  // 장 건강 사슬 HTML
   let gutHtml='';
   if(showGutChain){
     const steps=GUT_CHAIN.flow.map(step=>{
       const c=CO[step.oh];
       const isInvolved=involvedGut.includes(step.oh);
-      return`<div class="gut-step" style="${isInvolved?'background:'+c.bg+';border-radius:8px;padding:10px;margin:-2px':''}">
+      return`<div class="gut-step" style="${isInvolved?'background:'+c.bg+';border-radius:8px;padding:10px;margin:-2px':''}" >
         <div class="gut-step-num" style="background:${isInvolved?step.color:'#ccc0a0'}">${step.oh==='토'?'1':step.oh==='화'?'2':'3'}</div>
         <div class="gut-step-body">
           <div class="gut-step-title" style="color:${isInvolved?step.color:'#7a6040'}">${step.organ} — ${step.role}</div>
@@ -879,76 +609,73 @@ function renderHealth(s){
         </div>
       </div>`;
     }).join('');
-    const gutInner=`<div class="gut-chain-box" style="margin-bottom:0">
+
+    gutHtml=`<div class="gut-chain-box">
       <div class="gut-chain-title">🔗 장 건강 사슬</div>
       <div class="gut-chain-sub">${GUT_CHAIN.subtitle}</div>
       <div class="gut-steps">${steps}</div>
       <div class="gut-synergy"><div class="gs-label">▶ 핵심 원리</div>${GUT_CHAIN.synergy}</div>
     </div>`;
-    gutHtml=makeAcc('🔗 장 건강 사슬 보기', gutInner, '#7a6040');
   }
 
-  let orderHtml="";
+  // 2순위 희신 섹션
+  let secondaryHtml='';
+  if(rec2){
+    const c2=CO[oh2];
+    secondaryHtml=`
+      <button class="secondary-toggle" id="sec-toggle" onclick="toggleSecondary()">
+        <span>희신 오행 <b style="color:${c2.t}">${oh2}(${rec2.organ})</b> 보조 추천</span>
+        <span class="st-arrow">▼</span>
+      </button>
+      <div class="secondary-body" id="sec-body">
+        <div class="health-section">
+          <div class="health-section-title" style="color:${c2.t}">차 (茶)</div>
+          <div class="health-cards">${makeHCards(rec2.teas,3,c2)}</div>
+        </div>
+        <div class="health-section">
+          <div class="health-section-title" style="color:${c2.t}">건강기능식품</div>
+          <div class="health-cards">${makeHCards(rec2.supps,3,c2)}</div>
+        </div>
+      </div>`;
+  }
 
   return`<div class="health-panel">
-
-    <!-- 제1 밸런스 오행 -->
-    <div style="background:${c1.bg};border:1.5px solid ${c1.b};border-radius:11px;padding:14px 16px;margin-bottom:10px">
-      <div style="font-size:9px;font-weight:700;color:${c1.t};letter-spacing:.1em;margin-bottom:7px;opacity:.8">✦ 제1 밸런스 오행</div>
-      <div style="font-size:20px;font-weight:700;color:${c1.t};margin-bottom:8px;letter-spacing:.03em">
-        ${oh1}
-        <span style="font-size:13px;font-weight:600;margin-left:4px">(${rec1.deco[0]}${oh1} · ${rec1.deco[1]}${oh1})</span>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
-        <div style="background:rgba(255,255,255,0.55);border-radius:7px;padding:7px 9px">
-          <div style="font-size:8px;color:${c1.t};opacity:.75;margin-bottom:2px;font-weight:700">관련 장부</div>
-          <div style="font-size:11px;font-weight:700;color:${c1.t}">${rec1.organ.replace('·','·<br>').replace(' ','')}</div>
-        </div>
-        <div style="background:rgba(255,255,255,0.55);border-radius:7px;padding:7px 9px">
-          <div style="font-size:8px;color:${c1.t};opacity:.75;margin-bottom:2px;font-weight:700">맛</div>
-          <div style="font-size:11px;font-weight:700;color:${c1.t}">${rec1.taste}</div>
-        </div>
-        <div style="background:rgba(255,255,255,0.55);border-radius:7px;padding:7px 9px">
-          <div style="font-size:8px;color:${c1.t};opacity:.75;margin-bottom:2px;font-weight:700">색깔</div>
-          <div style="font-size:11px;font-weight:700;color:${c1.t}">${rec1.color}</div>
-        </div>
-      </div>
+    <div class="health-hero" style="background:${c1.bg};border:1.5px solid ${c1.b}">
+      <div class="hh-title" style="color:${c1.t}">✦ 용신 오행 건강 추천</div>
+      <div class="hh-main" style="color:${c1.t}">${oh1} (${rec1.organ})</div>
+      <div class="hh-organ" style="color:${c1.t}">${rec1.taste} · ${rec1.color}</div>
+      <div class="hh-season" style="color:${c1.t}">${rec1.principle}</div>
+      <div class="hh-deco" style="color:${c1.t}">${rec1.deco}</div>
     </div>
 
-    <!-- 왜 이 오행인가? (항상 표시) -->
-    <div style="background:#fffef5;border-left:3px solid #c9a227;border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:10px;font-size:12px;color:#3a2a00;line-height:1.9">
-      <b style="color:#8a6200">왜 ${oh1} 오행인가요?</b><br>
-      당신의 일간은 <b>${CG[dc]}(${CG_KR[dc]})</b>, 월지는 <b>${JJ[s.pillars[1].jj]}(${JJ_KR[s.pillars[1].jj]})</b>입니다.<br>
-      ${friendlyEnergyText(YONG_REASON[dc][moIdx])}<br>
-      <span style="font-size:10px;color:#7a6040">📖 황제내경 — ${oh1}은 ${rec1.organ.split('·')[0].trim()}을 주관 &nbsp;|&nbsp; 📖 동의보감 — ${rec1.taste}은 ${rec1.organ.split('·')[0].trim()}으로 귀납</span>
+    <div class="season-note-box">
+      <div class="sn-label">계절 포인트 (${season})</div>
+      ${seasonBoost.note}
     </div>
 
-    <!-- 제1 오행 아코디언 -->
-    ${acc1Tea}${acc1Juice}${acc1Supp}
+    <div class="health-section">
+      <div class="health-section-title" style="color:${c1.t}">차 (茶) — 상위 3종</div>
+      <div class="health-cards">${makeHCards(rec1.teas,3,c1)}</div>
+    </div>
 
-    <!-- 제2 밸런스 오행 -->
+    <div class="health-section">
+      <div class="health-section-title" style="color:${c1.t}">주스 — 상위 3종</div>
+      <div class="health-cards">${makeHCards(rec1.juices,3,c1)}</div>
+    </div>
+
+    <div class="health-section">
+      <div class="health-section-title" style="color:${c1.t}">건강기능식품 — 상위 3종</div>
+      <div class="health-cards">${makeHCards(rec1.supps,3,c1)}</div>
+    </div>
+
+    ${gutHtml}
     ${secondaryHtml}
 
-    <!-- 장 건강 사슬 -->
-    <div style="margin-bottom:8px">${gutHtml}</div>
-
-    <!-- 주문 CTA -->
-    ${orderHtml}
-
-    <div style="background:#faf8f4;border:1px solid #e0d0b0;border-radius:8px;padding:9px 12px;font-size:10px;color:#9a8a6a;line-height:1.7;margin-top:10px">
+    <div style="background:#faf8f4;border:1px solid #e0d0b0;border-radius:8px;padding:9px 12px;font-size:10px;color:#9a8a6a;line-height:1.7;margin-top:6px">
       ⚠️ 주의: ${rec1.caution}<br>
       이 추천은 사주 에너지 관점의 일상 습관 가이드입니다. 질병 치료 목적으로 사용하지 마시고, 기저 질환이 있으신 분은 반드시 전문의와 상담하세요.
     </div>
   </div>`;
-}
-
-
-
-function toggleAcc(id){
-  const hdr=document.getElementById('hdr_'+id);
-  const body=document.getElementById('body_'+id);
-  hdr.classList.toggle('open');
-  body.classList.toggle('open');
 }
 
 function toggleSecondary(){
@@ -958,141 +685,6 @@ function toggleSecondary(){
   body.classList.toggle('open');
 }
 
-// ────────────────────────────────────────────────
-// 주문 시스템
-// ────────────────────────────────────────────────
-
-// ★★★ 아래 계좌 정보를 실제 정보로 바꿔주세요 ★★★
-const SHOP_CONFIG = {
-  bankName:    "국민은행",
-  bankAccount: "000000-00-000000",
-  accountHolder:"카페본캐",
-  kakaoChannel:"http://pf.kakao.com/_GrHVX"
-};
-
-const OH_EMOJI_MAP={목:"🌿",화:"🔥",토:"🌍",금:"💎",수:"💧"};
-let _currentOrderProduct = null;
-let _currentOrderOh = null;
-
-
-function closeOrderModal() {
-  
-  document.body.style.overflow = '';
-}
-
-function searchAddress() {
-  new daum.Postcode({
-    oncomplete: function(data) {
-      document.getElementById('ord-postcode').value = data.zonecode;
-      document.getElementById('ord-addr1').value = data.roadAddress || data.jibunAddress;
-      document.getElementById('ord-addr2').focus();
-    }
-  }).open();
-}
-
-function autoHyphen(el) {
-  let v = el.value.replace(/[^0-9]/g,'');
-  if(v.length<=3) el.value=v;
-  else if(v.length<=7) el.value=v.slice(0,3)+'-'+v.slice(3);
-  else el.value=v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7,11);
-}
-
-async function submitOrder() {
-  const name   = document.getElementById('ord-name').value.trim();
-  const phone  = document.getElementById('ord-phone').value.trim();
-  const post   = document.getElementById('ord-postcode').value.trim();
-  const addr1  = document.getElementById('ord-addr1').value.trim();
-  const addr2  = document.getElementById('ord-addr2').value.trim();
-  const memo   = document.getElementById('ord-memo').value.trim();
-
-  if(!name)  { alert('수령인 이름을 입력해주세요.'); document.getElementById('ord-name').focus(); return; }
-  if(!phone || phone.length < 12) { alert('연락처를 정확히 입력해주세요.'); document.getElementById('ord-phone').focus(); return; }
-  if(!post || !addr1) { alert('배송 주소를 검색해서 입력해주세요.'); return; }
-
-  const btn = document.getElementById('btn-submit');
-  btn.disabled = true;
-  btn.textContent = '처리 중...';
-
-  const orderData = {
-    product:  _currentOrderProduct.name,
-    price:    _currentOrderProduct.price,
-    oh:       _currentOrderOh,
-    name, phone,
-    address:  `[${post}] ${addr1} ${addr2}`.trim(),
-    memo,
-    status:   'wait',   // wait = 입금 대기 / done = 발송 완료
-    createdAt: window._fbTS ? window._fbTS() : new Date().toISOString()
-  };
-
-  // Firebase 저장 시도
-  let orderId = 'local-' + Date.now();
-  try {
-    if(window._fbReady && window._db) {
-      const ref = await window._fbAddDoc(window._fbCol(window._db, 'orders'), orderData);
-      orderId = ref.id;
-    } else {
-      // Firebase 미설정 시 로컬 저장 (임시)
-      const orders = JSON.parse(localStorage.getItem('cafeOrders')||'[]');
-      orderData.id = orderId;
-      orders.push(orderData);
-      localStorage.setItem('cafeOrders', JSON.stringify(orders));
-    }
-  } catch(e) {
-    console.warn('Firebase save failed, using local:', e);
-    const orders = JSON.parse(localStorage.getItem('cafeOrders')||'[]');
-    orderData.id = orderId;
-    orders.push(orderData);
-    localStorage.setItem('cafeOrders', JSON.stringify(orders));
-  }
-
-  // 완료 화면
-  const shortId = orderId.slice(-6).toUpperCase();
-  document.getElementById('order-form-area').innerHTML = `
-    <div class="order-done">
-      <div class="od-icon">✅</div>
-      <div class="od-title">주문이 접수됐습니다!</div>
-      <div class="od-sub">
-        주문번호: <b>${shortId}</b><br><br>
-        아래 계좌로 <b>${_currentOrderProduct.price}원</b>을 입금해주세요.<br>
-        입금 확인 후 1~3 영업일 내 발송됩니다.
-      </div>
-      <div class="bank-info-box" style="text-align:left">
-        <div class="bi-title">💳 입금 계좌</div>
-        <div class="bi-account">${SHOP_CONFIG.bankName} ${SHOP_CONFIG.bankAccount}</div>
-        <div class="bi-name">예금주: ${SHOP_CONFIG.accountHolder}</div>
-        <div class="bi-note">• 입금자명에 <b>${name}</b>으로 입금해주세요<br>
-        • 운송장 번호는 카카오 채널로 안내드립니다</div>
-      </div>
-      <button class="btn-submit-order" onclick="window.open('${SHOP_CONFIG.kakaoChannel}','_blank')">
-        💬 카카오 채널에서 입금 확인 요청
-      </button>
-      <button class="btn-cancel-order" onclick="closeOrderModal()">닫기</button>
-    </div>
-  `;
-}
-
-// ────────────────────────────────────────────────
-
-
-// 일간별 이모지
-const ILGAN_EMOJI={
-  갑목:'🌳',을목:'🌿',병화:'☀️',정화:'🕯️',
-  무토:'⛰️',기토:'🌾',경금:'⚔️',신금:'💎',
-  임수:'🌊',계수:'🌧️'
-};
-// 오행별 이모지
-const OH_EMOJI={목:'🌿',화:'🔥',토:'🌍',금:'💎',수:'💧'};
-// 오행 한자
-const OH_HANJA={목:'木',화:'火',토:'土',금:'金',수:'水'};
-// 格방향별 이모지
-const GEK_EMOJI={
-  '독립·자생':'🦅','경쟁·도전':'⚡','표현·생산':'🎨',
-  '혁신·자유':'🚀','행동·현실':'💪','안정·성실':'🏛️',
-  '단련·극복':'🔥','규범·책임':'⚖️','직관·탐구':'🔭','수용·배움':'📚'
-};
-
-
-
 // ── 기존 코드 (십신, 운성, 사주 계산) ──
 const CG=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
 const JJ=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
@@ -1101,11 +693,9 @@ const JJ_KR=['자','축','인','묘','진','사','오','미','신','유','술','
 const OH=['목','화','토','금','수'];
 const OH_CG=[0,0,1,1,2,2,3,3,4,4];
 const OH_JJ=[4,2,0,0,2,1,1,2,3,3,2,4];
-const JJGAN=[[9],[9,7,5],[2,4,0],[1],[1,9,4],[4,6,2],[5,3],[1,3,5],[4,8,6],[7],[3,7,4],[0,8]];
-const JJ_JEONGGI=[9,5,0,1,4,2,3,5,6,7,4,8];// 각 지지의 정기 천간 index
+const JJGAN=[[9],[9,7,5],[2,4,0],[1],[1,9,4],[4,6,2],[3,5],[1,3,5],[4,8,6],[7],[3,7,4],[0,8]];
 const GONGMANG_TABLE=[[10,11],[8,9],[6,7],[4,5],[2,3],[0,1]];
 const SUN_NAME=['甲子순','甲戌순','甲申순','甲午순','甲辰순','甲寅순'];
-const JEOL_DATA={"소한_1900":2415024,"입춘_1900":2415054,"경칩_1900":2415083,"청명_1900":2415114,"입하_1900":2415144,"망종_1900":2415176,"소서_1900":2415207,"입추_1900":2415238,"백로_1900":2415270,"한로_1900":2415300,"입동_1900":2415330,"대설_1900":2415360,"소한_1901":2415390,"입춘_1901":2415419,"경칩_1901":2415449,"청명_1901":2415479,"입하_1901":2415510,"망종_1901":2415541,"소서_1901":2415572,"입추_1901":2415604,"백로_1901":2415635,"한로_1901":2415665,"입동_1901":2415696,"대설_1901":2415725,"소한_1902":2415755,"입춘_1902":2415784,"경칩_1902":2415814,"청명_1902":2415844,"입하_1902":2415875,"망종_1902":2415906,"소서_1902":2415938,"입추_1902":2415969,"백로_1902":2416000,"한로_1902":2416031,"입동_1902":2416061,"대설_1902":2416091,"소한_1903":2416120,"입춘_1903":2416150,"경칩_1903":2416179,"청명_1903":2416209,"입하_1903":2416240,"망종_1903":2416271,"소서_1903":2416303,"입추_1903":2416334,"백로_1903":2416365,"한로_1903":2416396,"입동_1903":2416426,"대설_1903":2416456,"소한_1904":2416485,"입춘_1904":2416515,"경칩_1904":2416545,"청명_1904":2416575,"입하_1904":2416605,"망종_1904":2416637,"소서_1904":2416668,"입추_1904":2416699,"백로_1904":2416731,"한로_1904":2416761,"입동_1904":2416791,"대설_1904":2416821,"소한_1905":2416851,"입춘_1905":2416880,"경칩_1905":2416910,"청명_1905":2416940,"입하_1905":2416971,"망종_1905":2417002,"소서_1905":2417033,"입추_1905":2417065,"백로_1905":2417096,"한로_1905":2417127,"입동_1905":2417157,"대설_1905":2417186,"소한_1906":2417216,"입춘_1906":2417245,"경칩_1906":2417275,"청명_1906":2417305,"입하_1906":2417336,"망종_1906":2417367,"소서_1906":2417399,"입추_1906":2417430,"백로_1906":2417461,"한로_1906":2417492,"입동_1906":2417522,"대설_1906":2417552,"소한_1907":2417581,"입춘_1907":2417611,"경칩_1907":2417640,"청명_1907":2417671,"입하_1907":2417701,"망종_1907":2417732,"소서_1907":2417764,"입추_1907":2417795,"백로_1907":2417826,"한로_1907":2417857,"입동_1907":2417887,"대설_1907":2417917,"소한_1908":2417946,"입춘_1908":2417976,"경칩_1908":2418006,"청명_1908":2418036,"입하_1908":2418066,"망종_1908":2418098,"소서_1908":2418129,"입추_1908":2418161,"백로_1908":2418192,"한로_1908":2418222,"입동_1908":2418252,"대설_1908":2418282,"소한_1909":2418312,"입춘_1909":2418341,"경칩_1909":2418371,"청명_1909":2418401,"입하_1909":2418432,"망종_1909":2418463,"소서_1909":2418494,"입추_1909":2418526,"백로_1909":2418557,"한로_1909":2418588,"입동_1909":2418618,"대설_1909":2418647,"소한_1910":2418677,"입춘_1910":2418706,"경칩_1910":2418736,"청명_1910":2418766,"입하_1910":2418797,"망종_1910":2418828,"소서_1910":2418860,"입추_1910":2418891,"백로_1910":2418922,"한로_1910":2418953,"입동_1910":2418983,"대설_1910":2419013,"소한_1911":2419042,"입춘_1911":2419072,"경칩_1911":2419101,"청명_1911":2419132,"입하_1911":2419162,"망종_1911":2419193,"소서_1911":2419225,"입추_1911":2419256,"백로_1911":2419287,"한로_1911":2419318,"입동_1911":2419348,"대설_1911":2419378,"소한_1912":2419407,"입춘_1912":2419437,"경칩_1912":2419467,"청명_1912":2419497,"입하_1912":2419528,"망종_1912":2419559,"소서_1912":2419590,"입추_1912":2419622,"백로_1912":2419653,"한로_1912":2419683,"입동_1912":2419713,"대설_1912":2419743,"소한_1913":2419773,"입춘_1913":2419802,"경칩_1913":2419832,"청명_1913":2419862,"입하_1913":2419893,"망종_1913":2419924,"소서_1913":2419955,"입추_1913":2419987,"백로_1913":2420018,"한로_1913":2420049,"입동_1913":2420079,"대설_1913":2420108,"소한_1914":2420138,"입춘_1914":2420167,"경칩_1914":2420197,"청명_1914":2420227,"입하_1914":2420258,"망종_1914":2420289,"소서_1914":2420321,"입추_1914":2420352,"백로_1914":2420383,"한로_1914":2420414,"입동_1914":2420444,"대설_1914":2420474,"소한_1915":2420503,"입춘_1915":2420533,"경칩_1915":2420562,"청명_1915":2420593,"입하_1915":2420623,"망종_1915":2420654,"소서_1915":2420686,"입추_1915":2420717,"백로_1915":2420748,"한로_1915":2420779,"입동_1915":2420809,"대설_1915":2420839,"소한_1916":2420868,"입춘_1916":2420898,"경칩_1916":2420928,"청명_1916":2420958,"입하_1916":2420989,"망종_1916":2421020,"소서_1916":2421051,"입추_1916":2421083,"백로_1916":2421114,"한로_1916":2421144,"입동_1916":2421174,"대설_1916":2421204,"소한_1917":2421234,"입춘_1917":2421263,"경칩_1917":2421293,"청명_1917":2421323,"입하_1917":2421354,"망종_1917":2421385,"소서_1917":2421416,"입추_1917":2421448,"백로_1917":2421479,"한로_1917":2421510,"입동_1917":2421540,"대설_1917":2421569,"소한_1918":2421599,"입춘_1918":2421628,"경칩_1918":2421658,"청명_1918":2421688,"입하_1918":2421719,"망종_1918":2421750,"소서_1918":2421782,"입추_1918":2421813,"백로_1918":2421844,"한로_1918":2421875,"입동_1918":2421905,"대설_1918":2421935,"소한_1919":2421964,"입춘_1919":2421994,"경칩_1919":2422023,"청명_1919":2422054,"입하_1919":2422084,"망종_1919":2422115,"소서_1919":2422147,"입추_1919":2422178,"백로_1919":2422209,"한로_1919":2422240,"입동_1919":2422270,"대설_1919":2422300,"소한_1920":2422329,"입춘_1920":2422359,"경칩_1920":2422389,"청명_1920":2422419,"입하_1920":2422450,"망종_1920":2422481,"소서_1920":2422512,"입추_1920":2422544,"백로_1920":2422575,"한로_1920":2422605,"입동_1920":2422635,"대설_1920":2422665,"소한_1921":2422695,"입춘_1921":2422724,"경칩_1921":2422754,"청명_1921":2422784,"입하_1921":2422815,"망종_1921":2422846,"소서_1921":2422877,"입추_1921":2422909,"백로_1921":2422940,"한로_1921":2422971,"입동_1921":2423001,"대설_1921":2423030,"소한_1922":2423060,"입춘_1922":2423089,"경칩_1922":2423119,"청명_1922":2423149,"입하_1922":2423180,"망종_1922":2423211,"소서_1922":2423243,"입추_1922":2423274,"백로_1922":2423305,"한로_1922":2423336,"입동_1922":2423366,"대설_1922":2423396,"소한_1923":2423425,"입춘_1923":2423455,"경칩_1923":2423484,"청명_1923":2423515,"입하_1923":2423545,"망종_1923":2423577,"소서_1923":2423608,"입추_1923":2423639,"백로_1923":2423670,"한로_1923":2423701,"입동_1923":2423731,"대설_1923":2423761,"소한_1924":2423790,"입춘_1924":2423820,"경칩_1924":2423850,"청명_1924":2423880,"입하_1924":2423911,"망종_1924":2423942,"소서_1924":2423973,"입추_1924":2424005,"백로_1924":2424036,"한로_1924":2424066,"입동_1924":2424097,"대설_1924":2424126,"소한_1925":2424156,"입춘_1925":2424185,"경칩_1925":2424215,"청명_1925":2424245,"입하_1925":2424276,"망종_1925":2424307,"소서_1925":2424338,"입추_1925":2424370,"백로_1925":2424401,"한로_1925":2424432,"입동_1925":2424462,"대설_1925":2424491,"소한_1926":2424521,"입춘_1926":2424550,"경칩_1926":2424580,"청명_1926":2424610,"입하_1926":2424641,"망종_1926":2424672,"소서_1926":2424704,"입추_1926":2424735,"백로_1926":2424766,"한로_1926":2424797,"입동_1926":2424827,"대설_1926":2424857,"소한_1927":2424886,"입춘_1927":2424916,"경칩_1927":2424945,"청명_1927":2424976,"입하_1927":2425006,"망종_1927":2425038,"소서_1927":2425069,"입추_1927":2425100,"백로_1927":2425131,"한로_1927":2425162,"입동_1927":2425192,"대설_1927":2425222,"소한_1928":2425251,"입춘_1928":2425281,"경칩_1928":2425311,"청명_1928":2425341,"입하_1928":2425372,"망종_1928":2425403,"소서_1928":2425434,"입추_1928":2425466,"백로_1928":2425497,"한로_1928":2425527,"입동_1928":2425558,"대설_1928":2425587,"소한_1929":2425617,"입춘_1929":2425646,"경칩_1929":2425676,"청명_1929":2425706,"입하_1929":2425737,"망종_1929":2425768,"소서_1929":2425799,"입추_1929":2425831,"백로_1929":2425862,"한로_1929":2425893,"입동_1929":2425923,"대설_1929":2425952,"소한_1930":2425982,"입춘_1930":2426011,"경칩_1930":2426041,"청명_1930":2426071,"입하_1930":2426102,"망종_1930":2426133,"소서_1930":2426165,"입추_1930":2426196,"백로_1930":2426227,"한로_1930":2426258,"입동_1930":2426288,"대설_1930":2426318,"소한_1931":2426347,"입춘_1931":2426377,"경칩_1931":2426406,"청명_1931":2426437,"입하_1931":2426467,"망종_1931":2426499,"소서_1931":2426530,"입추_1931":2426561,"백로_1931":2426593,"한로_1931":2426623,"입동_1931":2426653,"대설_1931":2426683,"소한_1932":2426712,"입춘_1932":2426742,"경칩_1932":2426772,"청명_1932":2426802,"입하_1932":2426833,"망종_1932":2426864,"소서_1932":2426895,"입추_1932":2426927,"백로_1932":2426958,"한로_1932":2426988,"입동_1932":2427019,"대설_1932":2427048,"소한_1933":2427078,"입춘_1933":2427107,"경칩_1933":2427137,"청명_1933":2427167,"입하_1933":2427198,"망종_1933":2427229,"소서_1933":2427261,"입추_1933":2427292,"백로_1933":2427323,"한로_1933":2427354,"입동_1933":2427384,"대설_1933":2427414,"소한_1934":2427443,"입춘_1934":2427472,"경칩_1934":2427502,"청명_1934":2427532,"입하_1934":2427563,"망종_1934":2427594,"소서_1934":2427626,"입추_1934":2427657,"백로_1934":2427688,"한로_1934":2427719,"입동_1934":2427749,"대설_1934":2427779,"소한_1935":2427808,"입춘_1935":2427838,"경칩_1935":2427867,"청명_1935":2427898,"입하_1935":2427928,"망종_1935":2427960,"소서_1935":2427991,"입추_1935":2428022,"백로_1935":2428054,"한로_1935":2428084,"입동_1935":2428114,"대설_1935":2428144,"소한_1936":2428173,"입춘_1936":2428203,"경칩_1936":2428233,"청명_1936":2428263,"입하_1936":2428294,"망종_1936":2428325,"소서_1936":2428356,"입추_1936":2428388,"백로_1936":2428419,"한로_1936":2428449,"입동_1936":2428480,"대설_1936":2428509,"소한_1937":2428539,"입춘_1937":2428568,"경칩_1937":2428598,"청명_1937":2428628,"입하_1937":2428659,"망종_1937":2428690,"소서_1937":2428722,"입추_1937":2428753,"백로_1937":2428784,"한로_1937":2428815,"입동_1937":2428845,"대설_1937":2428875,"소한_1938":2428904,"입춘_1938":2428933,"경칩_1938":2428963,"청명_1938":2428993,"입하_1938":2429024,"망종_1938":2429055,"소서_1938":2429087,"입추_1938":2429118,"백로_1938":2429149,"한로_1938":2429180,"입동_1938":2429210,"대설_1938":2429240,"소한_1939":2429269,"입춘_1939":2429299,"경칩_1939":2429329,"청명_1939":2429359,"입하_1939":2429389,"망종_1939":2429421,"소서_1939":2429452,"입추_1939":2429483,"백로_1939":2429515,"한로_1939":2429545,"입동_1939":2429575,"대설_1939":2429605,"소한_1940":2429635,"입춘_1940":2429664,"경칩_1940":2429694,"청명_1940":2429724,"입하_1940":2429755,"망종_1940":2429786,"소서_1940":2429817,"입추_1940":2429849,"백로_1940":2429880,"한로_1940":2429910,"입동_1940":2429941,"대설_1940":2429970,"소한_1941":2430000,"입춘_1941":2430029,"경칩_1941":2430059,"청명_1941":2430089,"입하_1941":2430120,"망종_1941":2430151,"소서_1941":2430183,"입추_1941":2430214,"백로_1941":2430245,"한로_1941":2430276,"입동_1941":2430306,"대설_1941":2430336,"소한_1942":2430365,"입춘_1942":2430395,"경칩_1942":2430424,"청명_1942":2430454,"입하_1942":2430485,"망종_1942":2430516,"소서_1942":2430548,"입추_1942":2430579,"백로_1942":2430610,"한로_1942":2430641,"입동_1942":2430671,"대설_1942":2430701,"소한_1943":2430730,"입춘_1943":2430760,"경칩_1943":2430790,"청명_1943":2430820,"입하_1943":2430850,"망종_1943":2430882,"소서_1943":2430913,"입추_1943":2430944,"백로_1943":2430976,"한로_1943":2431006,"입동_1943":2431036,"대설_1943":2431066,"소한_1944":2431096,"입춘_1944":2431125,"경칩_1944":2431155,"청명_1944":2431185,"입하_1944":2431216,"망종_1944":2431247,"소서_1944":2431278,"입추_1944":2431310,"백로_1944":2431341,"한로_1944":2431372,"입동_1944":2431402,"대설_1944":2431431,"소한_1945":2431461,"입춘_1945":2431490,"경칩_1945":2431520,"청명_1945":2431550,"입하_1945":2431581,"망종_1945":2431612,"소서_1945":2431644,"입추_1945":2431675,"백로_1945":2431706,"한로_1945":2431737,"입동_1945":2431767,"대설_1945":2431797,"소한_1946":2431826,"입춘_1946":2431856,"경칩_1946":2431885,"청명_1946":2431916,"입하_1946":2431946,"망종_1946":2431977,"소서_1946":2432009,"입추_1946":2432040,"백로_1946":2432071,"한로_1946":2432102,"입동_1946":2432132,"대설_1946":2432162,"소한_1947":2432191,"입춘_1947":2432221,"경칩_1947":2432251,"청명_1947":2432281,"입하_1947":2432311,"망종_1947":2432343,"소서_1947":2432374,"입추_1947":2432406,"백로_1947":2432437,"한로_1947":2432467,"입동_1947":2432497,"대설_1947":2432527,"소한_1948":2432557,"입춘_1948":2432586,"경칩_1948":2432616,"청명_1948":2432646,"입하_1948":2432677,"망종_1948":2432708,"소서_1948":2432739,"입추_1948":2432771,"백로_1948":2432802,"한로_1948":2432833,"입동_1948":2432863,"대설_1948":2432892,"소한_1949":2432922,"입춘_1949":2432951,"경칩_1949":2432981,"청명_1949":2433011,"입하_1949":2433042,"망종_1949":2433073,"소서_1949":2433105,"입추_1949":2433136,"백로_1949":2433167,"한로_1949":2433198,"입동_1949":2433228,"대설_1949":2433258,"소한_1950":2433287,"입춘_1950":2433317,"경칩_1950":2433346,"청명_1950":2433377,"입하_1950":2433407,"망종_1950":2433438,"소서_1950":2433470,"입추_1950":2433501,"백로_1950":2433532,"한로_1950":2433563,"입동_1950":2433593,"대설_1950":2433623,"소한_1951":2433652,"입춘_1951":2433682,"경칩_1951":2433712,"청명_1951":2433742,"입하_1951":2433773,"망종_1951":2433804,"소서_1951":2433835,"입추_1951":2433867,"백로_1951":2433898,"한로_1951":2433928,"입동_1951":2433958,"대설_1951":2433988,"소한_1952":2434018,"입춘_1952":2434047,"경칩_1952":2434077,"청명_1952":2434107,"입하_1952":2434138,"망종_1952":2434169,"소서_1952":2434200,"입추_1952":2434232,"백로_1952":2434263,"한로_1952":2434294,"입동_1952":2434324,"대설_1952":2434353,"소한_1953":2434383,"입춘_1953":2434412,"경칩_1953":2434442,"청명_1953":2434472,"입하_1953":2434503,"망종_1953":2434534,"소서_1953":2434566,"입추_1953":2434597,"백로_1953":2434628,"한로_1953":2434659,"입동_1953":2434689,"대설_1953":2434719,"소한_1954":2434748,"입춘_1954":2434778,"경칩_1954":2434807,"청명_1954":2434838,"입하_1954":2434868,"망종_1954":2434899,"소서_1954":2434931,"입추_1954":2434962,"백로_1954":2434993,"한로_1954":2435024,"입동_1954":2435054,"대설_1954":2435084,"소한_1955":2435113,"입춘_1955":2435143,"경칩_1955":2435173,"청명_1955":2435203,"입하_1955":2435234,"망종_1955":2435265,"소서_1955":2435296,"입추_1955":2435328,"백로_1955":2435359,"한로_1955":2435389,"입동_1955":2435419,"대설_1955":2435449,"소한_1956":2435479,"입춘_1956":2435508,"경칩_1956":2435538,"청명_1956":2435568,"입하_1956":2435599,"망종_1956":2435630,"소서_1956":2435661,"입추_1956":2435693,"백로_1956":2435724,"한로_1956":2435755,"입동_1956":2435785,"대설_1956":2435814,"소한_1957":2435844,"입춘_1957":2435873,"경칩_1957":2435903,"청명_1957":2435933,"입하_1957":2435964,"망종_1957":2435995,"소서_1957":2436027,"입추_1957":2436058,"백로_1957":2436089,"한로_1957":2436120,"입동_1957":2436150,"대설_1957":2436180,"소한_1958":2436209,"입춘_1958":2436239,"경칩_1958":2436268,"청명_1958":2436299,"입하_1958":2436329,"망종_1958":2436360,"소서_1958":2436392,"입추_1958":2436423,"백로_1958":2436454,"한로_1958":2436485,"입동_1958":2436515,"대설_1958":2436545,"소한_1959":2436574,"입춘_1959":2436604,"경칩_1959":2436634,"청명_1959":2436664,"입하_1959":2436695,"망종_1959":2436726,"소서_1959":2436757,"입추_1959":2436789,"백로_1959":2436820,"한로_1959":2436850,"입동_1959":2436880,"대설_1959":2436910,"소한_1960":2436940,"입춘_1960":2436969,"경칩_1960":2436999,"청명_1960":2437029,"입하_1960":2437060,"망종_1960":2437091,"소서_1960":2437122,"입추_1960":2437154,"백로_1960":2437185,"한로_1960":2437216,"입동_1960":2437246,"대설_1960":2437275,"소한_1961":2437305,"입춘_1961":2437334,"경칩_1961":2437364,"청명_1961":2437394,"입하_1961":2437425,"망종_1961":2437456,"소서_1961":2437488,"입추_1961":2437519,"백로_1961":2437550,"한로_1961":2437581,"입동_1961":2437611,"대설_1961":2437641,"소한_1962":2437670,"입춘_1962":2437700,"경칩_1962":2437729,"청명_1962":2437760,"입하_1962":2437790,"망종_1962":2437822,"소서_1962":2437853,"입추_1962":2437884,"백로_1962":2437915,"한로_1962":2437946,"입동_1962":2437976,"대설_1962":2438006,"소한_1963":2438035,"입춘_1963":2438065,"경칩_1963":2438095,"청명_1963":2438125,"입하_1963":2438156,"망종_1963":2438187,"소서_1963":2438218,"입추_1963":2438250,"백로_1963":2438281,"한로_1963":2438311,"입동_1963":2438342,"대설_1963":2438371,"소한_1964":2438401,"입춘_1964":2438430,"경칩_1964":2438460,"청명_1964":2438490,"입하_1964":2438521,"망종_1964":2438552,"소서_1964":2438583,"입추_1964":2438615,"백로_1964":2438646,"한로_1964":2438677,"입동_1964":2438707,"대설_1964":2438736,"소한_1965":2438766,"입춘_1965":2438795,"경칩_1965":2438825,"청명_1965":2438855,"입하_1965":2438886,"망종_1965":2438917,"소서_1965":2438949,"입추_1965":2438980,"백로_1965":2439011,"한로_1965":2439042,"입동_1965":2439072,"대설_1965":2439102,"소한_1966":2439131,"입춘_1966":2439161,"경칩_1966":2439190,"청명_1966":2439221,"입하_1966":2439251,"망종_1966":2439283,"소서_1966":2439314,"입추_1966":2439345,"백로_1966":2439376,"한로_1966":2439407,"입동_1966":2439437,"대설_1966":2439467,"소한_1967":2439496,"입춘_1967":2439526,"경칩_1967":2439556,"청명_1967":2439586,"입하_1967":2439617,"망종_1967":2439648,"소서_1967":2439679,"입추_1967":2439711,"백로_1967":2439742,"한로_1967":2439772,"입동_1967":2439803,"대설_1967":2439832,"소한_1968":2439862,"입춘_1968":2439891,"경칩_1968":2439921,"청명_1968":2439951,"입하_1968":2439982,"망종_1968":2440013,"소서_1968":2440044,"입추_1968":2440076,"백로_1968":2440107,"한로_1968":2440138,"입동_1968":2440168,"대설_1968":2440197,"소한_1969":2440227,"입춘_1969":2440256,"경칩_1969":2440286,"청명_1969":2440316,"입하_1969":2440347,"망종_1969":2440378,"소서_1969":2440410,"입추_1969":2440441,"백로_1969":2440472,"한로_1969":2440503,"입동_1969":2440533,"대설_1969":2440563,"소한_1970":2440592,"입춘_1970":2440622,"경칩_1970":2440651,"청명_1970":2440682,"입하_1970":2440712,"망종_1970":2440744,"소서_1970":2440775,"입추_1970":2440806,"백로_1970":2440838,"한로_1970":2440868,"입동_1970":2440898,"대설_1970":2440928,"소한_1971":2440957,"입춘_1971":2440987,"경칩_1971":2441017,"청명_1971":2441047,"입하_1971":2441078,"망종_1971":2441109,"소서_1971":2441140,"입추_1971":2441172,"백로_1971":2441203,"한로_1971":2441233,"입동_1971":2441264,"대설_1971":2441293,"소한_1972":2441323,"입춘_1972":2441352,"경칩_1972":2441382,"청명_1972":2441412,"입하_1972":2441443,"망종_1972":2441474,"소서_1972":2441506,"입추_1972":2441537,"백로_1972":2441568,"한로_1972":2441599,"입동_1972":2441629,"대설_1972":2441659,"소한_1973":2441688,"입춘_1973":2441717,"경칩_1973":2441747,"청명_1973":2441777,"입하_1973":2441808,"망종_1973":2441839,"소서_1973":2441871,"입추_1973":2441902,"백로_1973":2441933,"한로_1973":2441964,"입동_1973":2441994,"대설_1973":2442024,"소한_1974":2442053,"입춘_1974":2442083,"경칩_1974":2442112,"청명_1974":2442143,"입하_1974":2442173,"망종_1974":2442205,"소서_1974":2442236,"입추_1974":2442267,"백로_1974":2442299,"한로_1974":2442329,"입동_1974":2442359,"대설_1974":2442389,"소한_1975":2442419,"입춘_1975":2442448,"경칩_1975":2442478,"청명_1975":2442508,"입하_1975":2442539,"망종_1975":2442570,"소서_1975":2442601,"입추_1975":2442633,"백로_1975":2442664,"한로_1975":2442694,"입동_1975":2442725,"대설_1975":2442754,"소한_1976":2442784,"입춘_1976":2442813,"경칩_1976":2442843,"청명_1976":2442873,"입하_1976":2442904,"망종_1976":2442935,"소서_1976":2442967,"입추_1976":2442998,"백로_1976":2443029,"한로_1976":2443060,"입동_1976":2443090,"대설_1976":2443120,"소한_1977":2443149,"입춘_1977":2443178,"경칩_1977":2443208,"청명_1977":2443238,"입하_1977":2443269,"망종_1977":2443300,"소서_1977":2443332,"입추_1977":2443363,"백로_1977":2443394,"한로_1977":2443425,"입동_1977":2443455,"대설_1977":2443485,"소한_1978":2443514,"입춘_1978":2443544,"경칩_1978":2443574,"청명_1978":2443604,"입하_1978":2443634,"망종_1978":2443666,"소서_1978":2443697,"입추_1978":2443728,"백로_1978":2443760,"한로_1978":2443790,"입동_1978":2443820,"대설_1978":2443850,"소한_1979":2443880,"입춘_1979":2443909,"경칩_1979":2443939,"청명_1979":2443969,"입하_1979":2444000,"망종_1979":2444031,"소서_1979":2444062,"입추_1979":2444094,"백로_1979":2444125,"한로_1979":2444155,"입동_1979":2444186,"대설_1979":2444215,"소한_1980":2444245,"입춘_1980":2444274,"경칩_1980":2444304,"청명_1980":2444334,"입하_1980":2444365,"망종_1980":2444396,"소서_1980":2444428,"입추_1980":2444459,"백로_1980":2444490,"한로_1980":2444521,"입동_1980":2444551,"대설_1980":2444581,"소한_1981":2444610,"입춘_1981":2444640,"경칩_1981":2444669,"청명_1981":2444699,"입하_1981":2444730,"망종_1981":2444761,"소서_1981":2444793,"입추_1981":2444824,"백로_1981":2444855,"한로_1981":2444886,"입동_1981":2444916,"대설_1981":2444946,"소한_1982":2444975,"입춘_1982":2445005,"경칩_1982":2445035,"청명_1982":2445065,"입하_1982":2445095,"망종_1982":2445127,"소서_1982":2445158,"입추_1982":2445189,"백로_1982":2445221,"한로_1982":2445251,"입동_1982":2445281,"대설_1982":2445311,"소한_1983":2445341,"입춘_1983":2445370,"경칩_1983":2445400,"청명_1983":2445430,"입하_1983":2445461,"망종_1983":2445492,"소서_1983":2445523,"입추_1983":2445555,"백로_1983":2445586,"한로_1983":2445617,"입동_1983":2445647,"대설_1983":2445676,"소한_1984":2445706,"입춘_1984":2445735,"경칩_1984":2445765,"청명_1984":2445795,"입하_1984":2445826,"망종_1984":2445857,"소서_1984":2445889,"입추_1984":2445920,"백로_1984":2445951,"한로_1984":2445982,"입동_1984":2446012,"대설_1984":2446042,"소한_1985":2446071,"입춘_1985":2446101,"경칩_1985":2446130,"청명_1985":2446160,"입하_1985":2446191,"망종_1985":2446222,"소서_1985":2446254,"입추_1985":2446285,"백로_1985":2446316,"한로_1985":2446347,"입동_1985":2446377,"대설_1985":2446407,"소한_1986":2446436,"입춘_1986":2446466,"경칩_1986":2446496,"청명_1986":2446526,"입하_1986":2446556,"망종_1986":2446588,"소서_1986":2446619,"입추_1986":2446650,"백로_1986":2446682,"한로_1986":2446712,"입동_1986":2446742,"대설_1986":2446772,"소한_1987":2446802,"입춘_1987":2446831,"경칩_1987":2446861,"청명_1987":2446891,"입하_1987":2446922,"망종_1987":2446953,"소서_1987":2446984,"입추_1987":2447016,"백로_1987":2447047,"한로_1987":2447078,"입동_1987":2447108,"대설_1987":2447137,"소한_1988":2447167,"입춘_1988":2447196,"경칩_1988":2447226,"청명_1988":2447256,"입하_1988":2447287,"망종_1988":2447318,"소서_1988":2447350,"입추_1988":2447381,"백로_1988":2447412,"한로_1988":2447443,"입동_1988":2447473,"대설_1988":2447503,"소한_1989":2447532,"입춘_1989":2447562,"경칩_1989":2447591,"청명_1989":2447622,"입하_1989":2447652,"망종_1989":2447683,"소서_1989":2447715,"입추_1989":2447746,"백로_1989":2447777,"한로_1989":2447808,"입동_1989":2447838,"대설_1989":2447868,"소한_1990":2447897,"입춘_1990":2447927,"경칩_1990":2447957,"청명_1990":2447987,"입하_1990":2448018,"망종_1990":2448049,"소서_1990":2448080,"입추_1990":2448112,"백로_1990":2448143,"한로_1990":2448173,"입동_1990":2448203,"대설_1990":2448233,"소한_1991":2448263,"입춘_1991":2448292,"경칩_1991":2448322,"청명_1991":2448352,"입하_1991":2448383,"망종_1991":2448414,"소서_1991":2448445,"입추_1991":2448477,"백로_1991":2448508,"한로_1991":2448539,"입동_1991":2448569,"대설_1991":2448598,"소한_1992":2448628,"입춘_1992":2448657,"경칩_1992":2448687,"청명_1992":2448717,"입하_1992":2448748,"망종_1992":2448779,"소서_1992":2448811,"입추_1992":2448842,"백로_1992":2448873,"한로_1992":2448904,"입동_1992":2448934,"대설_1992":2448964,"소한_1993":2448993,"입춘_1993":2449023,"경칩_1993":2449052,"청명_1993":2449083,"입하_1993":2449113,"망종_1993":2449144,"소서_1993":2449176,"입추_1993":2449207,"백로_1993":2449238,"한로_1993":2449269,"입동_1993":2449299,"대설_1993":2449329,"소한_1994":2449358,"입춘_1994":2449388,"경칩_1994":2449418,"청명_1994":2449448,"입하_1994":2449479,"망종_1994":2449510,"소서_1994":2449541,"입추_1994":2449573,"백로_1994":2449604,"한로_1994":2449634,"입동_1994":2449664,"대설_1994":2449694,"소한_1995":2449724,"입춘_1995":2449753,"경칩_1995":2449783,"청명_1995":2449813,"입하_1995":2449844,"망종_1995":2449875,"소서_1995":2449906,"입추_1995":2449938,"백로_1995":2449969,"한로_1995":2450000,"입동_1995":2450030,"대설_1995":2450059,"소한_1996":2450089,"입춘_1996":2450118,"경칩_1996":2450148,"청명_1996":2450178,"입하_1996":2450209,"망종_1996":2450240,"소서_1996":2450272,"입추_1996":2450303,"백로_1996":2450334,"한로_1996":2450365,"입동_1996":2450395,"대설_1996":2450425,"소한_1997":2450454,"입춘_1997":2450484,"경칩_1997":2450513,"청명_1997":2450544,"입하_1997":2450574,"망종_1997":2450605,"소서_1997":2450637,"입추_1997":2450668,"백로_1997":2450699,"한로_1997":2450730,"입동_1997":2450760,"대설_1997":2450790,"소한_1998":2450819,"입춘_1998":2450849,"경칩_1998":2450879,"청명_1998":2450909,"입하_1998":2450940,"망종_1998":2450971,"소서_1998":2451002,"입추_1998":2451034,"백로_1998":2451065,"한로_1998":2451095,"입동_1998":2451125,"대설_1998":2451155,"소한_1999":2451185,"입춘_1999":2451214,"경칩_1999":2451244,"청명_1999":2451274,"입하_1999":2451305,"망종_1999":2451336,"소서_1999":2451367,"입추_1999":2451399,"백로_1999":2451430,"한로_1999":2451461,"입동_1999":2451491,"대설_1999":2451520,"소한_2000":2451550,"입춘_2000":2451579,"경칩_2000":2451609,"청명_2000":2451639,"입하_2000":2451670,"망종_2000":2451701,"소서_2000":2451733,"입추_2000":2451764,"백로_2000":2451795,"한로_2000":2451826,"입동_2000":2451856,"대설_2000":2451886,"소한_2001":2451915,"입춘_2001":2451945,"경칩_2001":2451974,"청명_2001":2452005,"입하_2001":2452035,"망종_2001":2452067,"소서_2001":2452098,"입추_2001":2452129,"백로_2001":2452160,"한로_2001":2452191,"입동_2001":2452221,"대설_2001":2452251,"소한_2002":2452280,"입춘_2002":2452310,"경칩_2002":2452340,"청명_2002":2452370,"입하_2002":2452401,"망종_2002":2452432,"소서_2002":2452463,"입추_2002":2452495,"백로_2002":2452526,"한로_2002":2452556,"입동_2002":2452587,"대설_2002":2452616,"소한_2003":2452646,"입춘_2003":2452675,"경칩_2003":2452705,"청명_2003":2452735,"입하_2003":2452766,"망종_2003":2452797,"소서_2003":2452828,"입추_2003":2452860,"백로_2003":2452891,"한로_2003":2452922,"입동_2003":2452952,"대설_2003":2452981,"소한_2004":2453011,"입춘_2004":2453040,"경칩_2004":2453070,"청명_2004":2453100,"입하_2004":2453131,"망종_2004":2453162,"소서_2004":2453194,"입추_2004":2453225,"백로_2004":2453256,"한로_2004":2453287,"입동_2004":2453317,"대설_2004":2453347,"소한_2005":2453376,"입춘_2005":2453406,"경칩_2005":2453435,"청명_2005":2453466,"입하_2005":2453496,"망종_2005":2453528,"소서_2005":2453559,"입추_2005":2453590,"백로_2005":2453621,"한로_2005":2453652,"입동_2005":2453682,"대설_2005":2453712,"소한_2006":2453741,"입춘_2006":2453771,"경칩_2006":2453801,"청명_2006":2453831,"입하_2006":2453862,"망종_2006":2453893,"소서_2006":2453924,"입추_2006":2453956,"백로_2006":2453987,"한로_2006":2454017,"입동_2006":2454048,"대설_2006":2454077,"소한_2007":2454107,"입춘_2007":2454136,"경칩_2007":2454166,"청명_2007":2454196,"입하_2007":2454227,"망종_2007":2454258,"소서_2007":2454289,"입추_2007":2454321,"백로_2007":2454352,"한로_2007":2454383,"입동_2007":2454413,"대설_2007":2454442,"소한_2008":2454472,"입춘_2008":2454501,"경칩_2008":2454531,"청명_2008":2454561,"입하_2008":2454592,"망종_2008":2454623,"소서_2008":2454655,"입추_2008":2454686,"백로_2008":2454717,"한로_2008":2454748,"입동_2008":2454778,"대설_2008":2454808,"소한_2009":2454837,"입춘_2009":2454867,"경칩_2009":2454896,"청명_2009":2454927,"입하_2009":2454957,"망종_2009":2454989,"소서_2009":2455020,"입추_2009":2455051,"백로_2009":2455083,"한로_2009":2455113,"입동_2009":2455143,"대설_2009":2455173,"소한_2010":2455202,"입춘_2010":2455232,"경칩_2010":2455262,"청명_2010":2455292,"입하_2010":2455323,"망종_2010":2455354,"소서_2010":2455385,"입추_2010":2455417,"백로_2010":2455448,"한로_2010":2455478,"입동_2010":2455509,"대설_2010":2455538,"소한_2011":2455568,"입춘_2011":2455597,"경칩_2011":2455627,"청명_2011":2455657,"입하_2011":2455688,"망종_2011":2455719,"소서_2011":2455750,"입추_2011":2455782,"백로_2011":2455813,"한로_2011":2455844,"입동_2011":2455874,"대설_2011":2455904,"소한_2012":2455933,"입춘_2012":2455962,"경칩_2012":2455992,"청명_2012":2456022,"입하_2012":2456053,"망종_2012":2456084,"소서_2012":2456116,"입추_2012":2456147,"백로_2012":2456178,"한로_2012":2456209,"입동_2012":2456239,"대설_2012":2456269,"소한_2013":2456298,"입춘_2013":2456328,"경칩_2013":2456357,"청명_2013":2456388,"입하_2013":2456418,"망종_2013":2456450,"소서_2013":2456481,"입추_2013":2456512,"백로_2013":2456544,"한로_2013":2456574,"입동_2013":2456604,"대설_2013":2456634,"소한_2014":2456663,"입춘_2014":2456693,"경칩_2014":2456723,"청명_2014":2456753,"입하_2014":2456784,"망종_2014":2456815,"소서_2014":2456846,"입추_2014":2456878,"백로_2014":2456909,"한로_2014":2456939,"입동_2014":2456970,"대설_2014":2456999,"소한_2015":2457029,"입춘_2015":2457058,"경칩_2015":2457088,"청명_2015":2457118,"입하_2015":2457149,"망종_2015":2457180,"소서_2015":2457212,"입추_2015":2457243,"백로_2015":2457274,"한로_2015":2457305,"입동_2015":2457335,"대설_2015":2457365,"소한_2016":2457394,"입춘_2016":2457423,"경칩_2016":2457453,"청명_2016":2457483,"입하_2016":2457514,"망종_2016":2457545,"소서_2016":2457577,"입추_2016":2457608,"백로_2016":2457639,"한로_2016":2457670,"입동_2016":2457700,"대설_2016":2457730,"소한_2017":2457759,"입춘_2017":2457789,"경칩_2017":2457819,"청명_2017":2457849,"입하_2017":2457879,"망종_2017":2457911,"소서_2017":2457942,"입추_2017":2457973,"백로_2017":2458005,"한로_2017":2458035,"입동_2017":2458065,"대설_2017":2458095,"소한_2018":2458125,"입춘_2018":2458154,"경칩_2018":2458184,"청명_2018":2458214,"입하_2018":2458245,"망종_2018":2458276,"소서_2018":2458307,"입추_2018":2458339,"백로_2018":2458370,"한로_2018":2458400,"입동_2018":2458431,"대설_2018":2458460,"소한_2019":2458490,"입춘_2019":2458519,"경칩_2019":2458549,"청명_2019":2458579,"입하_2019":2458610,"망종_2019":2458641,"소서_2019":2458673,"입추_2019":2458704,"백로_2019":2458735,"한로_2019":2458766,"입동_2019":2458796,"대설_2019":2458826,"소한_2020":2458855,"입춘_2020":2458885,"경칩_2020":2458914,"청명_2020":2458944,"입하_2020":2458975,"망종_2020":2459006,"소서_2020":2459038,"입추_2020":2459069,"백로_2020":2459100,"한로_2020":2459131,"입동_2020":2459161,"대설_2020":2459191,"소한_2021":2459220,"입춘_2021":2459250,"경칩_2021":2459280,"청명_2021":2459310,"입하_2021":2459340,"망종_2021":2459372,"소서_2021":2459403,"입추_2021":2459434,"백로_2021":2459466,"한로_2021":2459496,"입동_2021":2459526,"대설_2021":2459556,"소한_2022":2459586,"입춘_2022":2459615,"경칩_2022":2459645,"청명_2022":2459675,"입하_2022":2459706,"망종_2022":2459737,"소서_2022":2459768,"입추_2022":2459800,"백로_2022":2459831,"한로_2022":2459861,"입동_2022":2459892,"대설_2022":2459921,"소한_2023":2459951,"입춘_2023":2459980,"경칩_2023":2460010,"청명_2023":2460040,"입하_2023":2460071,"망종_2023":2460102,"소서_2023":2460134,"입추_2023":2460165,"백로_2023":2460196,"한로_2023":2460227,"입동_2023":2460257,"대설_2023":2460287,"소한_2024":2460316,"입춘_2024":2460346,"경칩_2024":2460375,"청명_2024":2460406,"입하_2024":2460436,"망종_2024":2460467,"소서_2024":2460499,"입추_2024":2460530,"백로_2024":2460561,"한로_2024":2460592,"입동_2024":2460622,"대설_2024":2460652,"소한_2025":2460681,"입춘_2025":2460711,"경칩_2025":2460741,"청명_2025":2460771,"입하_2025":2460801,"망종_2025":2460833,"소서_2025":2460864,"입추_2025":2460895,"백로_2025":2460927,"한로_2025":2460957,"입동_2025":2460987,"대설_2025":2461017,"소한_2026":2461047,"입춘_2026":2461076,"경칩_2026":2461106,"청명_2026":2461136,"입하_2026":2461167,"망종_2026":2461198,"소서_2026":2461229,"입추_2026":2461261,"백로_2026":2461292,"한로_2026":2461323,"입동_2026":2461353,"대설_2026":2461382,"소한_2027":2461412,"입춘_2027":2461441,"경칩_2027":2461471,"청명_2027":2461501,"입하_2027":2461532,"망종_2027":2461563,"소서_2027":2461595,"입추_2027":2461626,"백로_2027":2461657,"한로_2027":2461688,"입동_2027":2461718,"대설_2027":2461748,"소한_2028":2461777,"입춘_2028":2461807,"경칩_2028":2461836,"청명_2028":2461867,"입하_2028":2461897,"망종_2028":2461928,"소서_2028":2461960,"입추_2028":2461991,"백로_2028":2462022,"한로_2028":2462053,"입동_2028":2462083,"대설_2028":2462113,"소한_2029":2462142,"입춘_2029":2462172,"경칩_2029":2462202,"청명_2029":2462232,"입하_2029":2462263,"망종_2029":2462294,"소서_2029":2462325,"입추_2029":2462357,"백로_2029":2462388,"한로_2029":2462418,"입동_2029":2462448,"대설_2029":2462478,"소한_2030":2462508,"입춘_2030":2462537,"경칩_2030":2462567,"청명_2030":2462597,"입하_2030":2462628,"망종_2030":2462659,"소서_2030":2462690,"입추_2030":2462722,"백로_2030":2462753,"한로_2030":2462784,"입동_2030":2462814,"대설_2030":2462843,"소한_2031":2462873,"입춘_2031":2462902,"경칩_2031":2462932,"청명_2031":2462962,"입하_2031":2462993,"망종_2031":2463024,"소서_2031":2463056,"입추_2031":2463087,"백로_2031":2463118,"한로_2031":2463149,"입동_2031":2463179,"대설_2031":2463209,"소한_2032":2463238,"입춘_2032":2463268,"경칩_2032":2463297,"청명_2032":2463328,"입하_2032":2463358,"망종_2032":2463389,"소서_2032":2463421,"입추_2032":2463452,"백로_2032":2463483,"한로_2032":2463514,"입동_2032":2463544,"대설_2032":2463574,"소한_2033":2463603,"입춘_2033":2463633,"경칩_2033":2463663,"청명_2033":2463693,"입하_2033":2463724,"망종_2033":2463755,"소서_2033":2463786,"입추_2033":2463818,"백로_2033":2463849,"한로_2033":2463879,"입동_2033":2463909,"대설_2033":2463939,"소한_2034":2463969,"입춘_2034":2463998,"경칩_2034":2464028,"청명_2034":2464058,"입하_2034":2464089,"망종_2034":2464120,"소서_2034":2464151,"입추_2034":2464183,"백로_2034":2464214,"한로_2034":2464245,"입동_2034":2464275,"대설_2034":2464304,"소한_2035":2464334,"입춘_2035":2464363,"경칩_2035":2464393,"청명_2035":2464423,"입하_2035":2464454,"망종_2035":2464485,"소서_2035":2464517,"입추_2035":2464548,"백로_2035":2464579,"한로_2035":2464610,"입동_2035":2464640,"대설_2035":2464670,"소한_2036":2464699,"입춘_2036":2464729,"경칩_2036":2464758,"청명_2036":2464789,"입하_2036":2464819,"망종_2036":2464850,"소서_2036":2464882,"입추_2036":2464913,"백로_2036":2464944,"한로_2036":2464975,"입동_2036":2465005,"대설_2036":2465035,"소한_2037":2465064,"입춘_2037":2465094,"경칩_2037":2465124,"청명_2037":2465154,"입하_2037":2465185,"망종_2037":2465216,"소서_2037":2465247,"입추_2037":2465279,"백로_2037":2465310,"한로_2037":2465340,"입동_2037":2465370,"대설_2037":2465400,"소한_2038":2465430,"입춘_2038":2465459,"경칩_2038":2465489,"청명_2038":2465519,"입하_2038":2465550,"망종_2038":2465581,"소서_2038":2465612,"입추_2038":2465644,"백로_2038":2465675,"한로_2038":2465706,"입동_2038":2465736,"대설_2038":2465765,"소한_2039":2465795,"입춘_2039":2465824,"경칩_2039":2465854,"청명_2039":2465884,"입하_2039":2465915,"망종_2039":2465946,"소서_2039":2465978,"입추_2039":2466009,"백로_2039":2466040,"한로_2039":2466071,"입동_2039":2466101,"대설_2039":2466131,"소한_2040":2466160,"입춘_2040":2466190,"경칩_2040":2466219,"청명_2040":2466250,"입하_2040":2466280,"망종_2040":2466312,"소서_2040":2466343,"입추_2040":2466374,"백로_2040":2466405,"한로_2040":2466436,"입동_2040":2466466,"대설_2040":2466496,"소한_2041":2466525,"입춘_2041":2466555,"경칩_2041":2466585,"청명_2041":2466615,"입하_2041":2466646,"망종_2041":2466677,"소서_2041":2466708,"입추_2041":2466740,"백로_2041":2466771,"한로_2041":2466801,"입동_2041":2466831,"대설_2041":2466861,"소한_2042":2466891,"입춘_2042":2466920,"경칩_2042":2466950,"청명_2042":2466980,"입하_2042":2467011,"망종_2042":2467042,"소서_2042":2467073,"입추_2042":2467105,"백로_2042":2467136,"한로_2042":2467167,"입동_2042":2467197,"대설_2042":2467226,"소한_2043":2467256,"입춘_2043":2467285,"경칩_2043":2467315,"청명_2043":2467345,"입하_2043":2467376,"망종_2043":2467407,"소서_2043":2467439,"입추_2043":2467470,"백로_2043":2467501,"한로_2043":2467532,"입동_2043":2467562,"대설_2043":2467592,"소한_2044":2467621,"입춘_2044":2467651,"경칩_2044":2467680,"청명_2044":2467711,"입하_2044":2467741,"망종_2044":2467773,"소서_2044":2467804,"입추_2044":2467835,"백로_2044":2467866,"한로_2044":2467897,"입동_2044":2467927,"대설_2044":2467957,"소한_2045":2467986,"입춘_2045":2468016,"경칩_2045":2468046,"청명_2045":2468076,"입하_2045":2468107,"망종_2045":2468138,"소서_2045":2468169,"입추_2045":2468201,"백로_2045":2468232,"한로_2045":2468262,"입동_2045":2468293,"대설_2045":2468322,"소한_2046":2468352,"입춘_2046":2468381,"경칩_2046":2468411,"청명_2046":2468441,"입하_2046":2468472,"망종_2046":2468503,"소서_2046":2468534,"입추_2046":2468566,"백로_2046":2468597,"한로_2046":2468628,"입동_2046":2468658,"대설_2046":2468687,"소한_2047":2468717,"입춘_2047":2468746,"경칩_2047":2468776,"청명_2047":2468806,"입하_2047":2468837,"망종_2047":2468868,"소서_2047":2468900,"입추_2047":2468931,"백로_2047":2468962,"한로_2047":2468993,"입동_2047":2469023,"대설_2047":2469053,"소한_2048":2469082,"입춘_2048":2469112,"경칩_2048":2469141,"청명_2048":2469172,"입하_2048":2469202,"망종_2048":2469234,"소서_2048":2469265,"입추_2048":2469296,"백로_2048":2469328,"한로_2048":2469358,"입동_2048":2469388,"대설_2048":2469418,"소한_2049":2469447,"입춘_2049":2469477,"경칩_2049":2469507,"청명_2049":2469537,"입하_2049":2469568,"망종_2049":2469599,"소서_2049":2469630,"입추_2049":2469662,"백로_2049":2469693,"한로_2049":2469723,"입동_2049":2469754,"대설_2049":2469783,"소한_2050":2469813,"입춘_2050":2469842,"경칩_2050":2469872,"청명_2050":2469902,"입하_2050":2469933,"망종_2050":2469964,"소서_2050":2469995,"입추_2050":2470027,"백로_2050":2470058,"한로_2050":2470089,"입동_2050":2470119,"대설_2050":2470149,"소한_2051":2470178,"입춘_2051":2470207,"경칩_2051":2470237,"청명_2051":2470267,"입하_2051":2470298,"망종_2051":2470329,"소서_2051":2470361,"입추_2051":2470392,"백로_2051":2470423,"한로_2051":2470454,"입동_2051":2470484,"대설_2051":2470514,"소한_2052":2470543,"입춘_2052":2470573,"경칩_2052":2470602,"청명_2052":2470633,"입하_2052":2470663,"망종_2052":2470695,"소서_2052":2470726,"입추_2052":2470757,"백로_2052":2470789,"한로_2052":2470819,"입동_2052":2470849,"대설_2052":2470879,"소한_2053":2470908,"입춘_2053":2470938,"경칩_2053":2470968,"청명_2053":2470998,"입하_2053":2471029,"망종_2053":2471060,"소서_2053":2471091,"입추_2053":2471123,"백로_2053":2471154,"한로_2053":2471184,"입동_2053":2471215,"대설_2053":2471244,"소한_2054":2471274,"입춘_2054":2471303,"경칩_2054":2471333,"청명_2054":2471363,"입하_2054":2471394,"망종_2054":2471425,"소서_2054":2471457,"입추_2054":2471488,"백로_2054":2471519,"한로_2054":2471550,"입동_2054":2471580,"대설_2054":2471610,"소한_2055":2471639,"입춘_2055":2471668,"경칩_2055":2471698,"청명_2055":2471728,"입하_2055":2471759,"망종_2055":2471790,"소서_2055":2471822,"입추_2055":2471853,"백로_2055":2471884,"한로_2055":2471915,"입동_2055":2471945,"대설_2055":2471975,"소한_2056":2472004,"입춘_2056":2472034,"경칩_2056":2472064,"청명_2056":2472094,"입하_2056":2472124,"망종_2056":2472156,"소서_2056":2472187,"입추_2056":2472218,"백로_2056":2472250,"한로_2056":2472280,"입동_2056":2472310,"대설_2056":2472340,"소한_2057":2472370,"입춘_2057":2472399,"경칩_2057":2472429,"청명_2057":2472459,"입하_2057":2472490,"망종_2057":2472521,"소서_2057":2472552,"입추_2057":2472584,"백로_2057":2472615,"한로_2057":2472645,"입동_2057":2472676,"대설_2057":2472705,"소한_2058":2472735,"입춘_2058":2472764,"경칩_2058":2472794,"청명_2058":2472824,"입하_2058":2472855,"망종_2058":2472886,"소서_2058":2472918,"입추_2058":2472949,"백로_2058":2472980,"한로_2058":2473011,"입동_2058":2473041,"대설_2058":2473071,"소한_2059":2473100,"입춘_2059":2473130,"경칩_2059":2473159,"청명_2059":2473189,"입하_2059":2473220,"망종_2059":2473251,"소서_2059":2473283,"입추_2059":2473314,"백로_2059":2473345,"한로_2059":2473376,"입동_2059":2473406,"대설_2059":2473436,"소한_2060":2473465,"입춘_2060":2473495,"경칩_2060":2473525,"청명_2060":2473555,"입하_2060":2473585,"망종_2060":2473617,"소서_2060":2473648,"입추_2060":2473679,"백로_2060":2473711,"한로_2060":2473741,"입동_2060":2473771,"대설_2060":2473801,"소한_2061":2473831,"입춘_2061":2473860,"경칩_2061":2473890,"청명_2061":2473920,"입하_2061":2473951,"망종_2061":2473982,"소서_2061":2474013,"입추_2061":2474045,"백로_2061":2474076,"한로_2061":2474106,"입동_2061":2474137,"대설_2061":2474166,"소한_2062":2474196,"입춘_2062":2474225,"경칩_2062":2474255,"청명_2062":2474285,"입하_2062":2474316,"망종_2062":2474347,"소서_2062":2474379,"입추_2062":2474410,"백로_2062":2474441,"한로_2062":2474472,"입동_2062":2474502,"대설_2062":2474532,"소한_2063":2474561,"입춘_2063":2474591,"경칩_2063":2474620,"청명_2063":2474651,"입하_2063":2474681,"망종_2063":2474712,"소서_2063":2474744,"입추_2063":2474775,"백로_2063":2474806,"한로_2063":2474837,"입동_2063":2474867,"대설_2063":2474897,"소한_2064":2474926,"입춘_2064":2474956,"경칩_2064":2474986,"청명_2064":2475016,"입하_2064":2475046,"망종_2064":2475078,"소서_2064":2475109,"입추_2064":2475140,"백로_2064":2475172,"한로_2064":2475202,"입동_2064":2475232,"대설_2064":2475262,"소한_2065":2475292,"입춘_2065":2475321,"경칩_2065":2475351,"청명_2065":2475381,"입하_2065":2475412,"망종_2065":2475443,"소서_2065":2475474,"입추_2065":2475506,"백로_2065":2475537,"한로_2065":2475568,"입동_2065":2475598,"대설_2065":2475627,"소한_2066":2475657,"입춘_2066":2475686,"경칩_2066":2475716,"청명_2066":2475746,"입하_2066":2475777,"망종_2066":2475808,"소서_2066":2475840,"입추_2066":2475871,"백로_2066":2475902,"한로_2066":2475933,"입동_2066":2475963,"대설_2066":2475993,"소한_2067":2476022,"입춘_2067":2476052,"경칩_2067":2476081,"청명_2067":2476112,"입하_2067":2476142,"망종_2067":2476173,"소서_2067":2476205,"입추_2067":2476236,"백로_2067":2476267,"한로_2067":2476298,"입동_2067":2476328,"대설_2067":2476358,"소한_2068":2476387,"입춘_2068":2476417,"경칩_2068":2476447,"청명_2068":2476477,"입하_2068":2476507,"망종_2068":2476539,"소서_2068":2476570,"입추_2068":2476602,"백로_2068":2476633,"한로_2068":2476663,"입동_2068":2476693,"대설_2068":2476723,"소한_2069":2476753,"입춘_2069":2476782,"경칩_2069":2476812,"청명_2069":2476842,"입하_2069":2476873,"망종_2069":2476904,"소서_2069":2476935,"입추_2069":2476967,"백로_2069":2476998,"한로_2069":2477029,"입동_2069":2477059,"대설_2069":2477088,"소한_2070":2477118,"입춘_2070":2477147,"경칩_2070":2477177,"청명_2070":2477207,"입하_2070":2477238,"망종_2070":2477269,"소서_2070":2477301,"입추_2070":2477332,"백로_2070":2477363,"한로_2070":2477394,"입동_2070":2477424,"대설_2070":2477454,"소한_2071":2477483,"입춘_2071":2477513,"경칩_2071":2477542,"청명_2071":2477573,"입하_2071":2477603,"망종_2071":2477634,"소서_2071":2477666,"입추_2071":2477697,"백로_2071":2477728,"한로_2071":2477759,"입동_2071":2477789,"대설_2071":2477819,"소한_2072":2477848,"입춘_2072":2477878,"경칩_2072":2477908,"청명_2072":2477938,"입하_2072":2477969,"망종_2072":2478000,"소서_2072":2478031,"입추_2072":2478063,"백로_2072":2478094,"한로_2072":2478124,"입동_2072":2478154,"대설_2072":2478184,"소한_2073":2478214,"입춘_2073":2478243,"경칩_2073":2478273,"청명_2073":2478303,"입하_2073":2478334,"망종_2073":2478365,"소서_2073":2478396,"입추_2073":2478428,"백로_2073":2478459,"한로_2073":2478490,"입동_2073":2478520,"대설_2073":2478549,"소한_2074":2478579,"입춘_2074":2478608,"경칩_2074":2478638,"청명_2074":2478668,"입하_2074":2478699,"망종_2074":2478730,"소서_2074":2478762,"입추_2074":2478793,"백로_2074":2478824,"한로_2074":2478855,"입동_2074":2478885,"대설_2074":2478915,"소한_2075":2478944,"입춘_2075":2478974,"경칩_2075":2479003,"청명_2075":2479034,"입하_2075":2479064,"망종_2075":2479095,"소서_2075":2479127,"입추_2075":2479158,"백로_2075":2479189,"한로_2075":2479220,"입동_2075":2479250,"대설_2075":2479280,"소한_2076":2479309,"입춘_2076":2479339,"경칩_2076":2479369,"청명_2076":2479399,"입하_2076":2479430,"망종_2076":2479461,"소서_2076":2479492,"입추_2076":2479524,"백로_2076":2479555,"한로_2076":2479585,"입동_2076":2479615,"대설_2076":2479645,"소한_2077":2479675,"입춘_2077":2479704,"경칩_2077":2479734,"청명_2077":2479764,"입하_2077":2479795,"망종_2077":2479826,"소서_2077":2479857,"입추_2077":2479889,"백로_2077":2479920,"한로_2077":2479951,"입동_2077":2479981,"대설_2077":2480010,"소한_2078":2480040,"입춘_2078":2480069,"경칩_2078":2480099,"청명_2078":2480129,"입하_2078":2480160,"망종_2078":2480191,"소서_2078":2480223,"입추_2078":2480254,"백로_2078":2480285,"한로_2078":2480316,"입동_2078":2480346,"대설_2078":2480376,"소한_2079":2480405,"입춘_2079":2480435,"경칩_2079":2480464,"청명_2079":2480495,"입하_2079":2480525,"망종_2079":2480556,"소서_2079":2480588,"입추_2079":2480619,"백로_2079":2480650,"한로_2079":2480681,"입동_2079":2480711,"대설_2079":2480741,"소한_2080":2480770,"입춘_2080":2480800,"경칩_2080":2480830,"청명_2080":2480860,"입하_2080":2480891,"망종_2080":2480922,"소서_2080":2480953,"입추_2080":2480985,"백로_2080":2481016,"한로_2080":2481046,"입동_2080":2481077,"대설_2080":2481106,"소한_2081":2481136,"입춘_2081":2481165,"경칩_2081":2481195,"청명_2081":2481225,"입하_2081":2481256,"망종_2081":2481287,"소서_2081":2481318,"입추_2081":2481350,"백로_2081":2481381,"한로_2081":2481412,"입동_2081":2481442,"대설_2081":2481471,"소한_2082":2481501,"입춘_2082":2481530,"경칩_2082":2481560,"청명_2082":2481590,"입하_2082":2481621,"망종_2082":2481652,"소서_2082":2481684,"입추_2082":2481715,"백로_2082":2481746,"한로_2082":2481777,"입동_2082":2481807,"대설_2082":2481837,"소한_2083":2481866,"입춘_2083":2481896,"경칩_2083":2481925,"청명_2083":2481956,"입하_2083":2481986,"망종_2083":2482018,"소서_2083":2482049,"입추_2083":2482080,"백로_2083":2482111,"한로_2083":2482142,"입동_2083":2482172,"대설_2083":2482202,"소한_2084":2482231,"입춘_2084":2482261,"경칩_2084":2482291,"청명_2084":2482321,"입하_2084":2482352,"망종_2084":2482383,"소서_2084":2482414,"입추_2084":2482446,"백로_2084":2482477,"한로_2084":2482507,"입동_2084":2482538,"대설_2084":2482567,"소한_2085":2482597,"입춘_2085":2482626,"경칩_2085":2482656,"청명_2085":2482686,"입하_2085":2482717,"망종_2085":2482748,"소서_2085":2482779,"입추_2085":2482811,"백로_2085":2482842,"한로_2085":2482873,"입동_2085":2482903,"대설_2085":2482932,"소한_2086":2482962,"입춘_2086":2482991,"경칩_2086":2483021,"청명_2086":2483051,"입하_2086":2483082,"망종_2086":2483113,"소서_2086":2483145,"입추_2086":2483176,"백로_2086":2483207,"한로_2086":2483238,"입동_2086":2483268,"대설_2086":2483298,"소한_2087":2483327,"입춘_2087":2483357,"경칩_2087":2483386,"청명_2087":2483417,"입하_2087":2483447,"망종_2087":2483479,"소서_2087":2483510,"입추_2087":2483541,"백로_2087":2483572,"한로_2087":2483603,"입동_2087":2483633,"대설_2087":2483663,"소한_2088":2483692,"입춘_2088":2483722,"경칩_2088":2483752,"청명_2088":2483782,"입하_2088":2483813,"망종_2088":2483844,"소서_2088":2483875,"입추_2088":2483907,"백로_2088":2483938,"한로_2088":2483968,"입동_2088":2483999,"대설_2088":2484028,"소한_2089":2484058,"입춘_2089":2484087,"경칩_2089":2484117,"청명_2089":2484147,"입하_2089":2484178,"망종_2089":2484209,"소서_2089":2484240,"입추_2089":2484272,"백로_2089":2484303,"한로_2089":2484334,"입동_2089":2484364,"대설_2089":2484394,"소한_2090":2484423,"입춘_2090":2484452,"경칩_2090":2484482,"청명_2090":2484512,"입하_2090":2484543,"망종_2090":2484574,"소서_2090":2484606,"입추_2090":2484637,"백로_2090":2484668,"한로_2090":2484699,"입동_2090":2484729,"대설_2090":2484759,"소한_2091":2484788,"입춘_2091":2484818,"경칩_2091":2484847,"청명_2091":2484878,"입하_2091":2484908,"망종_2091":2484940,"소서_2091":2484971,"입추_2091":2485002,"백로_2091":2485034,"한로_2091":2485064,"입동_2091":2485094,"대설_2091":2485124,"소한_2092":2485154,"입춘_2092":2485183,"경칩_2092":2485213,"청명_2092":2485243,"입하_2092":2485274,"망종_2092":2485305,"소서_2092":2485336,"입추_2092":2485368,"백로_2092":2485399,"한로_2092":2485429,"입동_2092":2485460,"대설_2092":2485489,"소한_2093":2485519,"입춘_2093":2485548,"경칩_2093":2485578,"청명_2093":2485608,"입하_2093":2485639,"망종_2093":2485670,"소서_2093":2485702,"입추_2093":2485733,"백로_2093":2485764,"한로_2093":2485795,"입동_2093":2485825,"대설_2093":2485855,"소한_2094":2485884,"입춘_2094":2485914,"경칩_2094":2485943,"청명_2094":2485973,"입하_2094":2486004,"망종_2094":2486035,"소서_2094":2486067,"입추_2094":2486098,"백로_2094":2486129,"한로_2094":2486160,"입동_2094":2486190,"대설_2094":2486220,"소한_2095":2486249,"입춘_2095":2486279,"경칩_2095":2486309,"청명_2095":2486339,"입하_2095":2486369,"망종_2095":2486401,"소서_2095":2486432,"입추_2095":2486463,"백로_2095":2486495,"한로_2095":2486525,"입동_2095":2486555,"대설_2095":2486585,"소한_2096":2486615,"입춘_2096":2486644,"경칩_2096":2486674,"청명_2096":2486704,"입하_2096":2486735,"망종_2096":2486766,"소서_2096":2486797,"입추_2096":2486829,"백로_2096":2486860,"한로_2096":2486890,"입동_2096":2486921,"대설_2096":2486950,"소한_2097":2486980,"입춘_2097":2487009,"경칩_2097":2487039,"청명_2097":2487069,"입하_2097":2487100,"망종_2097":2487131,"소서_2097":2487163,"입추_2097":2487194,"백로_2097":2487225,"한로_2097":2487256,"입동_2097":2487286,"대설_2097":2487316,"소한_2098":2487345,"입춘_2098":2487375,"경칩_2098":2487404,"청명_2098":2487434,"입하_2098":2487465,"망종_2098":2487496,"소서_2098":2487528,"입추_2098":2487559,"백로_2098":2487590,"한로_2098":2487621,"입동_2098":2487651,"대설_2098":2487681,"소한_2099":2487710,"입춘_2099":2487740,"경칩_2099":2487770,"청명_2099":2487800,"입하_2099":2487830,"망종_2099":2487862,"소서_2099":2487893,"입추_2099":2487924,"백로_2099":2487956,"한로_2099":2487986,"입동_2099":2488016,"대설_2099":2488046,"소한_2100":2488076,"입춘_2100":2488105,"경칩_2100":2488135,"청명_2100":2488165,"입하_2100":2488196,"망종_2100":2488227,"소서_2100":2488258,"입추_2100":2488290,"백로_2100":2488321,"한로_2100":2488351,"입동_2100":2488382,"대설_2100":2488411};
 const JD_NAME=['소한','입춘','경칩','청명','입하','망종','소서','입추','백로','한로','입동','대설'];
 
 function toJDN(y,m,d){const a=Math.floor((14-m)/12),yr=y+4800-a,mn=m+12*a-3;return d+Math.floor((153*mn+2)/5)+365*yr+Math.floor(yr/4)-Math.floor(yr/100)+Math.floor(yr/400)-32045;}
@@ -1123,7 +713,7 @@ function calcYear(y,m,d,gmap){
 
 function calcMonth(y,m,d,ycg,gmap){
   const name=JD_NAME[m-1];let jeolJDN=null;
-  if(gmap){for(let i=0;i>=-1;i--){const k=name+'_'+(y+i);if(gmap[k]){jeolJDN=gmap[k];break;}}}
+  if(gmap){for(let i=-1;i<=1;i++){const k=name+'_'+(y+i);if(gmap[k]){jeolJDN=gmap[k];break;}}}
   const approx=[6,4,6,5,6,6,7,7,8,8,7,7];
   const jdn=toJDN(y,m,d);
   let after,warn;
@@ -1138,9 +728,7 @@ function calcDay(y,m,d){const pos=(toJDN(y,m,d)+49)%60;return{cg:pos%10,jj:pos%1
 
 function calcHour(h,min,dcg){
   const t=h*60+min;
-  // 동경시 보정: 한국 실제 태양시 = 표준시 - 30분 (경도 127.5° 기준)
-  // 자시(子) 23:30~01:30 / 이후 시진 30분씩 뒤로 이동
-  const ji=(t>=1410||t<90)?0:t<210?1:t<330?2:t<450?3:t<570?4:t<690?5:t<810?6:t<930?7:t<1050?8:t<1170?9:t<1290?10:11;
+  const ji=(t>=1380||t<60)?0:t<180?1:t<300?2:t<420?3:t<540?4:t<660?5:t<780?6:t<900?7:t<1020?8:t<1140?9:t<1260?10:11;
   const hc=((dcg%5)*2+ji)%10;
   return{cg:hc,jj:ji};
 }
@@ -1160,7 +748,7 @@ function calcGongmang(y,m,d){const pos=(toJDN(y,m,d)+49)%60,sun=Math.floor(pos/1
 
 function getJeolJDN(year,month,gmap){
   const name=JD_NAME[month-1];
-  if(gmap){for(let i=0;i>=-1;i--){const k=name+'_'+(year+i);if(gmap[k])return{j:gmap[k],p:true};}}
+  if(gmap){for(let i=-1;i<=1;i++){const k=name+'_'+(year+i);if(gmap[k])return{j:gmap[k],p:true};}}
   const approx=[6,4,6,5,6,6,7,7,8,8,7,7];
   return{j:toJDN(year,month,approx[month-1]),p:false};
 }
@@ -1197,6 +785,7 @@ function buildSaju(y,m,d,h,min,gender,gmap){
   const hp=calcHour(h,min,dp.cg);
   const dc=dp.cg;
   const gm=calcGongmang(y,m,d);
+  const shiName=JJ_KR[hp.jj]+'시';
   return{
     pillars:[
       {label:'년주',cg:yp.cg,jj:yp.jj,warn:yp.warn,ss:getSS(dc,yp.cg)},
@@ -1204,7 +793,7 @@ function buildSaju(y,m,d,h,min,gender,gmap){
       {label:'일주',cg:dc,jj:dp.jj,warn:false,ss:'일원'},
       {label:'시주',cg:hp.cg,jj:hp.jj,warn:false,ss:getSS(dc,hp.cg)},
     ],
-    dc,gongmang:gm,
+    dc,shiName,gongmang:gm,
     daeun:calcDaeun(y,m,d,h,min,gender,dc,mp,gmap,yp.cg),
   };
 }
@@ -1244,163 +833,23 @@ function getGekInfo(dc,moJJ){
 
 // ── YONGSIN_DATA (10간 × 12월) ──
 const YONGSIN_DATA=[
-  // 甲木 [寅卯辰巳午未申酉戌亥子丑]
-  [
-    {byung:"한기잔존",yongsin:"丙火",hesin:"癸水",desc:"丙癸 병존이면 부귀쌍전"},
-    {byung:"목기최왕",yongsin:"庚金",hesin:"丙火",desc:"庚丙 병존 부귀격"},
-    {byung:"토왕체목",yongsin:"庚金",hesin:"壬水",desc:"庚壬 소토가 핵심"},
-    {byung:"화왕목조",yongsin:"癸水",hesin:"庚金",desc:"癸水가 없으면 빈명"},
-    {byung:"염열극심",yongsin:"癸水",hesin:"庚金",desc:"癸水 하나가 열 용신보다 값짐"},
-    {byung:"화토극조",yongsin:"癸水",hesin:"庚金",desc:"癸庚 병존이면 길"},
-    {byung:"금왕한기",yongsin:"丁火",hesin:"庚金",desc:"丁庚 병존 문무겸비 귀격"},
-    {byung:"신금극목",yongsin:"丁火",hesin:"丙火",desc:"丁火가 재능 결정"},
-    {byung:"토왕목고",yongsin:"庚金",hesin:"甲木",desc:"庚甲壬 삼위 핵심"},
-    {byung:"수왕목부",yongsin:"戊土",hesin:"庚金",desc:"戊없으면 水旺木漂"},
-    {byung:"한동극심",yongsin:"丁火",hesin:"庚金",desc:"丁甲있으면 동목이 쓰임"},
-    {byung:"한극토동",yongsin:"丙火",hesin:"丁火",desc:"丙火가 첫 번째 급무"}
-  ],
-  // 乙木 [寅卯辰巳午未申酉戌亥子丑]
-  [
-    {byung:"한기잔존",yongsin:"丙火",hesin:"癸水",desc:"화초는 太陽(丙)이 급함"},
-    {byung:"목기최강",yongsin:"丙火",hesin:"癸水",desc:"음목은 丙이 庚보다 우선"},
-    {byung:"을목입묘",yongsin:"癸水",hesin:"丙火",desc:"癸丙 순서 주의·입묘 해소"},
-    {byung:"화왕목조",yongsin:"癸水",hesin:"丙火",desc:"癸水가 핵심"},
-    {byung:"염열목초",yongsin:"癸水",hesin:"丙火",desc:"癸水 없으면 초목이 타죽음"},
-    {byung:"토왕을쇠",yongsin:"癸水",hesin:"丙火",desc:"癸丙 병존이면 귀격"},
-    {byung:"경금왕합",yongsin:"丙火",hesin:"癸水",desc:"한기시작·乙庚합거 주의"},
-    {byung:"신금극을",yongsin:"丙火",hesin:"癸水",desc:"丙癸 병존이면 안정"},
-    {byung:"토왕을약",yongsin:"癸水",hesin:"辛金",desc:"辛은 이슬 수원·입묘 주의"},
-    {byung:"수왕목부",yongsin:"丙火",hesin:"戊土",desc:"丙戊 병존이면 길"},
-    {byung:"한동수왕",yongsin:"丙火",hesin:"戊土",desc:"丙이 없으면 동사"},
-    {byung:"한극토동",yongsin:"丙火",hesin:"戊土",desc:"丙火가 절대적 우선"}
-  ],
-  // 丙火 [寅卯辰巳午未申酉戌亥子丑]
-  [
-    {byung:"목왕생화",yongsin:"壬水",hesin:"庚金",desc:"壬庚이 기본 조합"},
-    {byung:"목왕화성",yongsin:"壬水",hesin:"庚金",desc:"壬庚 병존 귀격"},
-    {byung:"토왕설화",yongsin:"壬水",hesin:"甲木",desc:"土旺이면 甲木 추가"},
-    {byung:"화왕설기",yongsin:"壬水",hesin:"庚金",desc:"壬庚 없으면 불꽃만"},
-    {byung:"제왕염열",yongsin:"壬水",hesin:"庚金",desc:"壬庚이 없으면 범인"},
-    {byung:"화토조열",yongsin:"辛金",hesin:"甲木",desc:"辛甲 병존이면 길"},
-    {byung:"병지한시",yongsin:"壬水",hesin:"戊土",desc:"丙이 약해지나 壬은 필요"},
-    {byung:"사지금왕",yongsin:"壬水",hesin:"甲木",desc:"甲木으로 火 보강"},
-    {byung:"묘지토왕",yongsin:"甲木",hesin:"壬水",desc:"甲木이 먼저 필요"},
-    {byung:"절지수왕",yongsin:"甲木",hesin:"戊土",desc:"甲木이 최우선"},
-    {byung:"태지한동",yongsin:"甲木",hesin:"壬水",desc:"甲없으면 丙이 꺼짐"},
-    {byung:"한극토동",yongsin:"甲木",hesin:"壬水",desc:"甲木 우선 丙火보강"}
-  ],
-  // 丁火 [寅卯辰巳午未申酉戌亥子丑]
-  [
-    {byung:"사지한잔",yongsin:"甲木",hesin:"庚金",desc:"甲庚 병존이면 길"},
-    {byung:"병지목왕",yongsin:"甲木",hesin:"庚金",desc:"甲庚 함께면 귀격"},
-    {byung:"쇠지토왕",yongsin:"甲木",hesin:"庚金",desc:"甲으로 土克 해결"},
-    {byung:"제왕화왕",yongsin:"甲木",hesin:"庚金",desc:"庚壬 조절 필요"},
-    {byung:"건록염열",yongsin:"壬水",hesin:"庚金",desc:"壬水로 과열 제어"},
-    {byung:"관대토다",yongsin:"甲木",hesin:"壬水",desc:"甲木이 우선"},
-    {byung:"목욕금왕",yongsin:"甲木",hesin:"庚金",desc:"甲庚 병존 귀격"},
-    {byung:"장생신금",yongsin:"甲木",hesin:"庚金",desc:"甲庚 병존 귀격"},
-    {byung:"양지토왕",yongsin:"甲木",hesin:"庚金",desc:"甲木이 최우선"},
-    {byung:"태지수왕",yongsin:"甲木",hesin:"庚金",desc:"甲木이 가장 급함"},
-    {byung:"절지한동",yongsin:"甲木",hesin:"庚金",desc:"甲없으면 촛불이 꺼짐"},
-    {byung:"묘지한극",yongsin:"甲木",hesin:"庚金",desc:"甲木이 생명줄"}
-  ],
-  // 戊土 [寅卯辰巳午未申酉戌亥子丑]
-  [
-    {byung:"장생목왕",yongsin:"丙火",hesin:"甲木",desc:"丙甲 병존이면 길"},
-    {byung:"목욕목왕",yongsin:"丙火",hesin:"甲木",desc:"庚으로 甲制 가능"},
-    {byung:"관대토왕",yongsin:"甲木",hesin:"丙火",desc:"甲丙癸 삼위"},
-    {byung:"건록화조",yongsin:"甲木",hesin:"癸水",desc:"甲癸 병존이면 길"},
-    {byung:"제왕화조",yongsin:"甲木",hesin:"癸水",desc:"癸水가 없으면 조토"},
-    {byung:"쇠토조열",yongsin:"甲木",hesin:"癸水",desc:"甲癸 병존 필수"},
-    {byung:"병지금설",yongsin:"丙火",hesin:"癸水",desc:"丙癸 조화"},
-    {byung:"사지금설",yongsin:"丙火",hesin:"癸水",desc:"丙癸 병존"},
-    {byung:"묘지토왕",yongsin:"甲木",hesin:"丙火",desc:"甲이 최우선"},
-    {byung:"절지수왕",yongsin:"丙火",hesin:"甲木",desc:"丙甲 병존 필요"},
-    {byung:"태지한동",yongsin:"丙火",hesin:"甲木",desc:"丙火가 급함"},
-    {byung:"양지한극",yongsin:"丙火",hesin:"甲木",desc:"丙火 절대적"}
-  ],
-  // 己土 [寅卯辰巳午未申酉戌亥子丑]
-  [
-    {byung:"사지한잔",yongsin:"丙火",hesin:"癸水",desc:"丙癸 조화가 핵심"},
-    {byung:"병지목왕",yongsin:"丙火",hesin:"癸水",desc:"丙癸 병존"},
-    {byung:"쇠지토왕",yongsin:"丙火",hesin:"癸水",desc:"丙癸 균형"},
-    {byung:"제왕화조",yongsin:"癸水",hesin:"丙火",desc:"癸水가 우선"},
-    {byung:"건록염열",yongsin:"癸水",hesin:"丙火",desc:"癸水 없으면 조토"},
-    {byung:"관대토조",yongsin:"癸水",hesin:"丙火",desc:"癸丙 병존이면 길"},
-    {byung:"목욕금왕",yongsin:"丙火",hesin:"癸水",desc:"丙癸 병존"},
-    {byung:"장생금왕",yongsin:"丙火",hesin:"癸水",desc:"丙癸 조화"},
-    {byung:"양지토왕",yongsin:"甲木",hesin:"癸水",desc:"甲癸 병존이면 길"},
-    {byung:"태지수왕",yongsin:"丙火",hesin:"甲木",desc:"丙甲 병존"},
-    {byung:"절지한동",yongsin:"丙火",hesin:"甲木",desc:"丙火 급무"},
-    {byung:"묘지한극",yongsin:"丙火",hesin:"甲木",desc:"丙火 절대적"}
-  ],
-  // 庚金 [寅卯辰巳午未申酉戌亥子丑]
-  [
-    {byung:"절지목왕",yongsin:"戊土",hesin:"丙火",desc:"庚이 약하므로 戊土 생조 우선"},
-    {byung:"태지목왕",yongsin:"丁火",hesin:"甲木",desc:"丁甲 조합이 이상적"},
-    {byung:"양지토왕",yongsin:"甲木",hesin:"丁火",desc:"甲丁 병존이면 길"},
-    {byung:"장생화왕",yongsin:"壬水",hesin:"戊土",desc:"壬水로 과열 방지"},
-    {byung:"목욕염열",yongsin:"壬水",hesin:"戊土",desc:"壬水 없으면 金이 녹음"},
-    {byung:"관대조열",yongsin:"丁火",hesin:"甲木",desc:"丁甲이 핵심"},
-    {byung:"건록금왕",yongsin:"丁火",hesin:"甲木",desc:"丁甲 병존 문무귀격"},
-    {byung:"제왕금극",yongsin:"丁火",hesin:"甲木",desc:"丁甲 병존 귀격"},
-    {byung:"쇠토왕",yongsin:"甲木",hesin:"壬水",desc:"甲壬丁 삼위"},
-    {byung:"병지수왕",yongsin:"丁火",hesin:"甲木",desc:"丁甲 병존이면 길"},
-    {byung:"사지한동",yongsin:"丁火",hesin:"丙火",desc:"丁丙 병존이면 좋음"},
-    {byung:"묘지한극",yongsin:"丙火",hesin:"丁火",desc:"丙丁 병존 길"}
-  ],
-  // 辛金 [寅卯辰巳午未申酉戌亥子丑]
-  [
-    {byung:"태지목왕",yongsin:"己土",hesin:"壬水",desc:"己土 보호가 우선"},
-    {byung:"절지목왕",yongsin:"壬水",hesin:"甲木",desc:"壬水가 핵심"},
-    {byung:"묘지토왕",yongsin:"壬水",hesin:"甲木",desc:"壬甲 병존이면 길"},
-    {byung:"사지화왕",yongsin:"壬水",hesin:"庚金",desc:"壬水가 방어막"},
-    {byung:"병지염열",yongsin:"壬水",hesin:"庚金",desc:"壬水 없으면 玉이 녹음"},
-    {byung:"쇠지조열",yongsin:"壬水",hesin:"庚金",desc:"壬庚 병존이면 길"},
-    {byung:"제왕금왕",yongsin:"壬水",hesin:"甲木",desc:"壬甲 병존 귀격"},
-    {byung:"건록금왕",yongsin:"壬水",hesin:"甲木",desc:"壬甲 병존"},
-    {byung:"관대토왕",yongsin:"壬水",hesin:"甲木",desc:"壬甲 조합"},
-    {byung:"목욕수왕",yongsin:"甲木",hesin:"丙火",desc:"丙甲 병존이면 길"},
-    {byung:"장생한동",yongsin:"丙火",hesin:"壬水",desc:"丙火로 온난 필수"},
-    {byung:"양지한극",yongsin:"丙火",hesin:"壬水",desc:"丙火가 절대적"}
-  ],
-  // 壬水 [寅卯辰巳午未申酉戌亥子丑]
-  [
-    {byung:"병지목설",yongsin:"庚金",hesin:"戊土",desc:"庚戊 병존이면 길"},
-    {byung:"사지목설",yongsin:"庚金",hesin:"戊土",desc:"庚戊 조합"},
-    {byung:"묘지토극",yongsin:"甲木",hesin:"庚金",desc:"甲庚 병존이면 길"},
-    {byung:"절지화극",yongsin:"庚金",hesin:"癸水",desc:"庚이 수원을 유지"},
-    {byung:"태지염열",yongsin:"庚金",hesin:"辛金",desc:"金生水가 핵심"},
-    {byung:"양지조열",yongsin:"辛金",hesin:"甲木",desc:"辛甲 병존이면 길"},
-    {byung:"장생금왕",yongsin:"戊土",hesin:"甲木",desc:"戊甲 조합으로 제어"},
-    {byung:"목욕금성",yongsin:"戊土",hesin:"甲木",desc:"戊甲 병존 필수"},
-    {byung:"관대토왕",yongsin:"甲木",hesin:"丙火",desc:"甲丙 병존이면 길"},
-    {byung:"건록수왕",yongsin:"戊土",hesin:"甲木",desc:"戊없으면 범람"},
-    {byung:"제왕극한",yongsin:"戊土",hesin:"丙火",desc:"戊丙 병존 귀격"},
-    {byung:"쇠한동결",yongsin:"丙火",hesin:"甲木",desc:"丙火가 급무"}
-  ],
-  // 癸水 [寅卯辰巳午未申酉戌亥子丑]
-  [
-    {byung:"목욕목설",yongsin:"辛金",hesin:"庚金",desc:"辛庚 병존이면 길"},
-    {byung:"장생목설",yongsin:"辛金",hesin:"庚金",desc:"辛庚 조합"},
-    {byung:"양지토극",yongsin:"甲木",hesin:"丙火",desc:"甲丙 병존이면 길"},
-    {byung:"태지화극",yongsin:"庚金",hesin:"甲木",desc:"金生水가 핵심"},
-    {byung:"절지염열",yongsin:"庚金",hesin:"辛金",desc:"金없으면 癸水 고갈"},
-    {byung:"묘지조열",yongsin:"庚金",hesin:"甲木",desc:"庚辛 병존이면 길"},
-    {byung:"사지금왕",yongsin:"辛金",hesin:"丙火",desc:"辛丙 조합"},
-    {byung:"병지금왕",yongsin:"辛金",hesin:"丙火",desc:"辛丙 병존이면 귀격"},
-    {byung:"쇠토극수",yongsin:"辛金",hesin:"甲木",desc:"辛甲 병존이면 길"},
-    {byung:"제왕수왕",yongsin:"庚金",hesin:"丙火",desc:"庚丙 조합"},
-    {byung:"건록한동",yongsin:"丙火",hesin:"辛金",desc:"丙火가 절대 우선"},
-    {byung:"관대한극",yongsin:"丙火",hesin:"辛金",desc:"丙火 없으면 泉이 얼음"}
-  ]
+  [{byung:"한기",yongsin:"丙火",hesin:"癸水",desc:"丙癸 병존이면 부귀쌍전"},{byung:"목왕",yongsin:"庚金",hesin:"丁火",desc:"벽갑인정(劈甲引丁)"},{byung:"토다체목",yongsin:"庚金",hesin:"壬水",desc:"소토(疎土)가 핵심"},{byung:"조열",yongsin:"癸水",hesin:"庚金",desc:"癸水가 생명수"},{byung:"극열",yongsin:"癸水",hesin:"庚金",desc:"癸水 하나가 열 용신보다 값짐"},{byung:"화토조열",yongsin:"癸水",hesin:"庚金",desc:"癸水 주용신"},{byung:"관살과다",yongsin:"丁火",hesin:"甲木",desc:"제살(制殺)"},{byung:"금왕극제",yongsin:"丁火",hesin:"丙火",desc:"丁 하나가 재능 결정"},{byung:"토다목고",yongsin:"壬水",hesin:"庚金",desc:"수기 없으면 고목"},{byung:"수다목부",yongsin:"丙火",hesin:"戊土",desc:"丙火로 한기 제거"},{byung:"극한",yongsin:"丁火",hesin:"丙火",desc:"癸水는 이달 금물"},{byung:"한습",yongsin:"丙火",hesin:"庚金",desc:"丙火 태양 절대적"}],
+  [{byung:"한기",yongsin:"丙火",hesin:"癸水",desc:"화초는 태양이 급함"},{byung:"목성유동",yongsin:"丙火",hesin:"癸水",desc:"목화통명(木火通明)"},{byung:"최적환경",yongsin:"丙火",hesin:"癸水",desc:"辰土가 乙木의 집"},{byung:"조열",yongsin:"癸水",hesin:"丙火",desc:"맑은 癸水가 제격"},{byung:"극열",yongsin:"癸水",hesin:"丙火",desc:"癸水 한 모금이 화초를 살림"},{byung:"화토조열",yongsin:"癸水",hesin:"己土",desc:"癸水로 수분"},{byung:"관살태왕",yongsin:"丙火",hesin:"癸水",desc:"상관제살(傷官制殺)"},{byung:"금왕극제",yongsin:"丙火",hesin:"癸水",desc:"丙으로 금기 누그러뜨림"},{byung:"토조목고",yongsin:"癸水",hesin:"辛金",desc:"辛은 이슬 수원"},{byung:"수다목부",yongsin:"丙火",hesin:"戊土",desc:"丙火로 습기 제거"},{byung:"극한",yongsin:"丙火",hesin:"癸水",desc:"뿌리는 살아있음"},{byung:"한습",yongsin:"丙火",hesin:"庚金",desc:"丙火로 해동"}],
+  [{byung:"화약",yongsin:"壬水",hesin:"庚金",desc:"강휘상영(江暉相映)"},{byung:"목다화색",yongsin:"壬水",hesin:"甲木",desc:"壬水로 균형"},{byung:"습기",yongsin:"壬水",hesin:"甲木",desc:"壬 투간이면 귀격"},{byung:"화왕",yongsin:"壬水",hesin:"庚金",desc:"壬丙 함께면 문무겸비"},{byung:"극성",yongsin:"壬水",hesin:"庚金",desc:"겸손이 핵심"},{byung:"화토조열",yongsin:"壬水",hesin:"甲木",desc:"壬 한 줄기가 모두 해결"},{byung:"화쇠",yongsin:"甲木",hesin:"壬水",desc:"원숙한 노을빛"},{byung:"금왕화쇠",yongsin:"甲木",hesin:"壬水",desc:"甲木이 마지막 연료"},{byung:"토다회광",yongsin:"甲木",hesin:"壬水",desc:"황혼의 미학"},{byung:"수왕냉습",yongsin:"甲木",hesin:"戊土",desc:"甲木으로 수기 소통"},{byung:"극약",yongsin:"甲木",hesin:"戊土",desc:"동지 후 반드시 상승"},{byung:"한기",yongsin:"甲木",hesin:"壬水",desc:"반전의 에너지"}],
+  [{byung:"풍취화약",yongsin:"甲木",hesin:"庚金",desc:"甲木 연료+庚金 다듬기"},{byung:"병화엄폐",yongsin:"庚金",hesin:"甲木",desc:"제련 전문가로 틈새"},{byung:"습기심지",yongsin:"甲木",hesin:"庚金",desc:"환경 불리해도 재료가 변화"},{byung:"이중열기",yongsin:"庚金",hesin:"甲木",desc:"혹독한 환경에서 전문성"},{byung:"과열자소",yongsin:"壬水",hesin:"庚金",desc:"과유불급"},{byung:"화토조열",yongsin:"庚金",hesin:"壬水",desc:"극한이 최고 제련사"},{byung:"금다화식",yongsin:"甲木",hesin:"丙火",desc:"강한 쇠엔 뜨거운 불"},{byung:"금다화식",yongsin:"甲木",hesin:"丙火",desc:"丁辛 제련 전문성"},{byung:"화묘입묘",yongsin:"甲木",hesin:"庚金",desc:"불씨 살아있음"},{byung:"수왕풍취",yongsin:"甲木",hesin:"戊土",desc:"지키는 것이 승리"},{byung:"극한암야",yongsin:"甲木",hesin:"戊土",desc:"丁火만이 밤을 밝힘"},{byung:"한기장야",yongsin:"甲木",hesin:"庚金",desc:"소리 없이 강한 존재"}],
+  [{byung:"목왕극토",yongsin:"丙火",hesin:"甲木",desc:"木→火→土 살인상생"},{byung:"목왕토쇠",yongsin:"丙火",hesin:"庚金",desc:"상격(上格)"},{byung:"토중자비",yongsin:"丙火",hesin:"甲木",desc:"자기 역할 찾기"},{byung:"화토조열",yongsin:"壬水",hesin:"甲木",desc:"壬水 냉각수"},{byung:"화토동근극조",yongsin:"壬水",hesin:"甲木",desc:"극강의 역설"},{byung:"화토조열",yongsin:"壬水",hesin:"甲木",desc:"先潤後疎"},{byung:"금다토설",yongsin:"丙火",hesin:"壬水",desc:"베풀수록 풍요"},{byung:"금왕토허",yongsin:"丙火",hesin:"甲木",desc:"균형 배우기"},{byung:"토왕과강",yongsin:"甲木",hesin:"壬水",desc:"가장 강할 때 겸손"},{byung:"수왕토류",yongsin:"丙火",hesin:"戊土",desc:"제방 역할이 사명"},{byung:"수왕극한",yongsin:"丙火",hesin:"甲木",desc:"내면에 에너지 축적"},{byung:"한습극강",yongsin:"丙火",hesin:"甲木",desc:"불변의 위대함"}],
+  [{byung:"한기",yongsin:"丙火",hesin:"癸水",desc:"丙癸 조화가 핵심"},{byung:"목왕토허",yongsin:"丙火",hesin:"癸水",desc:"丙火로 포용"},{byung:"최적환경",yongsin:"丙火",hesin:"癸水",desc:"무엇이든 자라는 흙"},{byung:"조열",yongsin:"癸水",hesin:"丙火",desc:"수분 관리가 기본"},{byung:"극조",yongsin:"癸水",hesin:"丙火",desc:"단비 한 줄기"},{byung:"토중조열",yongsin:"癸水",hesin:"丙火",desc:"강함과 부드러움"},{byung:"최적환경",yongsin:"癸水",hesin:"丙火",desc:"풍성한 수확"},{byung:"금왕토허",yongsin:"丙火",hesin:"癸水",desc:"비워야 다시 채움"},{byung:"토조목고",yongsin:"甲木",hesin:"癸水",desc:"깊어지는 달"},{byung:"수왕토류",yongsin:"丙火",hesin:"戊土",desc:"한계 아는 것이 지혜"},{byung:"수왕극한",yongsin:"丙火",hesin:"戊土",desc:"씨앗을 품는 달"},{byung:"한습극강",yongsin:"丙火",hesin:"甲木",desc:"기다림이 사랑"}],
+  [{byung:"화약미련",yongsin:"丁火",hesin:"甲木",desc:"丁火로 날 벼림"},{byung:"용다도둔",yongsin:"丁火",hesin:"壬水",desc:"관리 없는 능력은 소모"},{byung:"충전기",yongsin:"丁火",hesin:"甲木",desc:"에너지 비축"},{byung:"화강도용",yongsin:"壬水",hesin:"丁火",desc:"시련이 강함 만듦"},{byung:"극열용해",yongsin:"壬水",hesin:"戊土",desc:"고통이 성장"},{byung:"화토잔열",yongsin:"壬水",hesin:"甲木",desc:"단련 완성기"},{byung:"금왕무방",yongsin:"甲木",hesin:"丁火",desc:"쓰임새가 핵심"},{byung:"금왕극강",yongsin:"甲木",hesin:"丁火",desc:"올바른 방향으로"},{byung:"금기하강",yongsin:"壬水",hesin:"丁火",desc:"원숙한 광채"},{byung:"금수설기",yongsin:"丙火",hesin:"戊土",desc:"광채 유지"},{byung:"극한중침",yongsin:"丙火",hesin:"甲木",desc:"고요 속 단련"},{byung:"한기동결",yongsin:"丁火",hesin:"甲木",desc:"봄에 먼저 일어섬"}],
+  [{byung:"한기",yongsin:"己土",hesin:"丙火",desc:"己土 보호 우선"},{byung:"목왕재다",yongsin:"壬水",hesin:"甲木",desc:"도세주옥(淘洗珠玉)"},{byung:"토다매금",yongsin:"甲木",hesin:"壬水",desc:"흙에서 꺼낸 보석"},{byung:"화강변색",yongsin:"壬水",hesin:"庚金",desc:"壬水가 방어막"},{byung:"극열손상",yongsin:"壬水",hesin:"癸水",desc:"녹아내림 방지"},{byung:"화토조열",yongsin:"壬水",hesin:"庚金",desc:"광채 관리"},{byung:"최적환경",yongsin:"壬水",hesin:"戊土",desc:"자기다움"},{byung:"금왕극강",yongsin:"壬水",hesin:"甲木",desc:"고향에서 극성"},{byung:"토다매금",yongsin:"甲木",hesin:"壬水",desc:"깊이 보존"},{byung:"수다금침",yongsin:"丙火",hesin:"壬水",desc:"줄수록 맑아짐"},{byung:"극한동결",yongsin:"丙火",hesin:"戊土",desc:"따뜻하면 드러남"},{byung:"한습동토",yongsin:"丙火",hesin:"壬水",desc:"스스로 빛남"}],
+  [{byung:"목다수설",yongsin:"庚金",hesin:"丙火",desc:"수원 확보 우선"},{byung:"목다수설",yongsin:"庚金",hesin:"丙火",desc:"베풀수록 풍성"},{byung:"풍성기",yongsin:"庚金",hesin:"甲木",desc:"흐름 잃지 않기"},{byung:"화열증발",yongsin:"庚金",hesin:"戊土",desc:"가진 것 지키기"},{byung:"극열건고",yongsin:"庚金",hesin:"辛金",desc:"극한 속 근원"},{byung:"화토흡수",yongsin:"庚金",hesin:"甲木",desc:"깊어지는 지하수"},{byung:"수왕과강",yongsin:"甲木",hesin:"戊土",desc:"방향 전환"},{byung:"수왕과강",yongsin:"甲木",hesin:"戊土",desc:"투명함이 아름다움"},{byung:"조토흡수",yongsin:"庚金",hesin:"甲木",desc:"넓이보다 깊이"},{byung:"수왕홍수",yongsin:"戊土",hesin:"丙火",desc:"강할 때 방향 잡기"},{byung:"수왕결빙",yongsin:"丙火",hesin:"甲木",desc:"흐름이 본질"},{byung:"표면동결",yongsin:"丙火",hesin:"庚金",desc:"속은 흐름"}],
+  [{byung:"한기",yongsin:"丙火",hesin:"庚金",desc:"작은 이슬이 씨앗 깨움"},{byung:"목다수설",yongsin:"庚金",hesin:"丙火",desc:"수원이 절실"},{byung:"최적환경",yongsin:"丙火",hesin:"甲木",desc:"대지를 생명으로"},{byung:"화열증발",yongsin:"庚金",hesin:"辛金",desc:"든든한 지원"},{byung:"극열순증",yongsin:"庚金",hesin:"壬水",desc:"변화가 생존"},{byung:"화토희소",yongsin:"庚金",hesin:"辛金",desc:"존재 자체가 기적"},{byung:"부활기",yongsin:"辛金",hesin:"庚金",desc:"가을에 아름다운 부활"},{byung:"극미기",yongsin:"辛金",hesin:"丙火",desc:"가장 아름다운 달"},{byung:"건조희소",yongsin:"辛金",hesin:"庚金",desc:"정확히 필요한 곳"},{byung:"수왕합류",yongsin:"庚金",hesin:"戊土",desc:"본질 잃지 말 것"},{byung:"한기서리",yongsin:"丙火",hesin:"庚金",desc:"형태 바뀌어도 본질"},{byung:"극한",yongsin:"丙火",hesin:"庚金",desc:"가장 질긴 존재"}]
 ];
 
 // ── 에너지 이야기 (축약 — 앱 용량 최적화) ──
 const MONTHLY_STORY=Array(10).fill(null).map((_,dc)=>Array(12).fill(null).map((_,mi)=>({
   keyword:YONGSIN_DATA[dc][mi].byung,
   title:`${ILGAN_NAME[dc]} × ${MO_LABEL[mi]}월`,
-  story:(()=>{const bd=BYUNG_MAP[YONGSIN_DATA[dc][mi].byung]||YONGSIN_DATA[dc][mi].byung;const us=UNSUNG_12[dc][mi];const ud=UNSUNG_DESC[us]||'';return `${ILGAN_NAME[dc]}(${ILGAN_NAT[dc]})이 ${MO_LABEL[mi]}월, ${MO_DESC[mi]}에 태어났습니다.\n일간의 에너지 상태: ${us}(${ud})\n${bd}\n용신: ${YONGSIN_DATA[dc][mi].yongsin} — ${YONGSIN_DATA[dc][mi].desc}`;})() 
+  story:`${ILGAN_NAME[dc]}(${ILGAN_NAT[dc]})이 ${MO_LABEL[mi]}월을 맞는 시간입니다.\n병(病): ${YONGSIN_DATA[dc][mi].byung} | 용신: ${YONGSIN_DATA[dc][mi].yongsin}\n${YONGSIN_DATA[dc][mi].desc}`
 })));
 
 // ── 렌더링 함수들 ──
@@ -1415,7 +864,7 @@ function renderEnergyCode(s){
   const GEK_COLOR={"독립·자생":"#1e8449","경쟁·도전":"#c0392b","표현·생산":"#1a6b3c","혁신·자유":"#922b21","행동·현실":"#784212","안정·성실":"#1a5276","단련·극복":"#6e2f1a","규범·책임":"#1f618d","직관·탐구":"#512e5f","수용·배움":"#1a5276"};
   const gc=GEK_COLOR[gek.label]||"#5a3e00";
   let mbtiHtml='';
-  if(mbti&&MBTI_DATA[mbti]){const m=MBTI_DATA[mbti];mbtiHtml=`<span class="ec-cross">×</span><span style="font-size:10px;color:#8a6200;font-weight:700">MBTI:</span><span class="mbti-badge">${mbti}</span>`;}
+  if(mbti&&MBTI_DATA[mbti]){const m=MBTI_DATA[mbti];mbtiHtml=`<span class="ec-cross">×</span><span class="mbti-badge">${mbti} ${m.name}</span>`;}
   const byungOH=extractOH(yong.byung),yongOH=extractOH(yong.yongsin),hesinOH=extractOH(yong.hesin);
   const byungPill=ohPill('byung',yong.byung,byungOH||'토');
   const yongPill=ohPill('yong',yong.yongsin,yongOH||'목');
@@ -1424,30 +873,21 @@ function renderEnergyCode(s){
   const id=`s${dc}_${moIdx}`;
   return`<div class="energy-code-box">
     <div class="ec-title">✦ 나의 에너지 코드</div>
-    <div class="energy-code-main" style="flex-direction:column;align-items:flex-start;gap:6px">
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <span style="font-size:10px;color:#8a6200;font-weight:700">일간</span>
-        <span class="ec-badge" style="background:${co.bg};color:${co.t};border:1px solid ${co.b}">${ILGAN_NAME[dc]}</span>
-        <span class="ec-cross">×</span>
-        <span style="font-size:10px;color:#8a6200;font-weight:700">격국</span>
-        <span class="gek-badge" style="background:${gc}">${gek.sipsin}</span>
-        ${mbtiHtml}
-      </div>
-      <div style="font-size:11px;color:#5a4020;line-height:1.9;margin-top:4px">
-        <span style="font-weight:700">${ILGAN_NAME[dc]}</span>: ${ILGAN_NAT[dc]}&nbsp;
-        <span style="color:#d0c0a0">·</span>&nbsp;
-        <span style="font-weight:700">${gek.sipsin}</span>: ${gek.label}&nbsp;
-        ${mbti&&MBTI_DATA[mbti]?`<span style="color:#d0c0a0">·</span>&nbsp;<span style="font-weight:700">${mbti}</span>: ${MBTI_DATA[mbti].name}`:''}
-      </div>
+    <div class="energy-code-main">
+      <span class="ec-badge" style="background:${co.bg};color:${co.t};border:1px solid ${co.b}">${ILGAN_NAME[dc]} (${ILGAN_NAT[dc]})</span>
+      <span class="ec-cross">×</span>
+      <span class="gek-badge" style="background:${gc}">${gek.label}</span>
+      ${mbtiHtml}
     </div>
+    <div class="ec-desc"><b>${ILGAN_NAME[dc]}</b>: ${ILGAN_CORE[dc]} 사람<br><b>${gek.sipsin} → ${gek.label}</b>: ${gek.desc}</div>
     <div class="story-accordion">
       <button class="story-toggle" id="toggle_${id}" onclick="toggleStory('${id}')">
-        <span class="toggle-label">✦ 나의 밸런스 오행</span>
+        <span class="toggle-label">📖 에너지 이야기 · 용신</span>
         <span class="toggle-arrow">▼</span>
       </button>
       <div class="story-body" id="body_${id}">
         <div class="story-sec">
-          <div class="story-sec-title">✦ 내가 태어난 에너지 구조</div>
+          <div class="story-sec-title">✦ 이달의 에너지</div>
           <div class="story-text">${story.story}</div>
         </div>
         <div class="story-sec">
@@ -1474,6 +914,7 @@ function renderChart(s){
   const pillarCards=displayOrder.map(origIdx=>{
     const p=pillars[origIdx];const isDay=(origIdx===2);const isHour=(origIdx===3);
     const co=OH[OH_CG[p.cg]],jo=OH[OH_JJ[p.jj]];
+    const jzItems=JJGAN[p.jj].map(c=>`<div class="item" style="color:${CO[OH[OH_CG[c]]].t}">${CG[c]}<span style="font-size:8px;color:#8a7a5a;margin-left:1px">${OH[OH_CG[c]]}</span></div>`).join('');
     return`<div class="pillar${isDay?' day':''}">
       ${p.warn?'<div class="warn">절기경계</div>':''}
       <div class="col-label">${p.label}</div>
@@ -1482,19 +923,32 @@ function renderChart(s){
       <div class="kr">${CG_KR[p.cg]}</div>
       ${ohBadge(co)}
       <div class="divider"></div>
-      <div class="ss">${getSS(dc,JJ_JEONGGI[p.jj])}</div>
       <div class="hj" style="color:${CO[jo].t}">${JJ[p.jj]}</div>
       <div class="kr">${JJ_KR[p.jj]}</div>
       ${ohBadge(jo)}
+      ${isHour?`<div class="kr">${s.shiName}</div>`:''}
+      <div class="jzgan"><div class="lbl">지장간</div>${jzItems}</div>
     </div>`;
   }).join('');
+  const sipsinItems=pillars.filter((_,i)=>i!==2).map(p=>`<div class="sipsin-item"><span class="k">${p.label}</span><span class="v">${p.ss}</span></div>`).join('');
+  const gmItems=gongmang.jj.map(j=>{
+    const inChart=pillars.some(p=>p.jj===j);const jo=OH[OH_JJ[j]];
+    return`<div class="gm-item${inChart?' in-chart':''}"><div class="hj" style="color:${CO[jo].t}">${JJ[j]}</div><div class="kr">${JJ_KR[j]}</div>${inChart?'<div class="star">명식 내 ★</div>':''}</div>`;
+  }).join('');
+  const gmNote=gongmang.jj.some(j=>pillars.some(p=>p.jj===j))?'★ 명식 내 공망 — 작용 약화':'명식 내 공망 없음';
   return`${renderEnergyCode(s)}
-
+    <div class="summary-box"><div class="lbl">일간</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:32px;font-weight:700;font-family:serif;color:${CO[OH[OH_CG[dc]]].t};line-height:1">${CG[dc]}</div>
+        <div><div style="font-size:13px;font-weight:700">${CG_KR[dc]} (${OH[OH_CG[dc]]})</div><div style="margin-top:3px">${ohBadges}</div></div>
+      </div>
+    </div>
     <div class="pillar-section">
+      <div class="pillar-direction"><span class="dir-label">시주</span><span class="dir-arrow">← 년주 방향</span><span class="dir-label">년주</span></div>
       <div class="pillar-row">${pillarCards}</div>
     </div>
-    <div style="margin-top:18px">${renderDaeun(s)}</div>
-`;
+    <div class="sipsin-box"><div class="lbl">십신 구조</div><div class="sipsin-row">${sipsinItems}</div></div>
+    <div class="gm-box"><div class="lbl">공망(空亡) · ${gongmang.sunName}</div><div class="gm-row">${gmItems}<div class="gm-note">${gmNote}</div></div></div>`;
 }
 
 function renderDaeun(s){
@@ -1534,284 +988,70 @@ function renderDaeun(s){
   </div>${nowBox}`;
 }
 
-function buildCopyText(s, gdOverride){
+function buildCopyText(s){
   const{pillars,dc,daeun}=s;
   const yr=parseInt(document.getElementById('yr').value);
-  const gd=gdOverride||document.getElementById('gd').value;
-  const pillarStr=pillars.map(p=>
-    p.label+': '+CG[p.cg]+JJ[p.jj]+
-    ' ['+CG_KR[p.cg]+'('+OH[OH_CG[p.cg]]+') / '+JJ_KR[p.jj]+'('+OH[OH_JJ[p.jj]]+')]'
-  ).join('\n');
-  const dStr=daeun.daeuns.slice(0,8).map(d=>d.age+'세 '+CG[d.cg]+JJ[d.jj]).join(' / ');
+  const gd=document.getElementById('gd').value;
+  const mbti=document.getElementById('mbti').value;
+  const moJJ=pillars[1].jj;const moIdx=jjToMoIdx(moJJ);
+  const gek=getGekInfo(dc,moJJ);
+  const yong=YONGSIN_DATA[dc][moIdx];
+  const oh1=yongsinToOH(yong.yongsin);
+  const pillarStr=pillars.map(p=>p.label+': '+CG[p.cg]+JJ[p.jj]+' ['+CG_KR[p.cg]+'('+OH[OH_CG[p.cg]]+') / '+JJ_KR[p.jj]+'('+OH[OH_JJ[p.jj]]+')] 십신: '+p.ss).join('\n');
+  const ohCnt={목:0,화:0,토:0,금:0,수:0};
+  pillars.forEach(p=>{ohCnt[OH[OH_CG[p.cg]]]++;ohCnt[OH[OH_JJ[p.jj]]]++;});
+  const ohStr=Object.entries(ohCnt).map(e=>e[0]+e[1]).join(' ');
+  const dStr=daeun.daeuns.slice(0,8).map(d=>d.age+'세 '+CG[d.cg]+JJ[d.jj]+'('+d.ss+')').join(' / ');
   const cd=daeun.daeuns.find(d=>nowYear>=yr+d.age&&nowYear<=yr+d.age+9);
   const dir=daeun.forward?'순행':'역행';
+  const healthStr=oh1?`\n[용신 건강 추천 오행: ${oh1}(${OH_HEALTH[oh1]?.organ||''})]`:'';
   return'아래 사주를 종합 간명해주세요.\n\n'+
-    '성별: '+gd+'성\n\n'+
-    '[사주 원국]\n'+pillarStr+'\n\n'+
+    '[나의 에너지 코드]\n일간: '+ILGAN_NAME[dc]+' ('+ILGAN_NAT[dc]+')\n'+
+    '格 방향: '+gek.sipsin+' → '+gek.label+'\n'+
+    (mbti&&MBTI_DATA[mbti]?'MBTI: '+mbti+' ('+MBTI_DATA[mbti].name+')\n':'')+
+    '[용신 (병약론)]\n병(病): '+yong.byung+' | 용신: '+yong.yongsin+(yong.hesin&&yong.hesin!=='-'?' | 희신: '+yong.hesin:'')+'\n'+
+    yong.desc+healthStr+'\n\n'+
+    '[사주 원국]\n'+pillarStr+'\n일간: '+CG[dc]+CG_KR[dc]+' ('+OH[OH_CG[dc]]+') | 성별: '+gd+'성\n'+
+    '오행분포: '+ohStr+'\n\n'+
     '[대운] '+dir+' | '+daeun.sy+'세 시작\n'+dStr+
-    (cd?'\n현재 대운('+nowYear+'): '+CG[cd.cg]+JJ[cd.jj]:'');
-}
-
-
-// ══════════════════════════════════════════════
-// 궁합 탭
-// ══════════════════════════════════════════════
-
-// 오행 상생상극 관계
-const OH_SANGSAENG = {목:'화',화:'토',토:'금',금:'수',수:'목'}; // A가 B를 생함
-const OH_SANGGEUK  = {목:'토',화:'금',토:'수',금:'목',수:'화'}; // A가 B를 극함
-
-function getOhRelation(oh1, oh2){
-  if(oh1===oh2) return {type:'비화',score:10,emoji:'🤝',desc:'같은 오행. 서로 잘 이해하지만 에너지가 한 방향으로 몰릴 수 있습니다.'};
-  if(OH_SANGSAENG[oh1]===oh2) return {type:'상생(생조)',score:20,emoji:'🌱',desc:`${oh1}이 ${oh2}를 생해주는 관계. 자연스럽게 에너지를 북돋아 줍니다.`};
-  if(OH_SANGSAENG[oh2]===oh1) return {type:'상생(수생)',score:20,emoji:'🌱',desc:`${oh2}이 ${oh1}를 생해주는 관계. 상대가 나를 자연스럽게 채워줍니다.`};
-  if(OH_SANGGEUK[oh1]===oh2) return {type:'상극(제어)',score:7,emoji:'⚡',desc:`${oh1}이 ${oh2}를 극하는 관계. 이끌어주는 힘이 되기도, 압박이 되기도 합니다.`};
-  return {type:'상극(제어됨)',score:7,emoji:'⚡',desc:`${oh2}이 ${oh1}를 극하는 관계. 상대에게 끌리면서도 에너지 긴장이 생길 수 있습니다.`};
-}
-
-// 일지 육합 목록
-const JJ_YUKHAP = [['子','丑'],['寅','亥'],['卯','戌'],['辰','酉'],['巳','申'],['午','未']];
-// 일지 충 목록
-const JJ_CHUNG  = [['子','午'],['丑','未'],['寅','申'],['卯','酉'],['辰','戌'],['巳','亥']];
-// 삼합
-const JJ_SAMHAP = [['申','子','辰'],['寅','午','戌'],['亥','卯','未'],['巳','酉','丑']];
-
-function getJjRelation(jj1, jj2){
-  const h1=JJ[jj1], h2=JJ[jj2];
-  for(const pair of JJ_YUKHAP){
-    if((pair[0]===h1&&pair[1]===h2)||(pair[1]===h1&&pair[0]===h2))
-      return{type:'육합(合)',score:45,emoji:'💫',desc:`${h1}과 ${h2}는 육합 관계. 배우자 자리에서 서로를 자연스럽게 당기는 힘이 있습니다.`};
-  }
-  for(const trio of JJ_SAMHAP){
-    if(trio.includes(h1)&&trio.includes(h2))
-      return{type:'삼합(合)',score:40,emoji:'✨',desc:`${h1}과 ${h2}는 삼합 관계. 같은 방향을 바라보는 에너지가 있습니다.`};
-  }
-  for(const pair of JJ_CHUNG){
-    if((pair[0]===h1&&pair[1]===h2)||(pair[1]===h1&&pair[0]===h2))
-      return{type:'충(沖)',score:0,emoji:'💥',desc:`${h1}과 ${h2}는 충 관계. 강한 자극과 변화를 일으킵니다. 끌리는 힘이 있지만 소통과 이해가 중요합니다.`};
-  }
-  return{type:'무관',score:30,emoji:'➖',desc:`특별한 합충 관계 없음. 서로 독립적인 에너지로 만납니다.`};
-}
-
-function getSajuYongshinOH(s){
-  // 일간(dc)과 월지(moIdx)로 YONGSIN_DATA에서 용신 오행 추출
-  const dc = s.pillars[2].cg; // 일간 천간 인덱스
-  const moJJ = s.pillars[1].jj; // 월지 지지 인덱스
-  try{
-    const moIdx = jjToMoIdx(moJJ);
-    const yongData = YONGSIN_DATA[dc][moIdx];
-    return yongsinToOH(yongData.yongsin); // 오행명 반환
-  }catch(e){ return null; }
-}
-
-function getYongshinCompat(s1, s2){
-  const vs1 = getSajuYongshinOH(s1); // s1 용신 오행
-  const vs2 = getSajuYongshinOH(s2); // s2 용신 오행
-  const oh1 = OH[OH_CG[s1.pillars[2].cg]]; // s1 일간 오행
-  const oh2 = OH[OH_CG[s2.pillars[2].cg]]; // s2 일간 오행
-  let score=0; let desc=[]; let matched=false;
-  if(vs1 && vs1===oh2){
-    score+=30;
-    desc.push(`상대(${oh2}) 일간이 나의 용신 오행. 상대가 내 에너지 균형을 자연스럽게 채워줍니다.`);
-    matched=true;
-  }
-  if(vs2 && vs2===oh1){
-    score+=30;
-    desc.push(`나(${oh1}) 일간이 상대의 용신 오행. 내가 상대의 에너지 균형을 채워줍니다.`);
-    matched=true;
-  }
-  if(!matched){
-    score=20;
-    desc.push('용신 오행이 직접 연결되지 않습니다. 다른 방식으로 서로를 보완할 수 있습니다.');
-  }
-  return{
-    score:Math.min(score,35),
-    emoji:matched?'💎':'🔶',
-    desc:desc.join(' '),
-    type:matched?'용신 보완':'용신 무관'
-  };
-}
-
-function compatGrade(total){
-  if(total>=80) return{grade:'최상 궁합 ★★★★★',color:'#2e7d4f',msg:'에너지가 매우 자연스럽게 흐릅니다. 서로를 성장시키는 이상적인 조합입니다.'};
-  if(total>=65) return{grade:'좋은 궁합 ★★★★☆',color:'#5a8a2f',msg:'에너지가 잘 보완됩니다. 소통으로 더욱 강한 관계가 될 수 있습니다.'};
-  if(total>=50) return{grade:'보통 궁합 ★★★☆☆',color:'#8a6200',msg:'서로 다른 에너지가 만납니다. 차이를 이해하면 시너지가 됩니다.'};
-  if(total>=35) return{grade:'주의 궁합 ★★☆☆☆',color:'#c27020',msg:'에너지 충돌이 있습니다. 인식하고 조율하는 노력이 필요합니다.'};
-  return{grade:'도전 궁합 ★☆☆☆☆',color:'#8b1a1a',msg:'에너지 방향이 크게 다릅니다. 서로를 깊이 이해하는 시간이 필요합니다.'};
-}
-
-function renderCompatPanel(){
-  return`<div class="compat-input-box">
-    <h3>💑 에너지 궁합 분석</h3>
-    <p style="font-size:10px;color:#9a8a6a;margin-bottom:12px;line-height:1.6">상대방의 생년월일시를 입력하면 두 사람의 에너지 구조를 비교 분석합니다.<br>일간 오행 관계 · 일지 합충 · 용신 보완 세 가지 기준으로 분석합니다.</p>
-    <div class="compat-row">
-      <label>생년</label>
-      <input type="number" id="c-yr" placeholder="예: 1990" min="1900" max="2050" style="max-width:90px">
-    </div>
-    <div class="compat-row">
-      <label>월·일</label>
-      <input type="number" id="c-mo" placeholder="월" min="1" max="12" style="max-width:50px">
-      <input type="number" id="c-dy" placeholder="일" min="1" max="31" style="max-width:50px">
-    </div>
-    <div class="compat-row">
-      <label>시각</label>
-      <input type="number" id="c-hr" placeholder="시(0~23)" min="0" max="23" style="max-width:65px">
-      <input type="number" id="c-mn" placeholder="분(0~59)" min="0" max="59" style="max-width:65px">
-    </div>
-    <div class="compat-gd-row">
-      <label>성별</label>
-      <button class="compat-gd-btn active" id="c-btn-m" onclick="setCompatGd('남')">남성</button>
-      <button class="compat-gd-btn" id="c-btn-f" onclick="setCompatGd('여')">여성</button>
-    </div>
-    <button class="compat-calc-btn" onclick="calcCompat()">✦ 궁합 분석하기</button>
-  </div>
-  <div id="compat-result-area"></div>`;
-}
-
-let compatGd='남';
-function setCompatGd(gd){
-  compatGd=gd;
-  document.getElementById('c-btn-m').className='compat-gd-btn'+(gd==='남'?' active':'');
-  document.getElementById('c-btn-f').className='compat-gd-btn'+(gd==='여'?' active':'');
-}
-
-function calcCompat(){
-  if(!currentSaju){alert('먼저 내 사주를 조회해주세요.');return;}
-  const yr=parseInt(document.getElementById('c-yr').value||0);
-  const mo=parseInt(document.getElementById('c-mo').value||0);
-  const dy=parseInt(document.getElementById('c-dy').value||0);
-  const hrVal=document.getElementById('c-hr').value;
-  const mnVal=document.getElementById('c-mn').value;
-  const hr=hrVal===''?0:parseInt(hrVal);
-  const mn=mnVal===''?0:parseInt(mnVal);
-  if(!yr||!mo||!dy){alert('상대방의 생년·월·일을 입력해주세요.');return;}
-  try{
-    const s2=buildSaju(yr,mo,dy,hr,mn,compatGd,JEOL_DATA);
-    renderCompatResult(currentSaju, s2);
-  }catch(e){
-    document.getElementById('compat-result-area').innerHTML=
-      `<div style="padding:14px;text-align:center;color:#8b1a1a;font-size:12px">⚠️ 사주 계산 중 오류가 발생했습니다.<br>입력값을 확인해주세요.</div>`;
-  }
-}
-
-function renderCompatResult(s1, s2){
-  const day1=s1.pillars[2], day2=s2.pillars[2]; // 일주
-  const oh1=OH[OH_CG[day1.cg]], oh2=OH[OH_CG[day2.cg]];
-  const jj1=day1.jj, jj2=day2.jj;
-
-  const rel_oh  = getOhRelation(oh1, oh2);
-  const rel_jj  = getJjRelation(jj1, jj2);
-  const rel_ys  = getYongshinCompat(s1, s2);
-
-  // 총점 계산 (각 기준 최대: 일간 30, 일지 30, 용신 40 → 합계 100)
-  const rawTotal = rel_oh.score + Math.max(0, rel_jj.score) + rel_ys.score;
-  const total = Math.min(100, Math.max(0, rawTotal));
-  const gr = compatGrade(total);
-
-  // SVG 링 차트
-  const r=38, cx=45, cy=45, circ=2*Math.PI*r;
-  const dash=(total/100)*circ;
-  const ringColor=total>=65?'#2e7d4f':total>=50?'#c9a227':total>=35?'#c27020':'#8b1a1a';
-
-  const barColor=(score,max)=>{
-    const pct=Math.max(0,score)/max*100;
-    return pct>=70?'#2e7d4f':pct>=45?'#c9a227':'#c27020';
-  };
-
-  document.getElementById('compat-result-area').innerHTML=`
-  <div class="compat-result">
-    <h3>에너지 궁합 분석 결과</h3>
-
-    <div class="compat-two-pillars">
-      <div class="compat-mini-card">
-        <div class="lbl">나의 일주</div>
-        <div class="hj" style="color:${CO[oh1]?.t||'#333'}">${CG[day1.cg]}${JJ[day1.jj]}</div>
-        <div class="kr">${CG_KR[day1.cg]} · ${JJ_KR[day1.jj]}</div>
-        ${ohBadge(oh1)}
-      </div>
-      <div style="display:flex;align-items:center;font-size:18px">💑</div>
-      <div class="compat-mini-card">
-        <div class="lbl">상대 일주</div>
-        <div class="hj" style="color:${CO[oh2]?.t||'#333'}">${CG[day2.cg]}${JJ[day2.jj]}</div>
-        <div class="kr">${CG_KR[day2.cg]} · ${JJ_KR[day2.jj]}</div>
-        ${ohBadge(oh2)}
-      </div>
-    </div>
-
-    <div class="compat-score-ring">
-      <svg viewBox="0 0 90 90">
-        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#e8e0d0" stroke-width="8"/>
-        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${ringColor}" stroke-width="8"
-          stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"
-          stroke-dashoffset="${(circ/4).toFixed(1)}"
-          stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>
-      </svg>
-      <div class="compat-score-num">${total}<span>/ 100</span></div>
-    </div>
-
-    <div class="compat-grade" style="color:${gr.color}">${gr.grade}</div>
-
-    <div class="compat-items">
-      <div class="compat-item">
-        <div class="compat-item-title">${rel_oh.emoji} 일간 오행 관계 — ${rel_oh.type}</div>
-        <div class="compat-item-bar"><div class="compat-item-bar-fill" style="width:${Math.max(0,rel_oh.score)/20*100}%;background:${barColor(rel_oh.score,20)}"></div></div>
-        <div class="compat-item-desc">${rel_oh.desc}</div>
-      </div>
-      <div class="compat-item">
-        <div class="compat-item-title">${rel_jj.emoji} 일지 합충 — ${rel_jj.type}</div>
-        <div class="compat-item-bar"><div class="compat-item-bar-fill" style="width:${Math.max(0,rel_jj.score/45*100)}%;background:${barColor(rel_jj.score+20,60)}"></div></div>
-        <div class="compat-item-desc">${rel_jj.desc}</div>
-      </div>
-      <div class="compat-item">
-        <div class="compat-item-title">${rel_ys.emoji} 용신 보완 — ${rel_ys.type}</div>
-        <div class="compat-item-bar"><div class="compat-item-bar-fill" style="width:${rel_ys.score/40*100}%;background:${barColor(rel_ys.score,40)}"></div></div>
-        <div class="compat-item-desc">${rel_ys.desc}</div>
-      </div>
-    </div>
-
-    <div class="compat-tip">
-      💡 ${gr.msg}<br>
-      <span style="font-size:9px;color:#9a8a6a">※ 이 궁합 분석은 일간·일지·용신 에너지 구조를 기준으로 합니다. AI 비서에게 두 사람의 사주를 함께 넣어 더 깊은 분석을 요청해보세요.</span>
-    </div>
-  </div>`;
+    (cd?'\n현재 대운('+nowYear+'): '+CG[cd.cg]+JJ[cd.jj]+'('+cd.ss+')':'');
 }
 
 let currentSaju=null;
 let nowYear=new Date().getFullYear();
 
+function updatePreview(){
+  const h=parseInt(document.getElementById('hr').value)||0;
+  const min=parseInt(document.getElementById('min').value)||0;
+  const t=h*60+min;
+  const ji=(t>=1380||t<60)?0:t<180?1:t<300?2:t<420?3:t<540?4:t<660?5:t<780?6:t<900?7:t<1020?8:t<1140?9:t<1260?10:11;
+  const oh=OH[OH_JJ[ji]];const c=CO[oh];
+  document.getElementById('pv-time').textContent=h+'시 '+String(min).padStart(2,'0')+'분 →';
+  document.getElementById('pv-jj').textContent=JJ[ji];
+  document.getElementById('pv-jj').style.color=c.t;
+  document.getElementById('pv-name').textContent=JJ_KR[ji]+'시';
+  const boundaries=[0,60,150,270,390,510,630,750,870,990,1110,1290,1410,1440];
+  const near=boundaries.some(b=>Math.abs(t-b)<=10);
+  document.getElementById('pv-warn').style.display=near?'':'none';
+}
 
+function toggleKasi(){
+  const body=document.getElementById('kasi-body');
+  const arrow=document.getElementById('kasi-arrow');
+  const show=body.style.display==='none';
+  body.style.display=show?'':'none';
+  arrow.textContent=show?'▲':'▼';
+}
 
 function setTab(t){
   document.getElementById('panel-chart').style.display=t==='chart'?'':'none';
-  document.getElementById('panel-compat').style.display=t==='compat'?'':'none';
+  document.getElementById('panel-daeun').style.display=t==='daeun'?'':'none';
   document.getElementById('panel-health').style.display=t==='health'?'':'none';
-  ['chart','compat','health'].forEach(id=>{
+  document.getElementById('panel-gunghap').style.display=t==='gunghap'?'':'none';
+  ['chart','daeun','health','gunghap'].forEach(id=>{
     document.getElementById('tab-'+id).className='tab-btn'+(t===id?' active':'');
   });
-  if(t==='chart'){setTimeout(()=>{const el=document.getElementById('daeun-scroll');if(el)el.scrollLeft=el.scrollWidth;},50);}
-}
-
-
-function toggleAiMenu(){
-  const body=document.getElementById('ai-menu-body');
-  const arrow=document.getElementById('ai-menu-arrow');
-  const open=body.style.display==='none';
-  body.style.display=open?'':'none';
-  arrow.style.transform=open?'rotate(180deg)':'';
-}
-
-function setCopyGender(gd){
-  // 버튼 활성화 표시
-  const btnM=document.getElementById('gd-btn-m');
-  const btnF=document.getElementById('gd-btn-f');
-  if(gd==='남'){
-    btnM.style.background='#c9a227';btnM.style.borderColor='#c9a227';btnM.style.color='#fff';
-    btnF.style.background='#faf8f4';btnF.style.borderColor='#ddd0b0';btnF.style.color='#7a6040';
-  }else{
-    btnF.style.background='#c9a227';btnF.style.borderColor='#c9a227';btnF.style.color='#fff';
-    btnM.style.background='#faf8f4';btnM.style.borderColor='#ddd0b0';btnM.style.color='#7a6040';
-  }
-  if(currentSaju) document.getElementById('copy-text').value=buildCopyText(currentSaju, gd);
+  if(t==='daeun'){setTimeout(()=>{const el=document.getElementById('daeun-scroll');if(el)el.scrollLeft=el.scrollWidth;},50);}
 }
 
 function toggleCopy(){
@@ -1820,80 +1060,8 @@ function toggleCopy(){
   const show=area.style.display==='none';
   area.style.display=show?'':'none';
   btn.className='copy-btn'+(show?' open':'');
-  btn.textContent=show?'▲ 닫기':'📋 텍스트 복사하기';
-  if(show&&currentSaju){
-    // 입력창의 성별 기본값으로 초기화
-    const gd=document.getElementById('gd').value;
-    setCopyGender(gd);
-  }
-}
-
-// ── 오늘 나의 인생전략: 5층 간지 계산 및 복사 ──
-function calcTodayGanji(){
-  const now=new Date();
-  const ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
-  const gmap=JEOL_DATA;
-  const yp=calcYear(ty,tm,td,gmap);
-  const mp=calcMonth(ty,tm,td,yp.cg,gmap);
-  const dp=calcDay(ty,tm,td);
-  return{year:{cg:yp.cg,jj:yp.jj},month:{cg:mp.cg,jj:mp.jj},day:{cg:dp.cg,jj:dp.jj}};
-}
-
-function buildTodayStrategyText(s, gdOverride){
-  const{pillars,dc,daeun}=s;
-  const yr=parseInt(document.getElementById('yr').value);
-  const gd=gdOverride||document.getElementById('gd').value;
-  const pillarStr=pillars.map(p=>
-    p.label+': '+CG[p.cg]+JJ[p.jj]+
-    ' ['+CG_KR[p.cg]+'('+OH[OH_CG[p.cg]]+') / '+JJ_KR[p.jj]+'('+OH[OH_JJ[p.jj]]+')]'
-  ).join('\n');
-  const cd=daeun.daeuns.find(d=>nowYear>=yr+d.age&&nowYear<=yr+d.age+9);
-  const now=new Date();
-  const dateStr=now.getFullYear()+'년 '+(now.getMonth()+1)+'월 '+now.getDate()+'일';
-  const t=calcTodayGanji();
-  const cdAge=cd?(yr+cd.age)+'~'+(yr+cd.age+9)+'년':'';
-
-  return '【오늘 나의 인생전략】 — '+dateStr+'\n\n'+
-    '성별: '+gd+'성\n\n'+
-    '[사주 원국]\n'+pillarStr+'\n\n'+
-    '[현재 대운]  '+(cd?CG[cd.cg]+JJ[cd.jj]+' ('+CG_KR[cd.cg]+JJ_KR[cd.jj]+')  '+cdAge:'미상')+'\n\n'+
-    '[세  운]    '+CG[t.year.cg]+JJ[t.year.jj]+' ('+CG_KR[t.year.cg]+JJ_KR[t.year.jj]+')\n'+
-    '[월  운]    '+CG[t.month.cg]+JJ[t.month.jj]+' ('+CG_KR[t.month.cg]+JJ_KR[t.month.jj]+')\n'+
-    '[일  진]    '+CG[t.day.cg]+JJ[t.day.jj]+' ('+CG_KR[t.day.cg]+JJ_KR[t.day.jj]+')';
-}
-
-function setTodayGender(gd){
-  const btnM=document.getElementById('tgd-btn-m');
-  const btnF=document.getElementById('tgd-btn-f');
-  if(gd==='남'){
-    btnM.style.background='#c9a227';btnM.style.borderColor='#c9a227';btnM.style.color='#fff';
-    btnF.style.background='#faf8f4';btnF.style.borderColor='#ddd0b0';btnF.style.color='#7a6040';
-  }else{
-    btnF.style.background='#c9a227';btnF.style.borderColor='#c9a227';btnF.style.color='#fff';
-    btnM.style.background='#faf8f4';btnM.style.borderColor='#ddd0b0';btnM.style.color='#7a6040';
-  }
-  if(currentSaju) document.getElementById('today-text').value=buildTodayStrategyText(currentSaju, gd);
-}
-
-function toggleToday(){
-  const area=document.getElementById('today-area');
-  const btn=document.getElementById('today-btn');
-  const show=area.style.display==='none';
-  area.style.display=show?'':'none';
-  if(show){
-    btn.textContent='▲ 닫기';
-    btn.style.background='';btn.style.borderColor='';btn.style.color='';
-    btn.className='copy-btn open';
-    if(currentSaju){
-      const gd=document.getElementById('gd').value;
-      setTodayGender(gd);
-    }
-  }else{
-    btn.textContent='📅 텍스트 복사하기';
-    btn.style.background='linear-gradient(135deg,#fffbf0,#fff8e8)';
-    btn.style.borderColor='#e0c870';btn.style.color='#5a3e00';
-    btn.className='copy-btn';
-  }
+  btn.textContent=show?'▲ 텍스트 닫기':'📋 사주 원국 + 대운 복사 (채팅창 간명용)';
+  if(show&&currentSaju)document.getElementById('copy-text').value=buildCopyText(currentSaju);
 }
 
 async function handleCalc(){
@@ -1905,191 +1073,322 @@ async function handleCalc(){
   const hr=parseInt(document.getElementById('hr').value)||0;
   const min=parseInt(document.getElementById('min').value)||0;
   const gd=document.getElementById('gd').value;
-  const gmap=JEOL_DATA; // 내장 절기 데이터
+  const kKey=document.getElementById('kKey').value.trim();
+  let gmap=null;
+  if(kKey){try{gmap=await fetchKasi(yr,kKey);if(Object.keys(gmap).length===0)gmap=null;}catch(e){}}
   const s=buildSaju(yr,mo,dy,hr,min,gd,gmap);
   currentSaju=s;
   document.getElementById('panel-chart').innerHTML=renderChart(s);
-  document.getElementById('panel-compat').innerHTML=renderCompatPanel();
+  document.getElementById('panel-daeun').innerHTML=renderDaeun(s);
   document.getElementById('panel-health').innerHTML=renderHealth(s);
+  document.getElementById('panel-gunghap').innerHTML=renderGunghapPanel();
+  currentPartnerSaju=null;
   setTimeout(()=>{const el=document.getElementById('daeun-scroll');if(el)el.scrollLeft=el.scrollWidth;},50);
   document.getElementById('result').style.display='';
   setTab('chart');
   document.getElementById('copy-area').style.display='none';
   document.getElementById('copy-btn').className='copy-btn';
-  document.getElementById('copy-btn').textContent='📋 텍스트 복사하기';
-  document.getElementById('today-area').style.display='none';
-  const tb=document.getElementById('today-btn');
-  tb.textContent='📅 텍스트 복사하기';
-  tb.style.background='linear-gradient(135deg,#fffbf0,#fff8e8)';
-  tb.style.borderColor='#e0c870';tb.style.color='#5a3e00';tb.className='copy-btn';
-  document.getElementById('ai-menu-body').style.display='none';
-  document.getElementById('ai-menu-arrow').style.transform='';
-  btn.disabled=false;btn.textContent='✦ 나의 에너지 코드 확인하기';
+  document.getElementById('copy-btn').textContent='📋 사주 원국 + 대운 복사 (채팅창 간명용)';
+  btn.disabled=false;btn.textContent='✦ 원국 + 대운 + 건강 추천 뽑기';
 }
 
-// ── MBTI 빠른 테스트 (20문항 · 차원당 5문항) ──
-const MBTI_Q_BANK=[
-  // E/I (5문항)
-  {dim:'EI', q:'주말에 에너지를 충전하는 방식은?',
-   a:['친구들과 만나서 신나게 보낸다 🎉','집에서 혼자 조용히 쉰다 🏠'],dir:['E','I']},
-  {dim:'EI', q:'새로운 사람을 만날 때 나는?',
-   a:['먼저 말을 걸고 대화를 이끈다 💬','상대가 먼저 다가오길 기다린다 🤫'],dir:['E','I']},
-  {dim:'EI', q:'파티나 모임이 끝난 후 나는?',
-   a:['신이 나서 더 놀고 싶다 🥳','피곤하고 혼자 있고 싶다 😴'],dir:['E','I']},
-  {dim:'EI', q:'고민이 생겼을 때 나는?',
-   a:['친구에게 털어놓으며 이야기한다 🗣️','혼자 생각하며 정리한다 💭'],dir:['E','I']},
-  {dim:'EI', q:'새로운 환경(학교·직장)에 적응할 때?',
-   a:['먼저 다가가서 금방 친해진다 🙋','시간이 걸리지만 깊게 사귄다 🌱'],dir:['E','I']},
-  // S/N (5문항)
-  {dim:'SN', q:'새로운 정보를 받아들일 때 나는?',
-   a:['구체적 사실과 데이터를 먼저 본다 📊','전체적인 흐름과 의미를 먼저 본다 🌐'],dir:['S','N']},
-  {dim:'SN', q:'요리를 할 때 나는?',
-   a:['레시피대로 정확하게 따른다 📖','느낌대로 창의적으로 만든다 🍳'],dir:['S','N']},
-  {dim:'SN', q:'미래에 대해 생각할 때?',
-   a:['현실적으로 계획을 세운다 📅','가능성과 상상을 즐긴다 🌠'],dir:['S','N']},
-  {dim:'SN', q:'책이나 영화를 고를 때 나는?',
-   a:['현실적이고 실용적인 내용을 선호 📚','상상력을 자극하는 판타지·SF를 선호 🚀'],dir:['S','N']},
-  {dim:'SN', q:'대화할 때 나는?',
-   a:['실제 일어난 일, 경험을 주로 말한다 💬','아이디어, 가능성, 미래 이야기를 좋아한다 💡'],dir:['S','N']},
-  // T/F (5문항)
-  {dim:'TF', q:'친구가 고민을 털어놓을 때 나는?',
-   a:['해결책과 조언을 먼저 생각한다 💡','먼저 공감하고 감정을 들어준다 🤝'],dir:['T','F']},
-  {dim:'TF', q:'결정을 내릴 때 중요한 것은?',
-   a:['논리적으로 옳은지 따진다 ⚖️','주변 사람들에게 미치는 영향을 본다 💕'],dir:['T','F']},
-  {dim:'TF', q:'비판을 받았을 때 나는?',
-   a:['내용이 맞는지 분석한다 🔍','상대의 감정과 의도가 신경 쓰인다 😟'],dir:['T','F']},
-  {dim:'TF', q:'토론할 때 나는?',
-   a:['근거와 논리로 상대를 설득한다 📐','분위기를 보며 조화롭게 이끈다 🌸'],dir:['T','F']},
-  {dim:'TF', q:'영화를 볼 때 더 기억에 남는 것은?',
-   a:['설정이 얼마나 논리적인지 🎬','등장인물들의 감정과 관계 💞'],dir:['T','F']},
-  // J/P (5문항)
-  {dim:'JP', q:'여행을 계획할 때 나는?',
-   a:['일정·숙소·동선을 미리 다 짠다 🗺️','대략의 방향만 정하고 즉흥적으로 🎲'],dir:['J','P']},
-  {dim:'JP', q:'마감이 있을 때 나는?',
-   a:['미리미리 끝내야 마음이 편하다 ✅','마감 직전에 집중력이 폭발한다 ⚡'],dir:['J','P']},
-  {dim:'JP', q:'내 책상/방의 상태는?',
-   a:['정리정돈이 잘 되어 있다 🗂️','물건이 여기저기 흩어져 있다 🌀'],dir:['J','P']},
-  {dim:'JP', q:'쇼핑할 때 나는?',
-   a:['살 것을 미리 정해두고 간다 📋','가서 마음에 드는 걸 고른다 🛍️'],dir:['J','P']},
-  {dim:'JP', q:'하루 일과는?',
-   a:['계획표대로 움직이는 게 편하다 ⏰','그때그때 상황에 맞게 유연하게 🌊'],dir:['J','P']},
-];
+// ══════════════════════════════════════════
+// 궁합 분석 모듈
+// 기준: 1순위(용신오행 보유) → 2순위(일지 관계 양방향) → 3순위(천을귀인)
+// ══════════════════════════════════════════
 
-// 차원별 문항 섞기 (매 테스트마다 랜덤)
-function shuffleMbtiQ(){
-  const dims=['EI','SN','TF','JP'];
-  let result=[];
-  dims.forEach(dim=>{
-    const pool=MBTI_Q_BANK.filter(q=>q.dim===dim);
-    const shuffled=[...pool].sort(()=>Math.random()-0.5);
-    result=result.concat(shuffled.slice(0,5));
-  });
-  // 차원 순서도 살짝 섞기 (EI·SN·TF·JP 블록 순서 유지하되 각 블록 내 랜덤)
-  return result;
-}
+// 천을귀인 (일간 index → 귀인 지지 indices)
+// 甲→丑·未 / 乙→子·申 / 丙→亥·酉 / 丁→亥·酉 / 戊→丑·未
+// 己→子·申 / 庚→丑·未 / 辛→午·寅 / 壬→卯·巳 / 癸→卯·巳
+const CHEONUL_TABLE=[[1,7],[0,8],[11,9],[11,9],[1,7],[0,8],[1,7],[6,2],[3,5],[3,5]];
 
-let MBTI_Q=[];
-let mbtiAnswers=[];
-let mbtiCurrent=0;
+// 오행 상생 — i를 생(生)하는 오행 index (금생수·수생목·목생화·화생토·토생금)
+const OH_SAENG_BY=[4,0,1,2,3]; // OH_SAENG_BY[목]=수, [화]=목, ...
 
-function openMbtiQuiz(){
-  MBTI_Q=shuffleMbtiQ();
-  mbtiAnswers=Array(MBTI_Q.length).fill(null);
-  mbtiCurrent=0;
-  document.getElementById('mbti-modal').classList.add('open');
-  renderMbtiQ();
-}
-function closeMbtiQuiz(){
-  document.getElementById('mbti-modal').classList.remove('open');
-}
-function renderMbtiQ(){
-  const total=MBTI_Q.length;
-  const prog=document.getElementById('mbti-prog');
-  const area=document.getElementById('mbti-quiz-area');
-  prog.style.width=((mbtiCurrent/total)*100)+'%';
+// 기신 — 용신을 극(克)하는 오행 index (목→토克목X, 금克목=기신; 수克화=기신...)
+// 목(0)克土, 화(1)克金, 토(2)克水, 금(3)克木, 수(4)克火
+// 기신 = 용신을 克하는 것: 金克木=목의기신金, 水克火=화의기신水, 木克土=토의기신木...
+const OH_GISHIN=[3,4,0,1,2]; // OH_GISHIN[용신idx] = 기신 idx
 
-  if(mbtiCurrent>=total){
-    const score={E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
-    mbtiAnswers.forEach((ans,i)=>{if(ans!==null)score[MBTI_Q[i].dir[ans]]++;});
-    const type=[
-      score.E>=score.I?'E':'I',
-      score.S>=score.N?'S':'N',
-      score.T>=score.F?'T':'F',
-      score.J>=score.P?'J':'P'
-    ].join('');
-    const info=MBTI_DATA[type]||{name:'',core:''};
-    const emoji={INTJ:'🔭',INTP:'🔬',ENTJ:'👑',ENTP:'💡',INFJ:'🌙',INFP:'🌸',ENFJ:'🌟',ENFP:'🦋',
-                 ISTJ:'🏛️',ISFJ:'🛡️',ESTJ:'⚖️',ESFJ:'🤝',ISTP:'🔧',ISFP:'🎨',ESTP:'⚡',ESFP:'🎭'};
-    // 차원별 퍼센트
-    const pct=(a,b)=>Math.round(a/(a+b)*100);
-    area.innerHTML=`
-      <div class="mbti-result-box">
-        <div style="font-size:44px;margin-bottom:6px">${emoji[type]||'✨'}</div>
-        <div class="mbti-result-type">${type}</div>
-        <div class="mbti-result-name">${info.name}</div>
-        <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:10px 0">
-          <span style="background:#e8f0ff;color:#2e5fa3;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700">${score.E>score.I?'E':'I'} ${pct(Math.max(score.E,score.I),Math.min(score.E,score.I))}%</span>
-          <span style="background:#e8fff0;color:#1e6b3c;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700">${score.S>score.N?'S':'N'} ${pct(Math.max(score.S,score.N),Math.min(score.S,score.N))}%</span>
-          <span style="background:#fff0e8;color:#8b3a00;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700">${score.T>score.F?'T':'F'} ${pct(Math.max(score.T,score.F),Math.min(score.T,score.F))}%</span>
-          <span style="background:#f0e8ff;color:#5b21b6;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700">${score.J>score.P?'J':'P'} ${pct(Math.max(score.J,score.P),Math.min(score.J,score.P))}%</span>
-        </div>
-        <div class="mbti-result-desc">${info.core}</div>
-        <button class="mbti-result-apply" onclick="applyMbtiResult('${type}')">
-          ✦ ${type} 적용하고 닫기
-        </button>
-        <button onclick="MBTI_Q=shuffleMbtiQ();mbtiAnswers=Array(MBTI_Q.length).fill(null);mbtiCurrent=0;renderMbtiQ()"
-          style="width:100%;background:none;border:1px solid #d4c8f0;border-radius:8px;padding:10px;font-size:12px;color:#7a6aaa;cursor:pointer;font-family:inherit;margin-top:8px">
-          🔀 문항 바꿔서 다시 풀기
-        </button>
-      </div>`;
-    prog.style.width='100%';
-    return;
+// 지지 충 pairs
+const JJ_CHUNG=[[0,6],[1,7],[2,8],[3,9],[4,10],[5,11]];
+// 지지 육합 pairs
+const JJ_YUKHAP=[[0,1],[2,11],[3,10],[4,9],[5,8],[6,7]];
+// 지지 삼합 triples
+const JJ_SAMHAP=[[8,0,4],[2,6,10],[11,3,7],[5,9,1]];
+
+function isChung(a,b){return JJ_CHUNG.some(p=>(p[0]===a&&p[1]===b)||(p[1]===a&&p[0]===b));}
+function isYukhap(a,b){return JJ_YUKHAP.some(p=>(p[0]===a&&p[1]===b)||(p[1]===a&&p[0]===b));}
+function isSamhap(a,b){return JJ_SAMHAP.some(t=>t.includes(a)&&t.includes(b));}
+
+function calcGunghap(me,partner){
+  // 나의 용신·기신 오행
+  const myMoIdx=jjToMoIdx(me.pillars[1].jj);
+  const myYongData=YONGSIN_DATA[me.dc][myMoIdx];
+  const myYongOH=yongsinToOH(myYongData.yongsin);
+  const myYongIdx=myYongOH?OH.indexOf(myYongOH):-1;
+  const myGishinIdx=myYongIdx>=0?OH_GISHIN[myYongIdx]:-1;
+  const myGishinOH=myGishinIdx>=0?OH[myGishinIdx]:null;
+
+  // 상대방 용신·기신 (2순위 역방향용)
+  const ptMoIdx=jjToMoIdx(partner.pillars[1].jj);
+  const ptYongData=YONGSIN_DATA[partner.dc][ptMoIdx];
+  const ptYongOH=yongsinToOH(ptYongData.yongsin);
+  const ptYongIdx=ptYongOH?OH.indexOf(ptYongOH):-1;
+  const ptGishinIdx=ptYongIdx>=0?OH_GISHIN[ptYongIdx]:-1;
+
+  // 일지 정보
+  const myIljiJJ=me.pillars[2].jj;
+  const myIljiOHIdx=OH_JJ[myIljiJJ];
+  const ptIljiJJ=partner.pillars[2].jj;
+  const ptIljiOHIdx=OH_JJ[ptIljiJJ];
+
+  // 상대 전체 오행 (8자 flat)
+  const ptAll8OH=partner.pillars.flatMap(p=>[OH[OH_CG[p.cg]],OH[OH_JJ[p.jj]]]);
+  const ptAll8JJ=partner.pillars.map(p=>p.jj);
+
+  // ── 1순위: 나의 용신오행을 상대가 강하게 보유 ──
+  let r1={score:0,stars:'',detail:'',met:false};
+  if(myYongOH){
+    const onIlgan=(OH[OH_CG[partner.dc]]===myYongOH);
+    const onIlji=(OH[ptIljiOHIdx]===myYongOH);
+    // 일주(index 4,5) 제외한 나머지 6자
+    const otherOHs=ptAll8OH.filter((_,i)=>i!==4&&i!==5);
+    const otherCnt=otherOHs.filter(o=>o===myYongOH).length;
+    if(onIlgan){
+      r1={score:3,stars:'★★★',met:true,
+        detail:`상대 일간 ${CG[partner.dc]}(${myYongOH}) = 나의 용신 오행 — 가장 강한 보유`};
+    }else if(onIlji){
+      r1={score:2,stars:'★★',met:true,
+        detail:`상대 일지 ${JJ[ptIljiJJ]}(${OH[ptIljiOHIdx]}) = 나의 용신 오행`};
+    }else if(otherCnt>=2){
+      r1={score:1,stars:'★',met:true,
+        detail:`나의 용신 ${myYongOH}이 상대 원국 연·월·시에 ${otherCnt}개 분포 (약한 해당)`};
+    }else{
+      r1={score:0,stars:'',met:false,
+        detail:`나의 용신 ${myYongOH}이 상대 원국에 ${otherCnt===1?'1개(미약)':'없음'}`};
+    }
+  }else{
+    r1.detail='용신 오행 판별 불가 — AI 분석 권장';
   }
 
-  const q=MBTI_Q[mbtiCurrent];
-  const sel=mbtiAnswers[mbtiCurrent];
-  area.innerHTML=`
-    <div class="mbti-qnum">Q${mbtiCurrent+1} / ${total} · ${q.dim}</div>
-    <div class="mbti-question">${q.q}</div>
-    <div class="mbti-options">
-      <button class="mbti-opt${sel===0?' selected':''}" onclick="selectMbtiAns(0)">${q.a[0]}</button>
-      <button class="mbti-opt${sel===1?' selected':''}" onclick="selectMbtiAns(1)">${q.a[1]}</button>
+  // ── 2순위: 일지 관계 (양방향 체크) ──
+  function checkOneDir(srcIljiJJ,srcIljiOHIdx,srcYongIdx,srcGishinIdx,tgtIljiJJ,tgtIljiOHIdx){
+    // Case A: 내 일지 = 용신오행
+    if(srcYongIdx>=0&&srcIljiOHIdx===srcYongIdx){
+      if(tgtIljiOHIdx===OH_SAENG_BY[srcIljiOHIdx]){
+        return{met:true,type:'A-生',
+          reason:`상대 일지 ${JJ[tgtIljiJJ]}(${OH[tgtIljiOHIdx]})가 내 일지 ${JJ[srcIljiJJ]}(${OH[srcIljiOHIdx]})를 생(生)`};
+      }
+      if(isYukhap(srcIljiJJ,tgtIljiJJ)){
+        return{met:true,type:'A-合',
+          reason:`일지 육합 ${JJ[srcIljiJJ]}↔${JJ[tgtIljiJJ]}`};
+      }
+      if(isSamhap(srcIljiJJ,tgtIljiJJ)){
+        return{met:true,type:'A-合',
+          reason:`일지 삼합 ${JJ[srcIljiJJ]}↔${JJ[tgtIljiJJ]}`};
+      }
+    }
+    // Case B: 내 일지 = 기신오행
+    if(srcGishinIdx>=0&&srcIljiOHIdx===srcGishinIdx){
+      if(isChung(srcIljiJJ,tgtIljiJJ)){
+        return{met:true,type:'B-冲',
+          reason:`상대 일지 ${JJ[tgtIljiJJ]}이 내 기신 일지 ${JJ[srcIljiJJ]}(${OH[srcIljiOHIdx]})를 충(冲)`};
+      }
+    }
+    return{met:false};
+  }
+
+  const fwd=checkOneDir(myIljiJJ,myIljiOHIdx,myYongIdx,myGishinIdx,ptIljiJJ,ptIljiOHIdx);
+  const bwd=checkOneDir(ptIljiJJ,ptIljiOHIdx,ptYongIdx,ptGishinIdx,myIljiJJ,myIljiOHIdx);
+
+  let r2={score:0,detail:'',met:false,bidirectional:false};
+  if(fwd.met&&bwd.met){
+    r2={score:2,met:true,bidirectional:true,
+      detail:`쌍방 해당 (가중치 ++)  나→상대: ${fwd.reason}  |  상대→나: ${bwd.reason}`};
+  }else if(fwd.met){
+    r2={score:1,met:true,bidirectional:false,detail:`단방향  나→상대: ${fwd.reason}`};
+  }else if(bwd.met){
+    r2={score:1,met:true,bidirectional:false,detail:`단방향  상대→나: ${bwd.reason}`};
+  }else{
+    const myIljiType=myYongIdx>=0?(myIljiOHIdx===myYongIdx?'용신 일지':myIljiOHIdx===myGishinIdx?'기신 일지':'중립 일지'):'판단 불가';
+    const ptIljiType=ptYongIdx>=0?(ptIljiOHIdx===ptYongIdx?'용신 일지':ptIljiOHIdx===ptGishinIdx?'기신 일지':'중립 일지'):'판단 불가';
+    r2.detail=`나의 일지: ${JJ[myIljiJJ]}(${OH[myIljiOHIdx]}) ${myIljiType}  |  상대 일지: ${JJ[ptIljiJJ]}(${OH[ptIljiOHIdx]}) ${ptIljiType}  →  생·합·충 조건 미성립`;
+  }
+
+  // ── 3순위: 천을귀인 ──
+  const myGuinJJs=CHEONUL_TABLE[me.dc];
+  const myGuinNames=myGuinJJs.map(j=>JJ[j]).join('·');
+  const foundGuin=myGuinJJs.filter(g=>ptAll8JJ.includes(g));
+  let r3={score:0,detail:'',met:false};
+  if(foundGuin.length>0){
+    r3={score:1,met:true,
+      detail:`나의 귀인 ${myGuinNames} 중 ${foundGuin.map(j=>JJ[j]).join('·')}이 상대 원국에 있음`};
+  }else{
+    r3.detail=`나의 귀인 ${myGuinNames}이 상대 원국 어디에도 없음`;
+  }
+
+  // ── 종합 판정 ──
+  const total=r1.score+r2.score+r3.score;
+  let verdict;
+  if(r1.score===3&&r2.met&&r3.met){
+    verdict={label:'천생연분',sub:'세 가지 기준 완전 충족',stars:'★★★★★',
+      color:'#c0392b',bg:'rgba(192,57,43,0.08)',border:'rgba(192,57,43,0.5)'};
+  }else if(r1.score===3||(r1.score>=2&&r2.met&&r3.met)){
+    verdict={label:'상합(上合)',sub:'핵심 기준 강하게 충족',stars:'★★★★',
+      color:'#8a6200',bg:'rgba(138,98,0,0.08)',border:'rgba(138,98,0,0.4)'};
+  }else if((r1.met&&r2.met)||(r1.met&&r3.met)||(r2.bidirectional)){
+    verdict={label:'중합(中合)',sub:'두 가지 이상 기준 충족',stars:'★★★',
+      color:'#2e7d4f',bg:'rgba(46,125,79,0.07)',border:'rgba(46,125,79,0.4)'};
+  }else if(r1.met||r2.met||r3.met){
+    verdict={label:'하합(下合)',sub:'일부 기준 충족',stars:'★★',
+      color:'#1565a0',bg:'rgba(21,101,160,0.07)',border:'rgba(21,101,160,0.3)'};
+  }else{
+    verdict={label:'참고 필요',sub:'3가지 기준 미충족 — AI 심층 분석 권장',stars:'★',
+      color:'#7a6040',bg:'rgba(122,96,64,0.06)',border:'rgba(122,96,64,0.25)'};
+  }
+
+  return{r1,r2,r3,verdict,total,myYongOH,myGishinOH,
+    myIlji:{jj:myIljiJJ,oh:OH[myIljiOHIdx]},
+    ptIlji:{jj:ptIljiJJ,oh:OH[ptIljiOHIdx]}};
+}
+
+function renderGunghapResult(me,partner){
+  const gh=calcGunghap(me,partner);
+  const myC=CO[OH[OH_CG[me.dc]]];
+  const ptC=CO[OH[OH_CG[partner.dc]]];
+  const nl=s=>s.replace(/\s{2,}/g,'<br>');
+
+  return`<div class="gh-result-card">
+    <div class="gh-vs">
+      <span class="gh-badge" style="background:${myC.bg};color:${myC.t};border:1px solid ${myC.b}">나&nbsp;${CG[me.dc]}일간·${JJ[me.pillars[2].jj]}일지</span>
+      <span class="gh-vs-sep">↔</span>
+      <span class="gh-badge" style="background:${ptC.bg};color:${ptC.t};border:1px solid ${ptC.b}">상대&nbsp;${CG[partner.dc]}일간·${JJ[partner.pillars[2].jj]}일지</span>
     </div>
-    <div class="mbti-nav">
-      <button class="mbti-nav-btn prev" onclick="mbtiCurrent--;renderMbtiQ()" ${mbtiCurrent===0?'disabled':''}>← 이전</button>
-      <button class="mbti-nav-btn" onclick="nextMbtiQ()" ${sel===null?'disabled':''}>
-        ${mbtiCurrent===total-1?'결과 보기 🎉':'다음 →'}
-      </button>
-    </div>`;
-}
-function selectMbtiAns(idx){
-  mbtiAnswers[mbtiCurrent]=idx;
-  renderMbtiQ();
-}
-function nextMbtiQ(){
-  if(mbtiAnswers[mbtiCurrent]===null) return;
-  mbtiCurrent++;
-  renderMbtiQ();
-}
-function applyMbtiResult(type){
-  const sel=document.getElementById('mbti');
-  sel.value=type;
-  closeMbtiQuiz();
-  sel.style.background='#ede8ff';
-  sel.style.borderColor='#7c3aed';
-  setTimeout(()=>{sel.style.background='';sel.style.borderColor='';},1500);
-  refreshEnergyCode();
+    <div class="gh-meta">
+      나의 용신 <b>${gh.myYongOH||'?'}</b> · 기신 <b>${gh.myGishinOH||'?'}</b> &nbsp;|&nbsp;
+      나의 귀인 <b>${CHEONUL_TABLE[me.dc].map(j=>JJ[j]).join('·')}</b>
+    </div>
+
+    <div class="gh-rank r1">
+      <div class="gh-rank-num" style="color:#c0392b">1순위<br>${gh.r1.stars||'✗'}</div>
+      <div class="gh-rank-body">
+        <div class="gh-rank-title" style="color:#c0392b">용신 오행 보유</div>
+        <div class="gh-rank-detail ${gh.r1.met?'ok':'ng'}">${nl(gh.r1.detail)}</div>
+      </div>
+    </div>
+
+    <div class="gh-rank r2">
+      <div class="gh-rank-num" style="color:#8a6200">2순위<br>${gh.r2.met?(gh.r2.bidirectional?'쌍방':'단방'):'✗'}</div>
+      <div class="gh-rank-body">
+        <div class="gh-rank-title" style="color:#8a6200">일지 관계${gh.r2.bidirectional?' <span style="font-size:9px;background:#fffbe6;color:#8a6200;border-radius:3px;padding:1px 4px">가중치++</span>':''}</div>
+        <div class="gh-rank-detail ${gh.r2.met?'ok':'ng'}">${nl(gh.r2.detail)}</div>
+      </div>
+    </div>
+
+    <div class="gh-rank r3">
+      <div class="gh-rank-num" style="color:#1565a0">3순위<br>${gh.r3.met?'✅':'✗'}</div>
+      <div class="gh-rank-body">
+        <div class="gh-rank-title" style="color:#1565a0">천을귀인 인연</div>
+        <div class="gh-rank-detail ${gh.r3.met?'ok':'ng'}">${nl(gh.r3.detail)}</div>
+      </div>
+    </div>
+
+    <div class="gh-verdict" style="background:${gh.verdict.bg};border-color:${gh.verdict.border}">
+      <div class="gh-verdict-stars">${gh.verdict.stars}</div>
+      <div class="gh-verdict-label" style="color:${gh.verdict.color}">${gh.verdict.label}</div>
+      <div class="gh-verdict-sub" style="color:${gh.verdict.color}">${gh.verdict.sub}</div>
+    </div>
+
+    <button class="gh-prompt-btn" onclick="toggleGhPrompt()">📋 AI 심층 궁합 분석 프롬프트 복사</button>
+    <div id="gh-prompt-area" style="display:none">
+      <textarea id="gh-prompt-text" class="gh-prompt-ta" readonly onclick="this.select()"></textarea>
+      <div style="font-size:9px;color:#9a8a6a;margin-top:4px">▲ 클릭 후 Ctrl+A → Ctrl+C → Claude 채팅창에 붙여넣기</div>
+    </div>
+  </div>`;
 }
 
-function refreshEnergyCode(){
-  if(!currentSaju)return;
-  const box=document.querySelector('.energy-code-box');
-  if(!box)return;
-  const tmp=document.createElement('div');
-  tmp.innerHTML=renderEnergyCode(currentSaju);
-  box.parentNode.replaceChild(tmp.firstChild,box);
+function renderGunghapPanel(){
+  return`<div class="gh-form-card">
+    <div class="card-title">✦ 상대방 정보 입력</div>
+    <div class="grid2" style="margin-bottom:9px">
+      <div>
+        <label class="em">성별</label>
+        <select id="p-gd"><option value="남">남</option><option value="여">여</option></select>
+      </div>
+      <div></div>
+    </div>
+    <div class="grid3">
+      <div><label class="em">생년</label><input id="p-yr" type="number" placeholder="1990" min="1900" max="2100"></div>
+      <div><label class="em">월</label><input id="p-mo" type="number" placeholder="1" min="1" max="12"></div>
+      <div><label class="em">일</label><input id="p-dy" type="number" placeholder="1" min="1" max="31"></div>
+    </div>
+    <div class="grid2" style="margin-top:9px">
+      <div><label>출생시 (모르면 0)</label><input id="p-hr" type="number" placeholder="0" min="0" max="23" value="0"></div>
+      <div><label>분</label><input id="p-min" type="number" placeholder="0" min="0" max="59" value="0"></div>
+    </div>
+    <button class="btn-main" onclick="handleGunghap()" style="margin-top:10px">✦ 궁합 분석하기</button>
+    <div style="font-size:9px;color:#9a8a6a;margin-top:7px;line-height:1.6">
+      ※ 절기 경계일 출생자는 오차가 있을 수 있습니다. 정확한 분석은 AI 심층 프롬프트를 활용하세요.
+    </div>
+  </div>
+  <div id="gh-result"></div>`;
 }
 
+let currentPartnerSaju=null;
+
+function handleGunghap(){
+  if(!currentSaju){alert('먼저 내 사주를 계산해주세요.');return;}
+  const pyr=parseInt(document.getElementById('p-yr').value);
+  const pmo=parseInt(document.getElementById('p-mo').value);
+  const pdy=parseInt(document.getElementById('p-dy').value);
+  const phr=parseInt(document.getElementById('p-hr').value)||0;
+  const pmin=parseInt(document.getElementById('p-min').value)||0;
+  const pgd=document.getElementById('p-gd').value;
+  if(!pyr||!pmo||!pdy){alert('상대방 생년월일을 모두 입력해주세요.');return;}
+  currentPartnerSaju=buildSaju(pyr,pmo,pdy,phr,pmin,pgd,null);
+  document.getElementById('gh-result').innerHTML=renderGunghapResult(currentSaju,currentPartnerSaju);
+}
+
+function buildGunghapPrompt(me,partner){
+  const fmt=s=>s.pillars.map(p=>CG[p.cg]+JJ[p.jj]).join(' ');
+  const myMoIdx=jjToMoIdx(me.pillars[1].jj);
+  const ptMoIdx=jjToMoIdx(partner.pillars[1].jj);
+  const myY=YONGSIN_DATA[me.dc][myMoIdx];
+  const ptY=YONGSIN_DATA[partner.dc][ptMoIdx];
+  const gh=calcGunghap(me,partner);
+  return`[궁합 분석 요청]
+
+나의 사주: ${fmt(me)}
+일간: ${CG[me.dc]} / 용신: ${myY.yongsin} / 일지: ${JJ[me.pillars[2].jj]}
+
+상대방 사주: ${fmt(partner)}
+일간: ${CG[partner.dc]} / 용신: ${ptY.yongsin} / 일지: ${JJ[partner.pillars[2].jj]}
+
+[앱 1차 분석 결과]
+1순위(용신보유): ${gh.r1.stars||'미해당'} ${gh.r1.detail}
+2순위(일지관계): ${gh.r2.met?(gh.r2.bidirectional?'쌍방':'단방'):'미해당'} ${gh.r2.detail}
+3순위(천을귀인): ${gh.r3.met?'해당':'미해당'} ${gh.r3.detail}
+종합: ${gh.verdict.label}
+
+위 결과를 바탕으로 다음을 심층 분석해주세요:
+① 格局 대조 (두 사람의 格과 用神이 상호 보완하는가)
+② 오행 한난조습 보완 관계 (궁통보감 기준)
+③ 두 사람 대운 방향 일치 여부
+④ 배우자성(남=정재, 여=정관)의 원국 내 위치·강약
+⑤ 고전 기준 종합 판단 및 상대방에게 내가 어떤 역할을 하는지`;
+}
+
+function toggleGhPrompt(){
+  if(!currentSaju||!currentPartnerSaju)return;
+  const area=document.getElementById('gh-prompt-area');
+  const ta=document.getElementById('gh-prompt-text');
+  const isHidden=area.style.display==='none';
+  area.style.display=isHidden?'':'none';
+  if(isHidden){ta.value=buildGunghapPrompt(currentSaju,currentPartnerSaju);ta.select();}
+}
+
+updatePreview();
 </script>
 </body>
 </html>
