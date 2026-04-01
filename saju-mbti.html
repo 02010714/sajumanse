@@ -1597,27 +1597,58 @@ function calcR1(s1, s2){
   const myYong=getSajuYongshinOH(s1);
   if(!myYong) return{met:false,stars:'',score:0,detail:'용신 오행 자동 판별 불가 — 직접 확인 권장'};
 
-  const ptDc=s2.pillars[2].cg;
-  const ptIlganOH=OH[OH_CG[ptDc]];
-  const ptIljiOH =OH[OH_JJ[s2.pillars[2].jj]];
+  // 상대 8글자에서 내 용신 오행 위치 파악
+  const cgOHs = s2.pillars.map(p=>OH[OH_CG[p.cg]]); // 천간 4개
+  const jjOHs = s2.pillars.map(p=>OH[OH_JJ[p.jj]]);  // 지지 4개
 
-  // 일간 외 6자 오행 (연·월·시 천간지지)
-  const other6OH=[];
-  [0,1,3].forEach(i=>{other6OH.push(OH[OH_CG[s2.pillars[i].cg]],OH[OH_JJ[s2.pillars[i].jj]]);});
-  const otherCnt=other6OH.filter(o=>o===myYong).length;
+  const cgCnt = cgOHs.filter(o=>o===myYong).length;  // 천간에 있는 수
+  const jjCnt = jjOHs.filter(o=>o===myYong).length;  // 지지에 있는 수
+  const total  = cgCnt + jjCnt;
 
-  if(ptIlganOH===myYong)
+  // 국(局) 판별 — 삼합 3글자가 상대 지지 4개 안에 모두 있는지
+  // SAMHAP = [[申8,子0,辰4]→수, [寅2,午6,戌10]→화, [亥11,卯3,未7]→목, [巳5,酉9,丑1]→금]
+  const SAMHAP_OH = ['수','화','목','금'];
+  const ptJJs = s2.pillars.map(p=>p.jj);
+  let gukYes = false;
+  SAMHAP.forEach((trio,i)=>{
+    if(SAMHAP_OH[i]===myYong && trio.every(j=>ptJJs.includes(j))) gukYes=true;
+  });
+  // 토국(방합) — 辰4·戌10·丑1·未7 중 3개 이상
+  if(myYong==='토'){
+    const bangHap=[4,10,1,7];
+    const cnt=bangHap.filter(j=>ptJJs.includes(j)).length;
+    if(cnt>=3) gukYes=true;
+  }
+
+  // 통근(通根) — 천간에 있고 지지에도 같은 오행 있음
+  const tongguen = cgCnt>=1 && jjCnt>=1;
+
+  // 판정
+  const cgNames = s2.pillars.filter(p=>OH[OH_CG[p.cg]]===myYong).map(p=>CG[p.cg]).join('');
+  const jjNames = s2.pillars.filter(p=>OH[OH_JJ[p.jj]]===myYong).map(p=>JJ[p.jj]).join('');
+
+  if(gukYes)
     return{met:true,stars:'★★★',score:3,
-      detail:`상대 일간 ${CG[ptDc]}(${myYong})이 나의 용신 오행 — 가장 강한 보유`};
-  if(ptIljiOH===myYong)
+      detail:`나의 용신 ${myYong}이 상대 사주에서 삼합국(局)을 이룸 — 가장 강한 형태`};
+
+  if(tongguen)
+    return{met:true,stars:'★★★',score:3,
+      detail:`나의 용신 ${myYong}이 천간 ${cgNames}·지지 ${jjNames}에 통근(通根) — 뿌리와 함께 강하게 존재`};
+
+  if(total>=2)
     return{met:true,stars:'★★',score:2,
-      detail:`상대 일지 ${JJ[s2.pillars[2].jj]}(${myYong})이 나의 용신 오행`};
-  if(otherCnt>=2)
+      detail:`나의 용신 ${myYong}이 상대 사주에 ${total}개 분포 (${cgCnt?'천간 '+cgNames:''}${jjCnt?'  지지 '+jjNames:''})`};
+
+  if(cgCnt===1)
     return{met:true,stars:'★',score:1,
-      detail:`나의 용신 ${myYong}이 상대 연·월·시에 ${otherCnt}개 분포`};
+      detail:`나의 용신 ${myYong}이 상대 천간 ${cgNames}에 있음 (지지 통근 없음)`};
+
+  if(jjCnt===1)
+    return{met:true,stars:'★',score:1,
+      detail:`나의 용신 ${myYong}이 상대 지지 ${jjNames}에 있음 (천간 미투출)`};
 
   return{met:false,stars:'',score:0,
-    detail:`나의 용신 ${myYong}이 상대 원국에 ${otherCnt===1?'1개(미약)':'없음'}`};
+    detail:`나의 용신 ${myYong}이 상대 원국에 없음`};
 }
 
 // ── 2순위: 일지 관계 (양방향) ──
