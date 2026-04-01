@@ -298,6 +298,7 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
     <div><label>시 (0~23)</label><input type="number" id="hr" value="10" min="0" max="23"></div>
     <div><label class="em">분 (0~59)</label><input type="number" id="min" value="30" min="0" max="59"></div>
     <div><label>성별</label><select id="gd"><option value="남">남성</option><option value="여">여성</option></select></div>
+    <div><label>출생지</label><select id="birthplace"><option value="korea">한국</option><option value="global">해외</option></select></div>
   </div>
   <div class="grid3" style="margin-bottom:9px">
     <div>
@@ -477,6 +478,54 @@ const MO_LABEL=['인','묘','진','사','오','미','신','유','술','해','자
 const MO_DESC=["이른 봄, 아직 한기가 남아있는 계절", "꽃이 피는 완연한 봄", "봄이 저물고 토기가 왕성한 계절", "초여름, 화기가 점점 강해지는 계절", "불볕더위의 한여름", "한여름이 지나고 토기가 무거운 계절", "서늘한 초가을, 금기가 강해지는 계절", "서리가 내리는 깊은 가을", "가을이 저물고 대지가 굳어가는 계절", "초겨울, 수기가 차오르는 계절", "한겨울 혹한의 계절", "한겨울 언 땅, 추위가 극에 달한 계절"];
 const UNSUNG_12=[["건록", "제왕", "쇠", "병", "사", "묘", "절", "태", "양", "장생", "목욕", "관대"], ["제왕", "건록", "관대", "목욕", "장생", "양", "태", "절", "묘", "사", "병", "쇠"], ["장생", "목욕", "관대", "건록", "제왕", "쇠", "병", "사", "묘", "절", "태", "양"], ["사", "병", "쇠", "제왕", "건록", "관대", "목욕", "장생", "양", "태", "절", "묘"], ["장생", "목욕", "관대", "건록", "제왕", "쇠", "병", "사", "묘", "절", "태", "양"], ["사", "병", "쇠", "제왕", "건록", "관대", "목욕", "장생", "양", "태", "절", "묘"], ["절", "태", "양", "장생", "목욕", "관대", "건록", "제왕", "쇠", "병", "사", "묘"], ["태", "절", "묘", "사", "병", "쇠", "제왕", "건록", "관대", "목욕", "장생", "양"], ["병", "사", "묘", "절", "태", "양", "장생", "목욕", "관대", "건록", "제왕", "쇠"], ["목욕", "장생", "양", "태", "절", "묘", "사", "병", "쇠", "제왕", "건록", "관대"]];
 const UNSUNG_DESC={"장생": "새 생명이 싹트는 출발 단계로, 에너지가 힘차게 시작됩니다", "목욕": "막 태어나 씻기는 단계로, 순수하지만 아직 불안정합니다", "관대": "성장해 갖춰가는 단계로, 점점 힘과 형태를 갖춰갑니다", "건록": "가장 왕성하게 활동하는 단계로, 에너지가 충만합니다", "제왕": "최고 전성기로, 기운이 정점에 달해 가장 강합니다", "쇠": "전성기를 지나 서서히 기운이 약해지기 시작하는 단계입니다", "병": "기운이 많이 약해진 단계로, 쉽게 소모되고 지치기 쉽습니다", "사": "기운이 거의 다한 단계로, 고요함 속에 가라앉아 있습니다", "묘": "기운이 땅속에 묻혀 저장되는 단계로, 겉으로는 잠잠합니다", "절": "기운이 끊어지고 새로운 순환을 준비하는 전환점입니다", "태": "새로운 기운이 잉태되는 단계로, 아직 세상에 나오지 않았습니다", "양": "아직 힘을 기르는 어린 단계로, 보살핌과 지원이 필요합니다"};
+const OH_EXERCISE={
+  목:{
+    title:"木 오행 — 간·담·근육·힘줄 강화",
+    principle:"간은 筋(근)을 주관한다 (황제내경). 뻗고 늘이는 움직임이 간담을 다스린다.",
+    items:[
+      {name:"요가 / 스트레칭",desc:"전신 힘줄·인대를 이완시켜 간 기운 소통",icon:"🧘"},
+      {name:"필라테스",desc:"코어와 유연성을 동시에 강화, 간·담 에너지 순환",icon:"🤸"},
+      {name:"태극권 / 기공",desc:"느리고 부드러운 흐름으로 목 기운 조화",icon:"☯️"}
+    ]
+  },
+  화:{
+    title:"火 오행 — 심장·소장·혈액순환 강화",
+    principle:"심장은 血脈(혈맥)을 주관한다 (황제내경). 심박수를 높이는 운동이 화 기운을 키운다.",
+    items:[
+      {name:"유산소 달리기",desc:"심박수 상승으로 심장과 혈액순환 강화",icon:"🏃"},
+      {name:"댄스 / 에어로빅",desc:"즐거운 리듬 속 심화(心火) 발산과 순환",icon:"💃"},
+      {name:"줄넘기 / 자전거",desc:"지속적인 유산소로 심장 지구력 강화",icon:"🚴"}
+    ]
+  },
+  토:{
+    title:"土 오행 — 비·위·소화기·복부 강화",
+    principle:"비장은 肌肉(기육)을 주관한다 (황제내경). 중심 안정과 복부 강화가 토 기운을 다스린다.",
+    items:[
+      {name:"걷기 / 등산",desc:"대지를 밟는 운동으로 비위 기운 안정화",icon:"🚶"},
+      {name:"코어 운동 / 플랭크",desc:"복부 중심근육 강화로 소화기 지지",icon:"💪"},
+      {name:"태극권 / 기공",desc:"중심 잡기와 호흡으로 비위 조화",icon:"☯️"}
+    ]
+  },
+  금:{
+    title:"金 오행 — 폐·대장·호흡기·피부 강화",
+    principle:"폐는 皮毛(피모)를 주관한다 (황제내경). 호흡과 상체 단련이 금 기운을 강화한다.",
+    items:[
+      {name:"수영",desc:"호흡 훈련과 전신 운동으로 폐 기능 극대화",icon:"🏊"},
+      {name:"호흡 명상 / 단전호흡",desc:"폐 용량 확장, 대장 기운 정화",icon:"🌬️"},
+      {name:"등산 / 트레킹",desc:"맑은 공기 속 유산소로 호흡기 강화",icon:"🏔️"}
+    ]
+  },
+  수:{
+    title:"水 오행 — 신장·방광·뼈·허리 강화",
+    principle:"신장은 骨(골)을 주관한다 (황제내경). 하체와 지구력 운동이 수 기운을 다스린다.",
+    items:[
+      {name:"수영 / 아쿠아로빅",desc:"물속 저항 운동으로 신장·방광 기운 강화",icon:"🏊"},
+      {name:"스쿼트 / 하체 근력",desc:"뼈와 허리 강화, 신장 에너지 비축",icon:"🏋️"},
+      {name:"요가 (음요가)",desc:"관절·뼈를 깊이 자극하는 정적 스트레칭",icon:"🧘"}
+    ]
+  }
+};
+
 const YONG_REASON=[["봄이 왔지만 한기가 남아 얼어붙은 땅, 甲木을 깨울 햇볕(丙)이 먼저입니다", "목 기운이 최고조라 설기가 필요하고, 庚金으로 다듬어야 큰 재목이 됩니다", "토가 강해 나무 뿌리가 막히니 庚金으로 토를 파헤쳐야 합니다", "불볕이 강해 나무가 타들어 가니 癸水로 적셔줘야 합니다", "한여름 불더위에 甲木이 타니 癸水가 생명수입니다", "화토가 함께 메말라 癸水가 우선이고, 庚金으로 수원을 만들어야 합니다", "가을 庚金이 甲木을 베니 丁火로 庚金을 제압해야 합니다", "서릿발 庚辛이 강해 丁火로 금기를 눌러야 합니다", "토가 왕해 나무가 고립되니 庚金으로 소토하고 壬水로 생목합니다", "수가 넘쳐 뿌리가 떠내려가니 戊土로 수를 막아야 합니다", "한겨울 얼음 속에 갇혀 丁火로 동목을 살려야 합니다", "언 땅에서 甲木이 얼어붙어 丙火 태양이 절대 먼저입니다"], ["봄 한기에 화초가 얼어 丙火 태양이 가장 급합니다", "목 기운이 강해 화초가 넘치니 丙火로 설기해야 합니다", "乙木이 묘지에 드니 癸水로 적시고 丙火로 살려야 합니다", "초여름 열기에 화초가 시드니 癸水가 가장 먼저입니다", "한여름 불더위에 癸水 없이는 화초가 살 수 없습니다", "화토가 겹쳐 뜨겁고 메마르니 癸水로 적셔야 합니다", "가을 서릿바람에 화초가 꺾이니 丙火 온기가 필요합니다", "깊은 가을 화초가 마르니 癸水와 丙火가 함께 필요합니다", "가을이 저물어 乙木이 묻히니 癸水로 소생시켜야 합니다", "초겨울 乙木이 죽어가니 丙火 온기가 가장 급합니다", "한겨울 화초가 얼어 丙火 태양이 절대적입니다", "언 땅에 화초가 묻히니 丙火로 땅을 녹여야 합니다"], ["봄 한기가 남아 丙火를 壬水로 적셔 빛을 더 멀리 보냅니다", "봄 木이 왕해 丙火가 설기되니 壬水로 중화합니다", "토가 강해 丙火 빛이 막히니 壬水와 甲木이 필요합니다", "초여름 화기가 강해지니 壬水로 식혀야 합니다", "한여름 丙火가 너무 강해 壬水가 절대 먼저입니다", "화토가 함께 강해 壬水로 식히고 庚金으로 수원을 만듭니다", "가을 金이 丙火를 극하니 壬水와 甲木으로 돌아가야 합니다", "가을 서리에 丙火가 약해지니 甲木으로 생화합니다", "술토가 丙火를 입묘시키니 甲木으로 소통해야 합니다", "초겨울 丙火가 절지에 드니 甲木과 壬水가 필요합니다", "한겨울 丙火가 태지에 드니 甲木으로 생화해야 합니다", "축월 한겨울 丙火가 양지이니 甲木으로 살려야 합니다"], ["봄 한기에 촛불 丁火가 약하니 甲木으로 불을 살려야 합니다", "봄 木이 왕해 丁火 불꽃이 흔들리니 庚金으로 안정시킵니다", "진토가 丁火를 입고시키니 甲木으로 소통해야 합니다", "초여름 丁火가 제왕이라 庚金으로 다스려야 합니다", "한여름 丁火가 건록으로 강하나 壬水로 중화합니다", "미토가 丁火를 설기시키니 甲木으로 생화합니다", "가을 庚金이 강해 丁火를 극하니 甲木이 먼저입니다", "가을 丁火가 장생지라 庚金을 제련하는 데 씁니다", "술월 丁火가 양지이니 甲木으로 불을 키워야 합니다", "해월 丁火가 태지라 甲木이 절대 먼저입니다", "한겨울 丁火가 절지라 甲木으로 불씨를 살려야 합니다", "언 땅에 丁火가 묘지이니 甲木으로 불씨를 되살려야 합니다"], ["봄 木이 왕해 戊土를 극하니 丙火로 목기를 설기시켜야 합니다", "봄 木이 강해 戊土가 눌리니 甲木을 제어할 庚金이 필요합니다", "진토가 왕해 壬水와 甲木으로 다스려야 합니다", "초여름 戊土가 건록으로 강하나 甲木으로 소통합니다", "한여름 火土가 타오르니 壬水가 절대 먼저입니다", "미토가 너무 강해 壬水와 甲木으로 다스려야 합니다", "가을 金이 강해 戊土 기운을 설기시키니 丙火로 보완합니다", "가을 戊土가 병지라 丙火로 생토해야 합니다", "술토가 너무 강하니 甲木으로 소통하고 壬水로 촉촉하게 합니다", "초겨울 水가 강해 戊土가 떠내려가니 丙火로 건조시켜야 합니다", "한겨울 戊土가 태지라 丙火로 생토해야 합니다", "언 땅 축토에 戊土가 양지라 丙火로 녹여야 합니다"], ["봄 木이 왕해 己土가 눌리니 丙火로 목기를 설기시켜야 합니다", "봄 木이 강해 논밭이 파헤쳐지니 庚金이 필요합니다", "진토가 왕해 甲木으로 소통하고 丙火로 따뜻하게 합니다", "초여름 己土가 제왕이라 壬水로 촉촉하게 해야 합니다", "한여름 火土가 너무 뜨겁니 癸水로 식혀야 합니다", "미토가 강해 壬水와 甲木으로 다스려야 합니다", "가을 金이 己土를 설기시키니 丙火로 보완합니다", "가을 己土가 장생지라 丙火와 癸水로 중화합니다", "술토가 강해 甲木으로 소통하고 癸水로 적셔야 합니다", "초겨울 水가 강해 논밭이 잠기니 丙火로 건조시켜야 합니다", "한겨울 己土가 절지라 丙火로 생토해야 합니다", "언 땅에 己土가 묘지이니 丙火로 녹여야 합니다"], ["봄 木이 왕해 庚金이 절지라 丁火로 단련해야 합니다", "봄 木이 강해 庚金이 태지라 丁火가 필요합니다", "庚金이 양지이니 丁火와 甲木으로 키워야 합니다", "초여름 庚金이 장생지라 丁火와 壬水로 단련합니다", "한여름 열기에 庚金이 목욕지라 壬水로 식혀야 합니다", "미월 庚金이 관대지라 丁火로 단련하고 壬水로 씻어야 합니다", "가을 庚金이 건록으로 강하니 丁火와 甲木으로 다스립니다", "가을 庚金이 제왕이라 丁火로 단련해야 진가가 납니다", "庚金이 쇠지라 丁火와 甲木으로 활기를 불어넣어야 합니다", "초겨울 庚金이 병지라 丁火로 다시 살려야 합니다", "한겨울 庚金이 사지라 丁火가 절대 먼저입니다", "언 땅에 庚金이 묘지이니 丁火로 달구어야 합니다"], ["봄 木이 강해 辛金이 태지라 丁火로 단련해야 합니다", "봄 辛金이 절지라 丁火와 壬水가 필요합니다", "辛金이 묘지라 壬水로 씻고 丙火로 빛나게 합니다", "사월 辛金이 사지라 壬水로 식히고 丙火로 빛을 냅니다", "한여름 辛金이 병지라 壬水로 식혀야 합니다", "辛金이 쇠지라 壬水와 甲木으로 중화합니다", "가을 辛金이 제왕이라 壬水로 씻어야 보석이 빛납니다", "가을 辛金이 건록이라 壬水와 甲木이 필요합니다", "辛金이 관대지라 壬水로 씻고 丙火로 빛나게 합니다", "초겨울 辛金이 목욕지라 壬水로 씻어 빛을 내야 합니다", "한겨울 辛金이 장생지라 壬水와 丙火로 빛나게 합니다", "한겨울 언 땅에 辛金이 양지라 아직 어리고 약합니다. 언 땅을 녹일 丙火가 먼저입니다"], ["봄 壬水가 병지라 庚金으로 수원을 만들어야 합니다", "봄 壬水가 사지라 庚金이 절대 먼저입니다", "壬水가 묘지라 甲木과 庚金으로 소통해야 합니다", "사월 壬水가 절지라 庚金과 辛金으로 수원을 만들어야 합니다", "한여름 壬水가 태지라 庚金과 辛金이 필요합니다", "壬水가 양지라 庚金으로 수원을 만들어야 합니다", "가을 壬水가 장생지라 戊土로 제방을 쌓아야 합니다", "가을 壬水가 목욕지라 戊土와 庚金으로 다스립니다", "壬水가 관대지라 甲木으로 설기하고 庚金으로 보완합니다", "초겨울 壬水가 건록으로 강하니 戊土로 제방을 쌓아야 합니다", "한겨울 壬水가 제왕이라 戊土로 막아야 합니다", "壬水가 쇠지이나 한겨울 넘쳐흐르니 戊土와 丙火가 필요합니다"], ["봄 癸水가 목욕지라 辛金으로 수원을 보완합니다", "봄 癸水가 장생지라 庚辛金으로 수원을 키웁니다", "癸水가 양지라 辛金으로 수원을 만들어야 합니다", "사월 癸水가 태지라 辛金이 절대 먼저입니다", "한여름 癸水가 절지라 庚辛金이 절대 먼저입니다", "癸水가 묘지라 辛金과 甲木으로 소통해야 합니다", "가을 癸水가 사지라 辛金으로 수원을 보충해야 합니다", "가을 癸水가 병지라 辛金과 庚金이 필요합니다", "癸水가 쇠지라 辛金으로 보완하고 甲木으로 설기합니다", "초겨울 癸水가 제왕이라 丙火와 戊土로 중화합니다", "한겨울 癸水가 건록으로 강하니 丙火와 戊土가 필요합니다", "癸水가 관대지이나 한겨울이라 丙火로 온기를 더해야 합니다"]];
 const BYUNG_MAP={"한기잔존": "봄이 왔지만 한기가 아직 남아 있어 한습합니다", "목기최왕": "목 기운이 가장 왕성해 나무가 우거진 시절입니다", "토왕체목": "토 기운이 강해 목 기운을 눌러버리는 계절입니다", "화왕목조": "화 기운이 넘쳐 뜨겁고 건조한 계절입니다", "염열극심": "불볕더위가 극에 달해 몸이 타들어 가는 계절입니다", "화토극조": "화와 토가 겹쳐 극도로 뜨겁고 메마른 계절입니다", "금왕한기": "금 기운이 강해지며 서늘한 기운이 밀려오는 계절입니다", "신금극목": "서릿발 같은 금 기운이 목 기운을 베어버리는 계절입니다", "토왕목고": "토 기운이 왕성해 목이 고립되는 계절입니다", "수왕목부": "물이 넘쳐 뿌리가 떠내려갈 위기의 계절입니다", "한동극심": "강추위로 만물이 꽁꽁 얼어붙는 계절입니다", "한극토동": "극심한 추위로 토까지 얼어버리는 계절입니다", "양지한극": "일간의 에너지가 아직 자라나는 단계인데 한기까지 극심해 이중으로 버거운 계절입니다", "금왕체목": "금 기운이 강해 목을 억누르는 계절입니다", "건록한동": "건록지이지만 한기가 가득한 겨울입니다", "관대한극": "관대지이지만 한기가 극심한 계절입니다", "쇠토극수": "토 기운이 수를 억제하는 계절입니다", "제왕수왕": "수 기운이 제왕처럼 강한 계절입니다", "목다화식": "목이 너무 많아 화 기운을 소진시키는 계절입니다", "수왕금침": "수 기운이 넘쳐 금이 가라앉는 계절입니다"};
 const MO_JJ_CHAR=['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];
@@ -830,6 +879,18 @@ function renderHealth(s){
   const acc1Juice= makeAcc(`🥤 ${oh1} 보충 · 주스 추천`, makeHCards(rec1.juices,3,c1), c1.t);
   const acc1Supp = makeAcc(`💊 ${oh1} 보충 · 건강기능식품 추천`, makeHCards(rec1.supps,3,c1), c1.t);
 
+  // ── 운동처방 아코디언 ──
+  const exData=OH_EXERCISE[oh1];
+  const accExercise=exData?makeAcc('🏃 '+oh1+' 오행 맞춤 운동처방',
+    '<div style="padding:4px 0">'
+    +'<div style="font-size:11px;color:#5a4020;line-height:1.8;margin-bottom:10px;background:#fffef5;border-left:3px solid #c9a227;padding:8px 10px;border-radius:0 6px 6px 0">'+exData.principle+'</div>'
+    +exData.items.map(it=>'<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid #f0ece0">'
+      +'<span style="font-size:20px;line-height:1.2">'+it.icon+'</span>'
+      +'<div><div style="font-size:12px;font-weight:700;color:#3a2a10;margin-bottom:2px">'+it.name+'</div>'
+      +'<div style="font-size:11px;color:#6a5a3a;line-height:1.6">'+it.desc+'</div></div>'
+      +'</div>').join('')
+    +'</div>', '#2e7d4f'):''
+
   // ── 제2 밸런스 오행 ──
   let secondaryHtml='';
   if(rec2){
@@ -893,24 +954,24 @@ function renderHealth(s){
   return`<div class="health-panel">
 
     <!-- 제1 밸런스 오행 -->
-    <div style="background:${c1.bg};border:1.5px solid ${c1.b};border-radius:11px;padding:14px 16px;margin-bottom:10px">
-      <div style="font-size:9px;font-weight:700;color:${c1.t};letter-spacing:.1em;margin-bottom:7px;opacity:.8">✦ 제1 밸런스 오행</div>
-      <div style="font-size:20px;font-weight:700;color:${c1.t};margin-bottom:8px;letter-spacing:.03em">
+    <div style="background:${c1.bg};border:1.5px solid ${c1.b};border-radius:10px;padding:10px 12px;margin-bottom:8px">
+      <div style="font-size:8px;font-weight:700;color:${c1.t};letter-spacing:.1em;margin-bottom:5px;opacity:.8">✦ 제1 밸런스 오행</div>
+      <div style="font-size:16px;font-weight:700;color:${c1.t};margin-bottom:6px;letter-spacing:.03em">
         ${oh1}
-        <span style="font-size:13px;font-weight:600;margin-left:4px">(${rec1.deco[0]}${oh1} · ${rec1.deco[1]}${oh1})</span>
+        <span style="font-size:11px;font-weight:600;margin-left:4px">(${rec1.deco[0]}${oh1} · ${rec1.deco[1]}${oh1})</span>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
-        <div style="background:rgba(255,255,255,0.55);border-radius:7px;padding:7px 9px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px">
+        <div style="background:rgba(255,255,255,0.55);border-radius:6px;padding:5px 7px">
           <div style="font-size:8px;color:${c1.t};opacity:.75;margin-bottom:2px;font-weight:700">관련 장부</div>
-          <div style="font-size:11px;font-weight:700;color:${c1.t}">${rec1.organ.replace('·','·<br>').replace(' ','')}</div>
+          <div style="font-size:10px;font-weight:700;color:${c1.t}">${rec1.organ.replace('·','·<br>').replace(' ','')}</div>
         </div>
-        <div style="background:rgba(255,255,255,0.55);border-radius:7px;padding:7px 9px">
+        <div style="background:rgba(255,255,255,0.55);border-radius:6px;padding:5px 7px">
           <div style="font-size:8px;color:${c1.t};opacity:.75;margin-bottom:2px;font-weight:700">맛</div>
-          <div style="font-size:11px;font-weight:700;color:${c1.t}">${rec1.taste}</div>
+          <div style="font-size:10px;font-weight:700;color:${c1.t}">${rec1.taste}</div>
         </div>
-        <div style="background:rgba(255,255,255,0.55);border-radius:7px;padding:7px 9px">
+        <div style="background:rgba(255,255,255,0.55);border-radius:6px;padding:5px 7px">
           <div style="font-size:8px;color:${c1.t};opacity:.75;margin-bottom:2px;font-weight:700">색깔</div>
-          <div style="font-size:11px;font-weight:700;color:${c1.t}">${rec1.color}</div>
+          <div style="font-size:10px;font-weight:700;color:${c1.t}">${rec1.color}</div>
         </div>
       </div>
     </div>
@@ -920,8 +981,11 @@ function renderHealth(s){
       <b style="color:#8a6200">왜 ${oh1} 오행인가요?</b><br>
       당신의 일간은 <b>${CG[dc]}(${CG_KR[dc]})</b>, 월지는 <b>${JJ[s.pillars[1].jj]}(${JJ_KR[s.pillars[1].jj]})</b>입니다.<br>
       ${friendlyEnergyText(YONG_REASON[dc][moIdx])}<br>
-      <span style="font-size:10px;color:#7a6040">📖 황제내경 — ${oh1}은 ${rec1.organ.split('·')[0].trim()}을 주관 &nbsp;|&nbsp; 📖 동의보감 — ${rec1.taste}은 ${rec1.organ.split('·')[0].trim()}으로 귀납</span>
+      <span style="font-size:10px;color:#7a6040">📖 황제내경 — ${oh1}${['목','화','금'].includes(oh1)?'은':'는'} ${rec1.organ.split('·')[0].trim()}을 주관 &nbsp;|&nbsp; 📖 동의보감 — ${rec1.taste}은 ${rec1.organ.split('·')[0].trim()}으로 귀납</span>
     </div>
+
+    <!-- 운동처방 -->
+    ${accExercise}
 
     <!-- 제1 오행 아코디언 -->
     ${acc1Tea}${acc1Juice}${acc1Supp}
@@ -1136,10 +1200,9 @@ function calcMonth(y,m,d,ycg,gmap){
 
 function calcDay(y,m,d){const pos=(toJDN(y,m,d)+49)%60;return{cg:pos%10,jj:pos%12};}
 
-function calcHour(h,min,dcg){
-  const t=h*60+min;
-  // 동경시 보정: 한국 실제 태양시 = 표준시 - 30분 (경도 127.5° 기준)
-  // 자시(子) 23:30~01:30 / 이후 시진 30분씩 뒤로 이동
+function calcHour(h,min,dcg,isKorea){
+  // 한국: 표준시-30분 보정 / 해외: 현지 시각 그대로
+  const t=isKorea?(h*60+min):(h*60+min+30);
   const ji=(t>=1410||t<90)?0:t<210?1:t<330?2:t<450?3:t<570?4:t<690?5:t<810?6:t<930?7:t<1050?8:t<1170?9:t<1290?10:11;
   const hc=((dcg%5)*2+ji)%10;
   return{cg:hc,jj:ji};
@@ -1190,11 +1253,11 @@ function calcDaeun(y,m,d,h,min,gender,dc,mp,gmap,ycg){
   return{forward,sy,sm,daeuns,precise,rawDays:Math.round(days*10)/10};
 }
 
-function buildSaju(y,m,d,h,min,gender,gmap){
+function buildSaju(y,m,d,h,min,gender,gmap,isKorea){
   const yp=calcYear(y,m,d,gmap);
   const mp=calcMonth(y,m,d,yp.cg,gmap);
   const dp=calcDay(y,m,d);
-  const hp=calcHour(h,min,dp.cg);
+  const hp=calcHour(h,min,dp.cg,isKorea);
   const dc=dp.cg;
   const gm=calcGongmang(y,m,d);
   return{
@@ -1825,7 +1888,7 @@ function calcCompat(){
   const mn=mnVal===''?0:parseInt(mnVal);
   if(!yr||!mo||!dy){alert('상대방의 생년·월·일을 입력해주세요.');return;}
   try{
-    const s2=buildSaju(yr,mo,dy,hr,mn,compatGd,JEOL_DATA);
+    const s2=buildSaju(yr,mo,dy,hr,mn,compatGd,JEOL_DATA,document.getElementById('birthplace').value==='korea');
     renderCompatResult(currentSaju, s2);
   }catch(e){
     document.getElementById('compat-result-area').innerHTML=
@@ -2050,8 +2113,9 @@ async function handleCalc(){
   const hr=parseInt(document.getElementById('hr').value)||0;
   const min=parseInt(document.getElementById('min').value)||0;
   const gd=document.getElementById('gd').value;
+  const isKorea=document.getElementById('birthplace').value==='korea';
   const gmap=JEOL_DATA; // 내장 절기 데이터
-  const s=buildSaju(yr,mo,dy,hr,min,gd,gmap);
+  const s=buildSaju(yr,mo,dy,hr,min,gd,gmap,isKorea);
   currentSaju=s;
   document.getElementById('panel-chart').innerHTML=renderChart(s);
   document.getElementById('panel-compat').innerHTML=renderCompatPanel();
