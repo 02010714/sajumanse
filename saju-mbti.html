@@ -2616,14 +2616,14 @@ async function loadSavedInput(){
     if(d.yr) document.getElementById('yr').value=d.yr;
     if(d.mo) document.getElementById('mo').value=d.mo;
     if(d.dy) document.getElementById('dy').value=d.dy;
-    if(d.hr!==undefined) document.getElementById('hr').value=d.hr;
-    if(d.mi!==undefined) document.getElementById('mi').value=d.mi;
+    if(d.hr!==undefined&&d.hr!=='') document.getElementById('hr').value=d.hr;
+    if(d.mi!==undefined&&d.mi!=='') document.getElementById('mi').value=d.mi;
     if(d.gd) document.getElementById('gd').value=d.gd;
+    if(d.mbti){ const el=document.getElementById('mbti'); if(el) el.value=d.mbti; }
     if(d.mbti) document.getElementById('mbti').value=d.mbti;
   }catch(e){}
 }
-// 페이지 로드 완료 후 저장값 복원
-window.addEventListener('load', loadSavedInput);
+loadSavedInput(); // 함수 정의 직후 즉시 실행
 function handleCalc(){
   const btn=document.querySelector('.btn-main');
   btn.disabled=true;btn.textContent='계산 중...';
