@@ -1187,20 +1187,22 @@ function friendlyEnergyText(str){
 }
 
 // ── 건강 추천 렌더링 ──
-let _accId=0; // 아코디언 고유 ID
-function makeAcc(label, contentHtml, color){
-  const id='acc_'+(++_accId);
-  return`<div class="acc-wrap">
+// _accId는 클로저 내부에만 존재 → 외부에서 리셋 불가 (ID 중복 충돌 방지)
+const makeAcc=(function(){
+  let _id=0;
+  return function(label, contentHtml, color){
+    const id='acc_'+(++_id);
+    return`<div class="acc-wrap">
     <div class="acc-hdr" id="hdr_${id}" onclick="toggleAcc('${id}')">
       <span class="acc-label" style="color:${color}">${label}</span>
       <span class="acc-arrow">▼</span>
     </div>
     <div class="acc-body" id="body_${id}">${contentHtml}</div>
   </div>`;
-}
+  };
+})();
 
 function renderHealth(s){
-  _accId=0; // 매 렌더 시 리셋
   const{pillars,dc}=s;
   const moJJ=pillars[1].jj;
   const moIdx=jjToMoIdx(moJJ);
@@ -3107,14 +3109,15 @@ async function loadSavedInput(){
     if(d.yr) document.getElementById('yr').value=d.yr;
     if(d.mo) document.getElementById('mo').value=d.mo;
     if(d.dy) document.getElementById('dy').value=d.dy;
-    if(d.hr!==undefined&&d.hr!=='') document.getElementById('hr').value=d.hr;
-    if(d.mi!==undefined&&d.mi!=='') document.getElementById('mi').value=d.mi;
+    if(d.hr!==undefined) document.getElementById('hr').value=d.hr;
+    if(d.min!==undefined) document.getElementById('min').value=d.min;
     if(d.gd) document.getElementById('gd').value=d.gd;
-    if(d.mbti){ const el=document.getElementById('mbti'); if(el) el.value=d.mbti; }
     if(d.mbti) document.getElementById('mbti').value=d.mbti;
+    if(d.birthplace) document.getElementById('birthplace').value=d.birthplace;
   }catch(e){}
 }
-loadSavedInput(); // 함수 정의 직후 즉시 실행
+// 페이지 로드 완료 후 저장값 복원
+window.addEventListener('load', loadSavedInput);
 function handleCalc(){
   const btn=document.querySelector('.btn-main');
   btn.disabled=true;btn.textContent='계산 중...';
@@ -3124,9 +3127,10 @@ function handleCalc(){
       mo:document.getElementById('mo').value,
       dy:document.getElementById('dy').value,
       hr:document.getElementById('hr').value,
-      mi:document.getElementById('mi').value,
+      min:document.getElementById('min').value,
       gd:document.getElementById('gd').value,
       mbti:document.getElementById('mbti').value,
+      birthplace:document.getElementById('birthplace').value
     };
     localStorage.setItem('innerme_last',JSON.stringify(saveData));
   }catch(e){}
