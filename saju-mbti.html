@@ -1639,6 +1639,7 @@ function aiMenuBlock(){
     +'<textarea id="today-text" readonly onclick="this.select()" style="height:280px"></textarea>'
     +'<div class="hint2">오늘 날짜 기준 5층 자동 계산</div>'
     +'</div></div>'
+    +'<div style="height:1px;background:#e8d8a0;margin:8px 0"></div>'+'<div style="margin-bottom:8px">'+'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">3 · 궁합 심층 분석 <span style="font-size:9px;color:#9a8a6a;font-weight:400">궁합 탭에서 분석 후 복사</span></div>'+'<button onclick="setTab(\'compat\')" style="width:100%;padding:11px;border-radius:9px;border:1px solid #e8a090;background:#fff5f5;color:#c0392b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">💑 궁합 탭으로 이동</button>'+'</div>'+'<div>'+'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">4 · 직업적성 심층 분석 <span style="font-size:9px;color:#9a8a6a;font-weight:400">직업 탭에서 확인 후 복사</span></div>'+'<button onclick="setTab(\'career\')" style="width:100%;padding:11px;border-radius:9px;border:1px solid #b0c8e0;background:#f0f8ff;color:#1565a0;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">💼 직업 탭으로 이동</button>'+'</div>'
     +'</div></div>';
 }
 
@@ -2151,6 +2152,8 @@ let nowYear=new Date().getFullYear();
 
 
 function setTab(t){
+  document.getElementById('ai-menu-body').style.display='none';
+  document.getElementById('ai-menu-arrow').style.transform='';
   document.getElementById('panel-chart').style.display=t==='chart'?'':'none';
   document.getElementById('panel-compat').style.display=t==='compat'?'':'none';
   document.getElementById('panel-health').style.display=t==='health'?'':'none';
