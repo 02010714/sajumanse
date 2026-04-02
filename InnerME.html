@@ -2210,6 +2210,25 @@ function renderEnergyCode(s){
         <span class="gek-badge" style="background:${gc}">${gek.sipsin}</span>
         ${mbtiHtml}
       </div>
+            <div style="margin-top:6px;padding:8px 10px;background:rgba(255,255,255,0.6);border-radius:7px;border:1px solid #e8d8a0">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:5px">
+          <span style="font-size:9px;font-weight:700;color:#8a6200">${gekDetail.tuChul?'✅ 成格':'⚠️ 未成格'}</span>
+          <span style="font-size:11px;font-weight:700;color:#2c4a2c">${gekDetail.gekName}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <span style="font-size:9px;color:#7a6040">格局용신:</span>
+          <span style="font-size:11px;font-weight:700;color:#1a3a6c">${gekDetail.gekYongOH||'조후용신 적용'}</span>
+          <span style="font-size:9px;color:#aaa">|</span>
+          <span style="font-size:9px;color:#7a6040">조후용신:</span>
+          <span style="font-size:11px;font-weight:700;color:#7a3a00">${yong.yongsin}</span>
+        </div>
+        <div style="margin-top:7px;display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+          <span style="font-size:9px;color:#7a6040;font-weight:700">적용 용신 변경:</span>
+          ${['목','화','토','금','수'].map(oh=>`<button onclick="changeYong('${oh}',this)" style="padding:3px 9px;border-radius:5px;border:1.5px solid ${currentYongOverride===oh?'#c9a227':'#ddd0b0'};background:${currentYongOverride===oh?'#c9a227':'#faf8f4'};color:${currentYongOverride===oh?'#fff':'#5a4020'};font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">${oh}</button>`).join('')}
+          <button onclick="resetYong()" style="padding:3px 8px;border-radius:5px;border:1px solid #ddd0b0;background:#f5f5f5;color:#888;font-size:10px;cursor:pointer;font-family:inherit">초기화</button>
+        </div>
+        <div style="font-size:9px;color:#9a8a6a;margin-top:4px">AI 검증 후 용신이 다르면 위에서 변경 → 건강·운동·직업 추천이 즉시 갱신됩니다</div>
+      </div>
       <div style="font-size:11px;color:#5a4020;line-height:1.9;margin-top:4px">
         <span style="font-weight:700">${ILGAN_NAME[dc]}</span>: ${ILGAN_NAT[dc]}&nbsp;
         <span style="color:#d0c0a0">·</span>&nbsp;
