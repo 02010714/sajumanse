@@ -374,6 +374,227 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 
 <script>
 // ── 格 방향 테이블 ──
+// ── 格局 정밀 판단 엔진 ──────────────────────────────
+// 일간 오행 인덱스 (0=목 1=화 2=토 3=금 4=수)
+const ILGAN_OH=[0,0,1,1,2,2,3,3,4,4]; // 甲乙=목, 丙丁=화, 戊己=토, 庚辛=금, 壬癸=수
+
+// 일간 기준 오행관계 → 십신 계열
+// [비겁, 식상, 재성, 관성, 인성] 오행 인덱스
+function getGekOH(dc){
+  const me=ILGAN_OH[dc];
+  return {
+    bigyeop: me,
+    siksang: (me+1)%5,  // 내가 생하는 오행
+    jaeseong:(me+3)%5,  // 내가 극하는 오행  (목→토: 0+3=3? 수정필요)
+    gwanseong:(me+2)%5, // 나를 극하는 오행
+    inseong: (me+4)%5,  // 나를 생하는 오행
+  };
+}
+// 상생: 목→화→토→금→수→목 (인덱스: 0→1→2→3→4→0)
+// 상극: 목→토, 화→금, 토→수, 금→목, 수→화 (0→2, 1→3, 2→4, 3→0, 4→1)
+function getRelOH(dc){
+  const me=ILGAN_OH[dc];
+  const gen=(me+1)%5;   // 내가 생하는 (식상)
+  const克=(me+2)%5;    // 내가 극하는 (재성) 목극토=0→2
+  const beingKill=(me+3)%5; // 나를 극하는 (관성) 토극수? NO
+  const beingGen=(me+4)%5;  // 나를 생하는 (인성)
+  // 상극 정확한 공식: 극하는 오행 = (me+2)%5, 극받는 오행 = (me+3)%5
+  // 목(0)→토(2) 극, 화(1)→금(3) 극, 토(2)→수(4) 극, 금(3)→목(0) 극, 수(4)→화(1) 극
+  return {
+    siksang:gen,        // 식상 오행
+    jaeseong:(me+2)%5, // 재성 오행 (내가 극하는)
+    gwanseong:(me+3)%5,// 관성 오행 (나를 극하는) ← 목(0)+3=3=금? NO
+    inseong:(me+4)%5,  // 인성 오행 (나를 생하는)
+  };
+}
+// 상극 정확 공식:
+// 목극토(0→2), 화극금(1→3), 토극수(2→4), 금극목(3→0), 수극화(4→1)
+// 내가 극하는 오행: (me*2)%5+... 복잡하므로 직접 테이블
+const GEUKHANEUN=[ // 내(row)가 극하는 오행
+  2, // 목 → 토
+  3, // 화 → 금
+  4, // 토 → 수
+  0, // 금 → 목
+  1, // 수 → 화
+];
+const GEUKBADEUN=[ // 나(row)를 극하는 오행
+  3, // 목 ← 금
+  4, // 화 ← 수
+  0, // 토 ← 목
+  1, // 금 ← 화
+  2, // 수 ← 토
+];
+const SAENGNEUN=[ // 나(row)를 생하는 오행 (인성)
+  4, // 목 ← 수
+  0, // 화 ← 목
+  1, // 토 ← 화
+  2, // 금 ← 토
+  3, // 수 ← 금
+];
+const SAENGHANEUN=[ // 내(row)가 생하는 오행 (식상)
+  1, // 목 → 화
+  2, // 화 → 토
+  3, // 토 → 금
+  4, // 금 → 수
+  0, // 수 → 목
+];
+
+// 체용 格局명 + 格局용신 오행 결정
+// 格 십신 + 원국에서 가장 강한 십신 계열 조합
+const GEK_BODY_YONG={
+  비견:{ rules:[
+    {yong:'gwanseong', name:'比劫用官格', ohKey:'gwanseong'},
+    {yong:'jaeseong',  name:'比劫用財格', ohKey:'jaeseong'},
+  ], default:{name:'비견격', ohKey:'gwanseong'}},
+  겁재:{ rules:[
+    {yong:'gwanseong', name:'劫財制官格', ohKey:'gwanseong'},
+  ], default:{name:'겁재격', ohKey:'gwanseong'}},
+  식신:{ rules:[
+    {yong:'jaeseong',  name:'食神生財格', ohKey:'jaeseong'},
+    {yong:'gwanseong', name:'食神制殺格', ohKey:'siksang'},
+  ], default:{name:'식신격', ohKey:'jaeseong'}},
+  상관:{ rules:[
+    {yong:'jaeseong',  name:'傷官生財格', ohKey:'jaeseong'},
+    {yong:'inseong',   name:'傷官配印格', ohKey:'inseong'},
+  ], default:{name:'상관격', ohKey:'jaeseong'}},
+  편재:{ rules:[
+    {yong:'siksang',   name:'食傷生財格', ohKey:'jaeseong'},
+    {yong:'gwanseong', name:'財滋弱殺格', ohKey:'gwanseong'},
+  ], default:{name:'편재격', ohKey:'siksang'}},
+  정재:{ rules:[
+    {yong:'siksang',   name:'食傷生財格', ohKey:'jaeseong'},
+    {yong:'gwanseong', name:'財生官格',   ohKey:'gwanseong'},
+  ], default:{name:'정재격', ohKey:'siksang'}},
+  편관:{ rules:[
+    {yong:'inseong',   name:'殺印相生格', ohKey:'inseong'},
+    {yong:'siksang',   name:'食神制殺格', ohKey:'siksang'},
+  ], default:{name:'편관격', ohKey:'inseong'}},
+  정관:{ rules:[
+    {yong:'inseong',   name:'官印相生格', ohKey:'inseong'},
+    {yong:'jaeseong',  name:'財生官格',   ohKey:'jaeseong'},
+  ], default:{name:'정관격', ohKey:'inseong'}},
+  편인:{ rules:[
+    {yong:'gwanseong', name:'GWANSAL_CHECK', ohKey:'inseong'},
+    {yong:'siksang',   name:'梟印奪食格', ohKey:'jaeseong'},
+  ], default:{name:'편인격', ohKey:'gwanseong'}},
+  정인:{ rules:[
+    {yong:'gwanseong', name:'GWANSAL_CHECK', ohKey:'inseong'},
+    {yong:'jaeseong',  name:'財破印格',   ohKey:'gwanseong'},
+  ], default:{name:'정인격', ohKey:'gwanseong'}},
+};
+
+// 정관/편관 구분 헬퍼
+// 관성 오행의 양간=정관, 음간=편관
+// 지지에만 있을 때: 년지>월지>일지>시지 강도로 판단 (앞 기둥 우선)
+function getGwanType(dc, pillars){
+  const me=ILGAN_OH[dc];
+  const gwanOH=GEUKBADEUN[me];      // 관성 오행 index
+  const jeonggwanCg=gwanOH*2;       // 정관 천간 index (양간)
+  const pyeongwanCg=gwanOH*2+1;     // 편관 천간 index (음간)
+  const 천간들=pillars.map(p=>p.cg);
+  const 지지정기들=pillars.map(p=>JJ_JEONGGI[p.jj]);
+
+  const jgTu=천간들.includes(jeonggwanCg);
+  const pkTu=천간들.includes(pyeongwanCg);
+  if(jgTu&&!pkTu) return 'jeonggwan';
+  if(pkTu&&!jgTu) return 'pyeongwan';
+  if(jgTu&&pkTu)  return 'mixed';
+
+  // 천간 없으면 지지 장간 위치로 판단 (년지=0이 강)
+  const jgJJ=지지정기들.indexOf(jeonggwanCg);
+  const pkJJ=지지정기들.indexOf(pyeongwanCg);
+  if(jgJJ!==-1&&pkJJ===-1) return 'jeonggwan';
+  if(pkJJ!==-1&&jgJJ===-1) return 'pyeongwan';
+  if(jgJJ!==-1&&pkJJ!==-1) return jgJJ<=pkJJ?'jeonggwan':'pyeongwan'; // 더 앞(년지쪽) 기둥 우선
+  return 'none';
+}
+
+function analyzeGek(s){
+  const dc=s.pillars[2].cg;
+  const moJJ=s.pillars[1].jj;
+  const moIdx=jjToMoIdx(moJJ);
+  const sipsin=SIPSIN_MAP[dc][moIdx]; // 格의 십신
+
+  // ① 투출 체크: 월지 정기 천간이 원국 4천간에 있는가
+  const moJeonggi=JJ_JEONGGI[moJJ]; // 월지 정기 천간 index
+  const 천간들=s.pillars.map(p=>p.cg);
+  const tuChul=천간들.includes(moJeonggi);
+
+  // ② 원국 오행 분포
+  const me=ILGAN_OH[dc];
+  const ohCount=[0,0,0,0,0];
+  s.pillars.forEach(p=>{
+    ohCount[OH_CG[p.cg]]++;
+    ohCount[OH_JJ[p.jj]]++;
+  });
+
+  // ③ 각 십신 계열 오행 강도
+  const rel={
+    siksang:  SAENGHANEUN[me],
+    jaeseong: GEUKHANEUN[me],
+    gwanseong:GEUKBADEUN[me],
+    inseong:  SAENGNEUN[me],
+  };
+
+  // ④ 格局용신 판단
+  let gekName, gekYongOH, gekYongOHname;
+  const ohNames=['목','화','토','금','수'];
+
+  if(!tuChul){
+    // 미성격 → 조후용신
+    gekName='미성격(未成格)';
+    const yongData=YONGSIN_DATA[dc][moIdx];
+    gekYongOH=yongsinToOH(yongData.yongsin);
+    gekYongOHname=gekYongOH;
+  } else {
+    // 성격 → 體用 판단
+    const bodyYong=GEK_BODY_YONG[sipsin]||GEK_BODY_YONG['식신'];
+    let matched=null;
+    // 원국에서 용신 역할 오행이 실제 존재하는지 체크
+    for(const rule of bodyYong.rules){
+      const yongOHidx=rel[rule.yong];
+      if(yongOHidx!==undefined && ohCount[yongOHidx]>0){
+        matched=rule;
+        break;
+      }
+    }
+    const chosen=matched||bodyYong.default;
+    // 정관/편관 구분
+    if(chosen.name==='GWANSAL_CHECK'){
+      const gwanType=getGwanType(dc,s.pillars);
+      gekName=gwanType==='jeonggwan'||gwanType==='mixed'?'官印相生格':'殺印相生格';
+    } else {
+      gekName=chosen.name;
+    }
+    const yongOHidx=rel[chosen.ohKey];
+    gekYongOH=yongOHidx!==undefined?ohNames[yongOHidx]:null;
+    gekYongOHname=gekYongOH;
+  }
+
+  return {
+    sipsin,
+    tuChul,
+    gekName,
+    gekYongOH,     // 格局용신 오행 (목/화/토/금/수)
+    ohCount,
+    tuChulChar: tuChul?CG[moJeonggi]:'미투출',
+  };
+}
+
+// 전역 용신 오버라이드 (AI 검증 후 사용자가 변경)
+let currentYongOverride=null;
+
+function getSajuYongshinOH(s){
+  if(currentYongOverride) return currentYongOverride;
+  const gek=analyzeGek(s);
+  if(gek.gekYongOH) return gek.gekYongOH;
+  // fallback: 조후용신
+  const dc=s.pillars[2].cg;
+  const moIdx=jjToMoIdx(s.pillars[1].jj);
+  return yongsinToOH(YONGSIN_DATA[dc][moIdx].yongsin);
+}
+// ────────────────────────────────────────────
+
 const GEK_LABEL={
   비견:{label:"독립·자생",desc:"스스로 서고 스스로 방향을 정한다."},
   겁재:{label:"경쟁·도전",desc:"경쟁이 에너지원이다."},
@@ -1506,6 +1727,7 @@ function renderEnergyCode(s){
   const{dc,pillars}=s;
   const moJJ=pillars[1].jj;
   const gek=getGekInfo(dc,moJJ);
+  const gekDetail=analyzeGek(s);
   const mbti=document.getElementById('mbti').value;
   const co=CO[OH[OH_CG[dc]]];
   const moIdx=jjToMoIdx(moJJ);
@@ -1530,6 +1752,25 @@ function renderEnergyCode(s){
         <span style="font-size:10px;color:#8a6200;font-weight:700">격국</span>
         <span class="gek-badge" style="background:${gc}">${gek.sipsin}</span>
         ${mbtiHtml}
+      </div>
+      <div style="margin-top:6px;padding:8px 10px;background:rgba(255,255,255,0.6);border-radius:7px;border:1px solid #e8d8a0">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:5px">
+          <span style="font-size:9px;font-weight:700;color:#8a6200">${gekDetail.tuChul?'✅ 成格':'⚠️ 未成格'}</span>
+          <span style="font-size:11px;font-weight:700;color:#2c4a2c">${gekDetail.gekName}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <span style="font-size:9px;color:#7a6040">格局용신:</span>
+          <span style="font-size:11px;font-weight:700;color:#1a3a6c">${gekDetail.gekYongOH||'조후용신 적용'}</span>
+          <span style="font-size:9px;color:#aaa">|</span>
+          <span style="font-size:9px;color:#7a6040">조후용신:</span>
+          <span style="font-size:11px;font-weight:700;color:#7a3a00">${yong.yongsin}</span>
+        </div>
+        <div style="margin-top:7px;display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+          <span style="font-size:9px;color:#7a6040;font-weight:700">적용 용신 변경:</span>
+          ${['목','화','토','금','수'].map(oh=>`<button onclick="changeYong('${oh}',this)" style="padding:3px 9px;border-radius:5px;border:1.5px solid ${currentYongOverride===oh?'#c9a227':'#ddd0b0'};background:${currentYongOverride===oh?'#c9a227':'#faf8f4'};color:${currentYongOverride===oh?'#fff':'#5a4020'};font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">${oh}</button>`).join('')}
+          <button onclick="resetYong()" style="padding:3px 8px;border-radius:5px;border:1px solid #ddd0b0;background:#f5f5f5;color:#888;font-size:10px;cursor:pointer;font-family:inherit">초기화</button>
+        </div>
+        <div style="font-size:9px;color:#9a8a6a;margin-top:4px">AI 검증 후 용신이 다르면 위에서 변경 → 건강·운동·직업 추천이 즉시 갱신됩니다</div>
       </div>
       <div style="font-size:11px;color:#5a4020;line-height:1.9;margin-top:4px">
         <span style="font-weight:700">${ILGAN_NAME[dc]}</span>: ${ILGAN_NAT[dc]}&nbsp;
@@ -1639,7 +1880,18 @@ function aiMenuBlock(){
     +'<textarea id="today-text" readonly onclick="this.select()" style="height:280px"></textarea>'
     +'<div class="hint2">오늘 날짜 기준 5층 자동 계산</div>'
     +'</div></div>'
-    +'<div style="height:1px;background:#e8d8a0;margin:8px 0"></div>'+'<div style="margin-bottom:8px">'+'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">3 · 궁합 심층 분석 <span style="font-size:9px;color:#9a8a6a;font-weight:400">궁합 탭에서 분석 후 복사</span></div>'+'<button onclick="setTab(\'compat\')" style="width:100%;padding:11px;border-radius:9px;border:1px solid #e8a090;background:#fff5f5;color:#c0392b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">💑 궁합 탭으로 이동</button>'+'</div>'+'<div>'+'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">4 · 직업적성 심층 분석 <span style="font-size:9px;color:#9a8a6a;font-weight:400">직업 탭에서 확인 후 복사</span></div>'+'<button onclick="setTab(\'career\')" style="width:100%;padding:11px;border-radius:9px;border:1px solid #b0c8e0;background:#f0f8ff;color:#1565a0;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">💼 직업 탭으로 이동</button>'+'</div>'
+    +'<div style="height:1px;background:#e8d8a0;margin:8px 0"></div>'+'<div style="margin-bottom:8px">'+'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'
+    +'<div style="margin-bottom:10px">'
+    +'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">3 · 格局·용신 정밀 검증 <span style="font-size:9px;color:#9a8a6a;font-weight:400">AI가 생극제화로 최종 확정</span></div>'
+    +'<button class="copy-btn" id="gek-btn" onclick="toggleGek()" style="margin-bottom:0;background:linear-gradient(135deg,#f0f4ff,#e8f0ff);border-color:#a0b8e0;color:#1a3a6c">🔍 格局·용신 검증 프롬프트 복사</button>'
+    +'<div class="copy-area" id="gek-area" style="display:none;margin-top:8px">'
+    +'<div class="hint" style="color:#1a3a6c">클립보드 복사 실패 시 아래에서 직접 선택하세요</div>'
+    +'<textarea id="gek-text" readonly onclick="this.select()" style="height:200px"></textarea>'
+    +'<div class="hint2">AI 채팅창에 붙여넣으면 格局·용신 정밀 분석을 받을 수 있습니다</div>'
+    +'</div>'
+    +'</div>'
+    +'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'
+    +'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">4 · 궁합 심층 분석 <span style="font-size:9px;color:#9a8a6a;font-weight:400">궁합 탭에서 분석 후 복사</span></div>'+'<button onclick="setTab(\'compat\')" style="width:100%;padding:11px;border-radius:9px;border:1px solid #e8a090;background:#fff5f5;color:#c0392b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">💑 궁합 탭으로 이동</button>'+'</div>'+'<div>'+'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">5 · 직업적성 심층 분석 <span style="font-size:9px;color:#9a8a6a;font-weight:400">직업 탭에서 확인 후 복사</span></div>'+'<button onclick="setTab(\'career\')" style="width:100%;padding:11px;border-radius:9px;border:1px solid #b0c8e0;background:#f0f8ff;color:#1565a0;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">💼 직업 탭으로 이동</button>'+'</div>'
     +'</div></div>';
 }
 
@@ -1928,6 +2180,7 @@ function renderCareer(s){
   const moJJ=s.pillars[1].jj;
   const moIdx=jjToMoIdx(moJJ);
   const gek=getGekInfo(dc,moJJ);
+  const gekDetail=analyzeGek(s);
   const ss=gek.sipsin;
   const oh1=getSajuYongshinOH(s);
   const oh2=(()=>{try{const d=YONGSIN_DATA[dc][moIdx];return d.hesin&&d.hesin!=="-"?yongsinToOH(d.hesin):null;}catch(e){return null;}})();
@@ -1999,6 +2252,80 @@ function renderCareer(s){
     +"<div style='background:#faf8f4;border:1px solid #e0d0b0;border-radius:8px;padding:9px 12px;font-size:10px;color:#9a8a6a;line-height:1.7;margin-top:10px'>"
     +"※ 이 추천은 格局·용신 2축 기반 참고 자료입니다. 실제 직업 선택 시 개인 경험·역량·환경을 함께 고려하세요."
     +"</div></div>";
+}
+
+function buildGekPrompt(s){
+  if(!s) return '';
+  const dc=s.pillars[2].cg;
+  const moJJ=s.pillars[1].jj;
+  const moIdx=jjToMoIdx(moJJ);
+  const gd=document.getElementById('gd').value;
+  const gek=analyzeGek(s);
+  const yong=YONGSIN_DATA[dc][moIdx];
+  const pillarStr=s.pillars.map(p=>
+    p.label+': '+CG[p.cg]+JJ[p.jj]+
+    ' ['+CG_KR[p.cg]+'('+OH[OH_CG[p.cg]]+') / '+JJ_KR[p.jj]+'('+OH[OH_JJ[p.jj]]+')]'
+  ).join('\n');
+  const ohArr=['목','화','토','금','수'];
+  const ohCount=gek.ohCount.map((n,i)=>ohArr[i]+' '+n+'개').join(' / ');
+  return '[格局·용신 정밀 검증 요청]\n'
+    +'성별: '+gd+'성\n\n'
+    +'[사주 원국]\n'+pillarStr+'\n\n'
+    +'[오행 분포] '+ohCount+'\n\n'
+    +'[이너미 앱 1차 판단]\n'
+    +'格局: '+gek.sipsin+' / 成格여부: '+(gek.tuChul?'成格('+gek.tuChulChar+' 투출)':'未成格(미투출)')+'\n'
+    +'格局명: '+gek.gekName+'\n'
+    +'格局용신(앱): '+( gek.gekYongOH||'미성격→조후용신 적용')+'\n'
+    +'조후용신(궁통보감): '+yong.yongsin+' / 희신: '+yong.hesin+'\n\n'
+    +'아래 기준으로 정밀 검증해주세요:\n'
+    +'① 오행 생극제화 — 格을 生·보호하는 오행이 원국에서 실제로 작동하는가\n'
+    +'② 합충형파해 — 格 또는 용신이 합거·충으로 훼손되지 않는가\n'
+    +'③ 格局용신과 조후용신 일치 여부 — 충돌 시 어느 쪽을 우선하는가\n'
+    +'④ 최종 용신 오행과 格局명을 확정해주세요\n'
+    +'⑤ 확정된 용신 오행 기준으로 음식·운동·직업 추천 방향도 알려주세요';
+}
+function toggleGek(){
+  if(!currentSaju){alert('먼저 사주를 조회해주세요.');return;}
+  const text=buildGekPrompt(currentSaju);
+  const btn=document.getElementById('gek-btn');
+  const area=document.getElementById('gek-area');
+  const ta=document.getElementById('gek-text');
+  ta.value=text;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='✅ 복사됐습니다! AI 채팅창에 붙여넣으세요';
+    btn.style.background='#e8f5e9';btn.style.borderColor='#66bb6a';btn.style.color='#2e7d32';
+    area.style.display='';
+    setTimeout(()=>{
+      btn.textContent='🔍 格局·용신 검증 프롬프트 복사';
+      btn.style.background='linear-gradient(135deg,#f0f4ff,#e8f0ff)';
+      btn.style.borderColor='#a0b8e0';btn.style.color='#1a3a6c';
+    },3000);
+  }).catch(()=>{
+    area.style.display='';
+    ta.select();
+  });
+}
+function copyGekPrompt(){toggleGek();}
+
+function changeYong(oh, btn){
+  currentYongOverride=oh;
+  // 건강·운동·직업 탭 갱신
+  if(currentSaju){
+    document.getElementById('panel-health').innerHTML=renderHealth(currentSaju);
+    document.getElementById('panel-career').innerHTML=renderCareer(currentSaju);
+  }
+  // 에너지코드 재렌더
+  document.getElementById('panel-chart').innerHTML=renderChart(currentSaju);
+  setTab('chart');
+}
+function resetYong(){
+  currentYongOverride=null;
+  if(currentSaju){
+    document.getElementById('panel-health').innerHTML=renderHealth(currentSaju);
+    document.getElementById('panel-career').innerHTML=renderCareer(currentSaju);
+  }
+  document.getElementById('panel-chart').innerHTML=renderChart(currentSaju);
+  setTab('chart');
 }
 
 function renderCompatPanel(){
