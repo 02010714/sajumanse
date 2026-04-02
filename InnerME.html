@@ -405,122 +405,7 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
   <div id="panel-health" style="display:none"></div>
   <div id="panel-career" style="display:none"></div>
   <!-- AI에게 사주 물어보기 아코디언 -->
-  <div style="margin-top:14px;border:1.5px solid #c9a227;border-radius:13px;overflow:hidden;background:#fffbf0">
-    <!-- 타이틀 헤더 -->
-    <div onclick="toggleAiMenu()" id="ai-menu-hdr"
-      style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;background:linear-gradient(135deg,#fffbf0,#fff5e0)">
-      <div>
-        <div style="font-size:10px;color:#8a6200;letter-spacing:.08em;font-weight:700;margin-bottom:3px">✦ AI에게 사주 물어보기</div>
-        <div style="font-size:13px;font-weight:700;color:#5a3e00">사주 데이터 복사 → AI 채팅창에 붙여넣기</div>
-      </div>
-      <span id="ai-menu-arrow" style="font-size:12px;color:#c9a227;transition:transform .2s">▼</span>
-    </div>
-
-    <!-- 아코디언 바디 -->
-    <div id="ai-menu-body" style="display:none;padding:12px 14px 16px;border-top:1px solid #e8d8a0">
-
-      <!-- 1. 나의 사주 종합간명 -->
-      <div style="margin-bottom:10px">
-        <div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px;letter-spacing:.04em">
-          1 · 나의 사주 종합간명
-          <span style="font-size:9px;color:#9a8a6a;font-weight:400;margin-left:4px">사주원국 + 대운</span>
-        </div>
-        <button class="copy-btn" id="copy-btn" onclick="toggleCopy()" style="margin-bottom:0">
-          📋 텍스트 복사하기
-        </button>
-        <div class="copy-area" id="copy-area" style="display:none;margin-top:8px">
-          <div class="hint">▼ 텍스트 클릭 → 전체선택(Ctrl+A) → 복사(Ctrl+C) → AI 채팅창 붙여넣기</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:7px 10px;background:#fdf9f0;border:1px solid #e0c870;border-radius:7px">
-            <span style="font-size:10px;color:#8a6200;font-weight:700;white-space:nowrap">성별 확인</span>
-            <button onclick="setCopyGender('남')" id="gd-btn-m"
-              style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #c9a227;background:#c9a227;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">
-              남성
-            </button>
-            <button onclick="setCopyGender('여')" id="gd-btn-f"
-              style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #ddd0b0;background:#faf8f4;color:#7a6040;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">
-              여성
-            </button>
-          </div>
-          <textarea id="copy-text" readonly onclick="this.select()"></textarea>
-          <div class="hint2">복사 후 AI 채팅창에 붙여넣으면 인생 전체 흐름 간명을 받을 수 있습니다</div>
-        </div>
-      </div>
-
-      <div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>
-
-      <!-- 2. 오늘 나의 인생전략 -->
-      <div style="margin-bottom:10px">
-        <div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px;letter-spacing:.04em">
-          2 · 오늘 나의 인생전략
-          <span style="font-size:9px;color:#9a8a6a;font-weight:400;margin-left:4px">사주원국 + 대운 + 세운 + 월운 + 일진</span>
-        </div>
-        <button class="copy-btn" id="today-btn" onclick="toggleToday()"
-          style="margin-bottom:0;background:linear-gradient(135deg,#fffbf0,#fff8e8);border-color:#e0c870;color:#5a3e00">
-          📅 텍스트 복사하기
-        </button>
-        <div class="copy-area" id="today-area" style="display:none;margin-top:8px">
-          <div class="hint" style="color:#8a6200">▼ 텍스트 클릭 → 전체선택(Ctrl+A) → 복사(Ctrl+C) → AI 채팅창 붙여넣기</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:7px 10px;background:#fdf9f0;border:1px solid #e0c870;border-radius:7px">
-            <span style="font-size:10px;color:#8a6200;font-weight:700;white-space:nowrap">성별 확인</span>
-            <button onclick="setTodayGender('남')" id="tgd-btn-m"
-              style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #c9a227;background:#c9a227;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">
-              남성
-            </button>
-            <button onclick="setTodayGender('여')" id="tgd-btn-f"
-              style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #ddd0b0;background:#faf8f4;color:#7a6040;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">
-              여성
-            </button>
-          </div>
-          <textarea id="today-text" readonly onclick="this.select()" style="height:280px"></textarea>
-          <div class="hint2">오늘 날짜 기준 5층 자동 계산 — 매일 새로운 내용</div>
-        </div>
-      </div>
-
-      <div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>
-
-      <!-- 3. 궁합 심층 분석 -->
-      <div style="margin-bottom:10px">
-        <div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px;letter-spacing:.04em">
-          3 · 궁합 심층 분석
-          <span style="font-size:9px;color:#9a8a6a;font-weight:400;margin-left:4px">궁합 탭에서 분석 후 복사</span>
-        </div>
-        <button onclick="setTab('compat');toggleAiMenu();"
-          style="width:100%;padding:11px;border-radius:9px;border:1px solid #e8a090;background:#fff5f5;color:#c0392b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">
-          💑 궁합 탭으로 이동
-        </button>
-      </div>
-
-      <div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>
-
-      <!-- 4. 직업적성 심층 분석 -->
-      <div style="margin-bottom:10px">
-        <div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px;letter-spacing:.04em">
-          4 · 직업적성 심층 분석
-          <span style="font-size:9px;color:#9a8a6a;font-weight:400;margin-left:4px">직업 탭에서 확인 후 복사</span>
-        </div>
-        <button onclick="setTab('career');toggleAiMenu();"
-          style="width:100%;padding:11px;border-radius:9px;border:1px solid #b0c8e0;background:#f0f8ff;color:#1565a0;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">
-          💼 직업 탭으로 이동
-        </button>
-      </div>
-
-      <div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>
-
-      <!-- 5. 정밀간명 의뢰 -->
-      <div>
-        <div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px;letter-spacing:.04em">
-          3 · 정밀간명 의뢰
-          <span style="font-size:9px;color:#9a8a6a;font-weight:400;margin-left:4px">오픈 준비 중</span>
-        </div>
-        <button class="kakao-gimyeong-btn" id="kakao-btn" onclick="requestGimyeong()"
-          style="margin-top:0">
-          🔮 정밀간명 의뢰 — 오픈 준비 중 (채널 추가 후 알림 받기)
-        </button>
-      </div>
-
-    </div>
-  </div>
-</div>
+  
 
 <div class="footer">
   <p>InnerME — 나의 에너지 코드</p>
@@ -2139,10 +2024,9 @@ function renderChart(s){
   const{pillars,dc,gongmang}=s;
   const ohCnt={목:0,화:0,토:0,금:0,수:0};
   pillars.forEach(p=>{ohCnt[OH[OH_CG[p.cg]]]++;ohCnt[OH[OH_JJ[p.jj]]]++;});
-  const ohBadges=Object.entries(ohCnt).filter(e=>e[1]>0).map(e=>ohBadge(e[0])).join(' ');
   const displayOrder=[3,2,1,0];
   const pillarCards=displayOrder.map(origIdx=>{
-    const p=pillars[origIdx];const isDay=(origIdx===2);const isHour=(origIdx===3);
+    const p=pillars[origIdx];const isDay=(origIdx===2);
     const co=OH[OH_CG[p.cg]],jo=OH[OH_JJ[p.jj]];
     return`<div class="pillar${isDay?' day':''}">
       ${p.warn?'<div class="warn">절기경계</div>':''}
@@ -2158,13 +2042,69 @@ function renderChart(s){
       ${ohBadge(jo)}
     </div>`;
   }).join('');
-  return`${renderEnergyCode(s)}
 
-    <div class="pillar-section">
-      <div class="pillar-row">${pillarCards}</div>
-    </div>
-    <div style="margin-top:18px">${renderDaeun(s)}</div>
-`;
+  const pillarAcc=makeAcc('📋 사주 원국 보기',
+    '<div style="overflow-x:auto"><div class="pillar-section" style="margin:0">'
+    +'<div class="pillar-row">'+pillarCards+'</div>'
+    +'</div></div>', '#5a3e00');
+
+  const daeunAcc=makeAcc('📅 대운 흐름 보기',
+    '<div>'+renderDaeun(s)+'</div>', '#1565a0');
+
+  return renderEnergyCode(s)
+    +cafeAiMenuBlock()
+    +'<div style="margin-top:10px">'+pillarAcc+'</div>'
+    +'<div style="margin-top:6px">'+daeunAcc+'</div>';
+}
+
+function cafeAiMenuBlock(){
+  return '<div style="margin-top:12px;border:1.5px solid #c9a227;border-radius:11px;overflow:hidden;background:#fffbf0">'
+    +'<div onclick="toggleAiMenu()" id="ai-menu-hdr" style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;background:linear-gradient(135deg,#fffbf0,#fff5e0)">'
+    +'<div>'
+    +'<div style="font-size:10px;color:#8a6200;letter-spacing:.08em;font-weight:700;margin-bottom:2px">✦ AI에게 사주 물어보기</div>'
+    +'<div style="font-size:12px;font-weight:700;color:#5a3e00">사주 데이터 복사 → AI 채팅창에 붙여넣기</div>'
+    +'</div>'
+    +'<span id="ai-menu-arrow" style="font-size:12px;color:#c9a227;transition:transform .2s">▼</span>'
+    +'</div>'
+    +'<div id="ai-menu-body" style="display:none;padding:12px 14px 14px;border-top:1px solid #e8d8a0">'
+    +'<div style="margin-bottom:10px">'
+    +'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">1 · 나의 사주 종합간명 <span style="font-size:9px;color:#9a8a6a;font-weight:400">원국+대운</span></div>'
+    +'<button class="copy-btn" id="copy-btn" onclick="toggleCopy()" style="margin-bottom:0">📋 버튼 클릭 한 번으로 복사!</button>'
+    +'<div class="copy-area" id="copy-area" style="display:none;margin-top:8px">'
+    +'<div class="hint">클립보드 복사 실패 시 아래에서 직접 선택하세요</div>'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:7px 10px;background:#fdf9f0;border:1px solid #e0c870;border-radius:7px">'
+    +'<span style="font-size:10px;color:#8a6200;font-weight:700;white-space:nowrap">성별 확인</span>'
+    +'<button onclick="setCopyGender(&quot;남&quot;)" id="gd-btn-m" style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #c9a227;background:#c9a227;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">남성</button>'
+    +'<button onclick="setCopyGender(&quot;여&quot;)" id="gd-btn-f" style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #ddd0b0;background:#faf8f4;color:#7a6040;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">여성</button>'
+    +'</div>'
+    +'<textarea id="copy-text" readonly onclick="this.select()"></textarea>'
+    +'<div class="hint2">복사 후 AI 채팅창에 붙여넣으세요</div>'
+    +'</div></div>'
+    +'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'
+    +'<div style="margin-bottom:10px">'
+    +'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">2 · 오늘 나의 인생전략 <span style="font-size:9px;color:#9a8a6a;font-weight:400">원국+대운+세운+월운+일진</span></div>'
+    +'<button class="copy-btn" id="today-btn" onclick="toggleToday()" style="margin-bottom:0;background:linear-gradient(135deg,#fffbf0,#fff8e8);border-color:#e0c870;color:#5a3e00">📅 버튼 클릭 한 번으로 복사!</button>'
+    +'<div class="copy-area" id="today-area" style="display:none;margin-top:8px">'
+    +'<div class="hint" style="color:#8a6200">클립보드 복사 실패 시 아래에서 직접 선택하세요</div>'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:7px 10px;background:#fdf9f0;border:1px solid #e0c870;border-radius:7px">'
+    +'<span style="font-size:10px;color:#8a6200;font-weight:700;white-space:nowrap">성별 확인</span>'
+    +'<button onclick="setTodayGender(&quot;남&quot;)" id="tgd-btn-m" style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #c9a227;background:#c9a227;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">남성</button>'
+    +'<button onclick="setTodayGender(&quot;여&quot;)" id="tgd-btn-f" style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #ddd0b0;background:#faf8f4;color:#7a6040;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">여성</button>'
+    +'</div>'
+    +'<textarea id="today-text" readonly onclick="this.select()" style="height:280px"></textarea>'
+    +'<div class="hint2">오늘 날짜 기준 5층 자동 계산</div>'
+    +'</div></div>'
+    +'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'
+    +'<div style="margin-bottom:10px">'
+    +'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">3 · 궁합 심층 분석 <span style="font-size:9px;color:#9a8a6a;font-weight:400">궁합 탭에서 분석 후 복사</span></div>'
+    +'<button onclick="setTab(&quot;compat&quot;);toggleAiMenu();" style="width:100%;padding:11px;border-radius:9px;border:1px solid #e8a090;background:#fff5f5;color:#c0392b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">💑 궁합 탭으로 이동</button>'
+    +'</div>'
+    +'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'
+    +'<div>'
+    +'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">4 · 직업적성 심층 분석 <span style="font-size:9px;color:#9a8a6a;font-weight:400">직업 탭에서 확인 후 복사</span></div>'
+    +'<button onclick="setTab(&quot;career&quot;);toggleAiMenu();" style="width:100%;padding:11px;border-radius:9px;border:1px solid #b0c8e0;background:#f0f8ff;color:#1565a0;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">💼 직업 탭으로 이동</button>'
+    +'</div>'
+    +'</div></div>';
 }
 
 function renderDaeun(s){
