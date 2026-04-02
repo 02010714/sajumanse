@@ -350,12 +350,12 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
   <div class="card-title">생년월일시 입력</div>
   <div style="font-size:10px;color:#2e5fa3;background:#e8f0ff;border-radius:6px;padding:6px 10px;margin-bottom:10px;font-weight:700;letter-spacing:.03em">📅 양력으로 입력해 주세요</div>
   <div class="grid3">
-    <div><label>년도</label><input type="number" id="yr" value="1990" min="1900" max="2100"></div>
-    <div><label>월</label><input type="number" id="mo" value="6" min="1" max="12"></div>
-    <div><label>일</label><input type="number" id="dy" value="15" min="1" max="31"></div>
+    <div><label>년도</label><input type="number" id="yr" placeholder="년도" min="1900" max="2100"></div>
+    <div><label>월</label><input type="number" id="mo" placeholder="월" min="1" max="12"></div>
+    <div><label>일</label><input type="number" id="dy" placeholder="일" min="1" max="31"></div>
   </div>
   <div class="grid3">
-    <div><label>시 (0~23)</label><input type="number" id="hr" value="10" min="0" max="23"></div>
+    <div><label>시 (0~23)</label><input type="number" id="hr" placeholder="시" min="0" max="23"></div>
     <div><label class="em">분 (0~59)</label><input type="number" id="min" value="30" min="0" max="59"></div>
     <div><label>성별</label><select id="gd"><option value="남">남성</option><option value="여">여성</option></select></div>
     <div><label>출생지</label><select id="birthplace"><option value="korea">한국</option><option value="global">해외</option></select></div>
@@ -523,7 +523,7 @@ const GEK_BODY_YONG={
     {yong:'inseong',   name:'傷官配印格', ohKey:'inseong'},
   ], default:{name:'상관격', ohKey:'jaeseong'}},
   편재:{ rules:[
-    {yong:'siksang',   name:'食傷生財格', ohKey:'jaeseong'},
+    {yong:'siksang',   name:'食傷生財格', ohKey:'siksang'},  // 相神=식상
     {yong:'gwanseong', name:'財滋弱殺格', ohKey:'gwanseong'},
   ], default:{name:'편재격', ohKey:'siksang'}},
   정재:{ rules:[
@@ -539,11 +539,11 @@ const GEK_BODY_YONG={
     {yong:'jaeseong',  name:'財生官格',   ohKey:'jaeseong'},
   ], default:{name:'정관격', ohKey:'inseong'}},
   편인:{ rules:[
-    {yong:'gwanseong', name:'GWANSAL_CHECK', ohKey:'inseong'},
+    {yong:'gwanseong', name:'GWANSAL_CHECK', ohKey:'gwanseong'}, // 相神=관성(화)
     {yong:'siksang',   name:'梟印奪食格', ohKey:'jaeseong'},
   ], default:{name:'편인격', ohKey:'gwanseong'}},
   정인:{ rules:[
-    {yong:'gwanseong', name:'GWANSAL_CHECK', ohKey:'inseong'},
+    {yong:'gwanseong', name:'GWANSAL_CHECK', ohKey:'gwanseong'}, // 相神=관성(화)
     {yong:'jaeseong',  name:'財破印格',   ohKey:'gwanseong'},
   ], default:{name:'정인격', ohKey:'gwanseong'}},
 };
@@ -1207,8 +1207,9 @@ function renderHealth(s){
   const season=getSeasonFromMoIdx(moIdx);
   const yongData=YONGSIN_DATA[dc][moIdx];
 
-  const oh1=yongsinToOH(yongData.yongsin);
-  const oh2=yongsinToOH(yongData.hesin);
+  // currentYongOverride 반영
+  const oh1=currentYongOverride||yongsinToOH(yongData.yongsin);
+  const oh2=currentYongOverride?null:yongsinToOH(yongData.hesin);
   const rec1=oh1?OH_HEALTH[oh1]:null;
   const rec2=oh2&&oh2!==oh1?OH_HEALTH[oh2]:null;
 
@@ -2353,12 +2354,11 @@ function copyGekPrompt(){toggleGek();}
 
 function changeYong(oh, btn){
   currentYongOverride=oh;
-  // 건강·운동·직업 탭 갱신
   if(currentSaju){
     document.getElementById('panel-health').innerHTML=renderHealth(currentSaju);
     document.getElementById('panel-career').innerHTML=renderCareer(currentSaju);
+    document.getElementById('panel-compat').innerHTML=renderCompatPanel();
   }
-  // 에너지코드 재렌더
   document.getElementById('panel-chart').innerHTML=renderChart(currentSaju);
   setTab('chart');
 }
@@ -2367,6 +2367,7 @@ function resetYong(){
   if(currentSaju){
     document.getElementById('panel-health').innerHTML=renderHealth(currentSaju);
     document.getElementById('panel-career').innerHTML=renderCareer(currentSaju);
+    document.getElementById('panel-compat').innerHTML=renderCompatPanel();
   }
   document.getElementById('panel-chart').innerHTML=renderChart(currentSaju);
   setTab('chart');
@@ -2741,7 +2742,7 @@ function renderCareer(s){
   const gek=getGekInfo(dc,moJJ);
   const ss=gek.sipsin;
   const oh1=getSajuYongshinOH(s);
-  const oh2=(()=>{try{const d=YONGSIN_DATA[dc][moIdx];return d.hesin&&d.hesin!=="-"?yongsinToOH(d.hesin):null;}catch(e){return null;}})();
+  const oh2=currentYongOverride?null:(()=>{try{const d=YONGSIN_DATA[dc][moIdx];return d.hesin&&d.hesin!=="-"?yongsinToOH(d.hesin):null;}catch(e){return null;}})();
   const careerSS=CAREER_DATA[ss];
   const c1=CO[oh1]||{bg:"#faf8f4",t:"#5a4020",b:"#e0d0b0"};
   if(!careerSS||!oh1) return "<div style='padding:20px;text-align:center;color:#9a8a6a;font-size:12px'>격국 또는 용신 정보를 확인할 수 없습니다.<br>사주 원국 탭을 먼저 확인해주세요.</div>";
@@ -3098,9 +3099,36 @@ function toggleToday(){
   });
 }
 
-async function handleCalc(){
+async function loadSavedInput(){
+  try{
+    const saved=localStorage.getItem('innerme_last');
+    if(!saved) return;
+    const d=JSON.parse(saved);
+    if(d.yr) document.getElementById('yr').value=d.yr;
+    if(d.mo) document.getElementById('mo').value=d.mo;
+    if(d.dy) document.getElementById('dy').value=d.dy;
+    if(d.hr!==undefined) document.getElementById('hr').value=d.hr;
+    if(d.mi!==undefined) document.getElementById('mi').value=d.mi;
+    if(d.gd) document.getElementById('gd').value=d.gd;
+    if(d.mbti) document.getElementById('mbti').value=d.mbti;
+  }catch(e){}
+}
+document.addEventListener('DOMContentLoaded', loadSavedInput);
+function handleCalc(){
   const btn=document.querySelector('.btn-main');
   btn.disabled=true;btn.textContent='계산 중...';
+  try{
+    const saveData={
+      yr:document.getElementById('yr').value,
+      mo:document.getElementById('mo').value,
+      dy:document.getElementById('dy').value,
+      hr:document.getElementById('hr').value,
+      mi:document.getElementById('mi').value,
+      gd:document.getElementById('gd').value,
+      mbti:document.getElementById('mbti').value,
+    };
+    localStorage.setItem('innerme_last',JSON.stringify(saveData));
+  }catch(e){}
   const yr=parseInt(document.getElementById('yr').value);
   const mo=parseInt(document.getElementById('mo').value);
   const dy=parseInt(document.getElementById('dy').value);
