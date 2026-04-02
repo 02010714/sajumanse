@@ -2011,7 +2011,7 @@ function calcR1(s1, s2){
   const SAMHAP_OH = ['수','화','목','금'];
   const ptJJs = s2.pillars.map(p=>p.jj);
   let gukYes = false;
-  SAMHAP.forEach((trio,i)=>{
+  GH_SAMHAP.forEach((trio,i)=>{
     if(SAMHAP_OH[i]===myYong && trio.every(j=>ptJJs.includes(j))) gukYes=true;
   });
   // 토국(방합) — 辰4·戌10·丑1·未7 중 3개 이상
@@ -2483,8 +2483,8 @@ let nowYear=new Date().getFullYear();
 
 
 function setTab(t){
-  document.getElementById('ai-menu-body').style.display='none';
-  document.getElementById('ai-menu-arrow').style.transform='';
+  const _mb=document.getElementById('ai-menu-body');if(_mb)_mb.style.display='none';
+  const _ma=document.getElementById('ai-menu-arrow');if(_ma)_ma.style.transform='';
   document.getElementById('panel-chart').style.display=t==='chart'?'':'none';
   document.getElementById('panel-compat').style.display=t==='compat'?'':'none';
   document.getElementById('panel-health').style.display=t==='health'?'':'none';
