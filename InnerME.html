@@ -478,7 +478,35 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 
       <div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>
 
-      <!-- 3. 정밀간명 의뢰 -->
+      <!-- 3. 궁합 심층 분석 -->
+      <div style="margin-bottom:10px">
+        <div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px;letter-spacing:.04em">
+          3 · 궁합 심층 분석
+          <span style="font-size:9px;color:#9a8a6a;font-weight:400;margin-left:4px">궁합 탭에서 분석 후 복사</span>
+        </div>
+        <button onclick="setTab('compat');toggleAiMenu();"
+          style="width:100%;padding:11px;border-radius:9px;border:1px solid #e8a090;background:#fff5f5;color:#c0392b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">
+          💑 궁합 탭으로 이동
+        </button>
+      </div>
+
+      <div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>
+
+      <!-- 4. 직업적성 심층 분석 -->
+      <div style="margin-bottom:10px">
+        <div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px;letter-spacing:.04em">
+          4 · 직업적성 심층 분석
+          <span style="font-size:9px;color:#9a8a6a;font-weight:400;margin-left:4px">직업 탭에서 확인 후 복사</span>
+        </div>
+        <button onclick="setTab('career');toggleAiMenu();"
+          style="width:100%;padding:11px;border-radius:9px;border:1px solid #b0c8e0;background:#f0f8ff;color:#1565a0;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">
+          💼 직업 탭으로 이동
+        </button>
+      </div>
+
+      <div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>
+
+      <!-- 5. 정밀간명 의뢰 -->
       <div>
         <div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px;letter-spacing:.04em">
           3 · 정밀간명 의뢰
@@ -2678,6 +2706,8 @@ let nowYear=new Date().getFullYear();
 
 
 function setTab(t){
+  const _mb=document.getElementById("ai-menu-body");if(_mb)_mb.style.display="none";
+  const _ma=document.getElementById("ai-menu-arrow");if(_ma)_ma.style.transform="";
   document.getElementById('panel-chart').style.display=t==='chart'?'':'none';
   document.getElementById('panel-compat').style.display=t==='compat'?'':'none';
   document.getElementById('panel-health').style.display=t==='health'?'':'none';
