@@ -2622,7 +2622,8 @@ async function loadSavedInput(){
     if(d.mbti) document.getElementById('mbti').value=d.mbti;
   }catch(e){}
 }
-document.addEventListener('DOMContentLoaded', loadSavedInput);
+// 페이지 로드 완료 후 저장값 복원
+window.addEventListener('load', loadSavedInput);
 function handleCalc(){
   const btn=document.querySelector('.btn-main');
   btn.disabled=true;btn.textContent='계산 중...';
