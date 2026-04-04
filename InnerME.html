@@ -3427,7 +3427,9 @@ function shareKakao(){
   const supp=rec?rec.supps[0].name:'';
   const pageUrl='https://02010714.github.io/sajumanse/saju-mbti.html';
 
-  const shareText=`나의 에너지 코드 ${ilganEmoji}${ilganName} ${gekEmoji}${gek.label}${mbtiInfo} | ${ohEmoji}밸런스 오행: ${oh1}(${ohHanja}) | ☕${tea} · 🥤${juice} · 💊${supp}`;
+  const ilganNat=ILGAN_NAT[dc]||'';
+  const mbtiLine=mbti&&MBTI_DATA[mbti]?`\n${mbti} ${MBTI_DATA[mbti].name}`:'';
+  const shareText=`✦ 나의 에너지 코드\n${ilganEmoji} ${ilganName} — ${ilganNat}\n${gek.sipsin} — ${gek.label}${mbtiLine}\n${ohEmoji} 밸런스 오행: ${oh1}(${ohHanja})\n☕ ${tea}\n🥤 ${juice}\n💊 ${supp}`;
 
   try{
     Kakao.Share.sendDefault({
