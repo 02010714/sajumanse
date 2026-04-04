@@ -4,7 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Energy Code — 나의 에너지 코드</title>
-
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" crossorigin="anonymous"></script>
+<!-- 카카오 우편번호 (무료) -->
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<!-- Firebase SDK (모듈) -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,getDocs,doc,updateDoc,query,orderBy,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+// ★ Firebase 콘솔 > 프로젝트 설정 > 웹앱 > Config 복사 후 아래에 붙여넣으세요 ★
+const firebaseConfig={
+  apiKey:"YOUR_API_KEY",
+  authDomain:"YOUR_PROJECT_ID.firebaseapp.com",
+  projectId:"YOUR_PROJECT_ID",
+  storageBucket:"YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId:"YOUR_SENDER_ID",
+  appId:"YOUR_APP_ID"
+};
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+window._db=db;window._fbCol=collection;window._fbAddDoc=addDoc;
+window._fbGetDocs=getDocs;window._fbDoc=doc;window._fbUpdate=updateDoc;
+window._fbQuery=query;window._fbOrderBy=orderBy;window._fbTS=serverTimestamp;
+window._fbReady=true;document.dispatchEvent(new Event('fbReady'));
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f4f0e8;color:#2c2416;font-family:"Malgun Gothic","Apple SD Gothic Neo",serif;padding:20px 14px;min-height:100vh}
@@ -67,6 +89,8 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .now-box .years{font-size:10px;color:#7a6040;margin-bottom:4px}
 .now-box .badges{display:flex;gap:5px}
 .copy-btn{width:100%;padding:13px;border-radius:9px;border:1px solid #ccc0a0;background:#fffbf0;color:#7a6040;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.03em;margin-top:14px}
+.kakao-gimyeong-btn{width:100%;padding:11px;border-radius:8px;border:1px solid #b0a0d0;background:#f5f0ff;color:#5b21b6;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.03em;margin-top:10px;transition:all .2s}
+.kakao-gimyeong-btn:active{transform:scale(.98)}
 .copy-btn-wrap{margin-top:0}
 .copy-btn.open{border-color:rgba(46,95,163,.4);background:#f0f4ff;color:#2e5fa3}
 .copy-area{margin-top:8px}
@@ -216,6 +240,22 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .today-rec-drink .trd-effect{font-size:10px;opacity:.8}
 .today-rec-deco{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:52px;opacity:.1;font-family:serif}
 
+/* ── 주문 CTA ── */
+.order-box{background:linear-gradient(135deg,#fffbf0,#fff5e0);border:2px solid #c9a227;border-radius:14px;padding:16px;margin-top:14px}
+.order-box .ob-title{font-size:13px;font-weight:700;color:#5a3e00;margin-bottom:4px}
+.order-box .ob-sub{font-size:11px;color:#8a6200;margin-bottom:12px;line-height:1.6}
+.order-menu{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.order-item{background:#fff;border:1px solid #e0c870;border-radius:9px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.order-item .oi-info{flex:1}
+.order-item .oi-name{font-size:12px;font-weight:700;color:#2c2416;margin-bottom:2px}
+.order-item .oi-desc{font-size:10px;color:#8a7a5a}
+.order-item .oi-btn{background:#c9a227;color:#fff;border:none;border-radius:7px;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0}
+.order-item .oi-btn:hover{background:#9a7010}
+.btn-kakao{width:100%;background:#FEE500;color:#3A1D1D;border:none;border-radius:9px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:8px}
+.btn-kakao:hover{background:#f0d800}
+.btn-share{width:100%;background:#fff;border:1.5px solid #ddd0b0;border-radius:9px;padding:11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;color:#7a6040}
+.btn-share:hover{background:#f5edd8}
+
 /* ── MBTI 퀴즈 모달 ── */
 .mbti-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;padding:16px}
 .mbti-modal.open{display:flex}
@@ -244,6 +284,8 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 #result{margin-top:0}
 
 /* ── 주문 모달 ── */
+.order-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.65);z-index:2000;align-items:flex-end;justify-content:center;padding:0}
+.order-modal.open{display:flex}
 .order-sheet{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:440px;max-height:92vh;overflow-y:auto;padding:22px 18px 32px}
 .order-sheet-handle{width:40px;height:4px;background:#e0d0b0;border-radius:2px;margin:0 auto 18px}
 .order-sheet-title{font-size:15px;font-weight:700;color:#5a3e00;margin-bottom:4px}
@@ -275,6 +317,24 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .order-done .od-icon{font-size:52px;margin-bottom:12px}
 .order-done .od-title{font-size:18px;font-weight:700;color:#5a3e00;margin-bottom:6px}
 .order-done .od-sub{font-size:12px;color:#8a7a5a;line-height:1.7;margin-bottom:20px}
+/* 관리자 화면 */
+.admin-wrap{max-width:440px;margin:0 auto;padding:20px 14px}
+.admin-header{background:linear-gradient(135deg,#1f3864,#2e5fa3);color:#fff;border-radius:12px;padding:16px 18px;margin-bottom:18px}
+.admin-header h2{font-size:16px;font-weight:700;margin-bottom:3px}
+.admin-header p{font-size:11px;opacity:.8}
+.order-card{background:#fff;border:1px solid #ddd5c0;border-radius:11px;padding:14px 16px;margin-bottom:11px}
+.order-card .oc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.order-card .oc-no{font-size:10px;color:#9a8a6a}
+.order-card .oc-status{font-size:10px;font-weight:700;border-radius:4px;padding:2px 8px}
+.oc-status.wait{background:#fff3cd;color:#856404}
+.oc-status.done{background:#d4edda;color:#155724}
+.order-card .oc-product{font-size:13px;font-weight:700;color:#2c2416;margin-bottom:4px}
+.order-card .oc-price{font-size:12px;color:#c9a227;font-weight:700;margin-bottom:8px}
+.order-card .oc-info{font-size:11px;color:#5a4a2a;line-height:1.7}
+.order-card .oc-addr{font-size:11px;color:#7a6040;margin-top:4px;line-height:1.5}
+.btn-done{background:#1f3864;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:10px}
+.admin-empty{text-align:center;padding:40px 20px;color:#9a8a6a;font-size:13px}
+
 </style>
 </head>
 <body>
@@ -351,6 +411,13 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
   <button class="btn-main" onclick="handleCalc()">✦ 나의 에너지 코드 확인하기</button>
 </div>
 
+<div id="kakao-share-wrap" style="display:none;margin-bottom:10px">
+  <button onclick="shareKakao()" style="width:100%;padding:13px;border-radius:11px;border:none;background:#FEE500;color:#3C1E1E;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
+    <img src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_small.png" style="width:20px;height:20px;border-radius:4px">
+    카카오톡으로 공유하기
+  </button>
+</div>
+
 <div id="result" style="display:none">
   <div class="tabs">
     <button class="tab-btn active" id="tab-chart" onclick="setTab('chart')">🔮 원국·대운</button>
@@ -363,9 +430,7 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
   <div id="panel-health" style="display:none"></div>
   <div id="panel-career" style="display:none"></div>
   <!-- AI에게 사주 물어보기 아코디언 -->
-
-    </div>
-</div>
+  
 
 <div class="footer">
   <p>Energy Code — 나의 에너지 코드</p>
@@ -376,6 +441,13 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 </div>
 
 
+<!-- ── 주문 모달 ── -->
+<div class="order-modal" id="order-modal">
+  <div class="order-sheet" id="order-sheet">
+    <div class="order-sheet-handle"></div>
+    <div id="order-form-area"></div>
+  </div>
+</div>
 
 <!-- MBTI 퀴즈 모달 -->
 <div class="mbti-modal" id="mbti-modal">
@@ -651,74 +723,21 @@ const UNSUNG_12=[["건록", "제왕", "쇠", "병", "사", "묘", "절", "태", 
 const UNSUNG_DESC={"장생": "새 생명이 싹트는 출발 단계로, 에너지가 힘차게 시작됩니다", "목욕": "막 태어나 씻기는 단계로, 순수하지만 아직 불안정합니다", "관대": "성장해 갖춰가는 단계로, 점점 힘과 형태를 갖춰갑니다", "건록": "가장 왕성하게 활동하는 단계로, 에너지가 충만합니다", "제왕": "최고 전성기로, 기운이 정점에 달해 가장 강합니다", "쇠": "전성기를 지나 서서히 기운이 약해지기 시작하는 단계입니다", "병": "기운이 많이 약해진 단계로, 쉽게 소모되고 지치기 쉽습니다", "사": "기운이 거의 다한 단계로, 고요함 속에 가라앉아 있습니다", "묘": "기운이 땅속에 묻혀 저장되는 단계로, 겉으로는 잠잠합니다", "절": "기운이 끊어지고 새로운 순환을 준비하는 전환점입니다", "태": "새로운 기운이 잉태되는 단계로, 아직 세상에 나오지 않았습니다", "양": "아직 힘을 기르는 어린 단계로, 보살핌과 지원이 필요합니다"};
 
 // ── 12신살 조견표 ──
-// 연지 삼합 그룹: 申子辰=0, 寅午戌=1, 亥卯未=2, 巳酉丑=3
-// 지지(子=0~亥=11) → 그룹 인덱스
 const SINSAL_GROUP=[0,3,1,2,0,3,1,2,0,3,1,2];
-// 그룹별 신살 [子~亥 순]
 const SINSAL_NAMES=[
-  ['장성','반안','역마','육해','화개','겁살','재살','천살','지살','년살','월살','망신'],// 申子辰
-  ['재살','천살','지살','년살','월살','망신','장성','반안','역마','육해','화개','겁살'],// 寅午戌
-  ['년살','월살','망신','장성','반안','역마','육해','화개','겁살','재살','천살','지살'],// 亥卯未
-  ['육해','화개','겁살','재살','천살','지살','년살','월살','망신','장성','반안','역마'],// 巳酉丑
+  ['장성','반안','역마','육해','화개','겁살','재살','천살','지살','년살','월살','망신'],
+  ['재살','천살','지살','년살','월살','망신','장성','반안','역마','육해','화개','겁살'],
+  ['년살','월살','망신','장성','반안','역마','육해','화개','겁살','재살','천살','지살'],
+  ['육해','화개','겁살','재살','천살','지살','년살','월살','망신','장성','반안','역마'],
 ];
 function getSinsal(ynJJ, jj){ return SINSAL_NAMES[SINSAL_GROUP[ynJJ]][jj]; }
-// 12운성: UNSUNG_12[dc][(jj-2+12)%12]  (jj=子0~亥11, 월지기준 → 지지기준 변환)
 function getUnsungJJ(dc, jj){ return UNSUNG_12[dc][(jj-2+12)%12]; }
-// 신살 중요도 색상
 const SINSAL_COLOR={
   '역마':'#2e5fa3','도화':'#c0392b','년살':'#c0392b',
   '화개':'#7a6040','겁살':'#8b0000','재살':'#8b0000',
   '장성':'#2e7d4f','반안':'#2e7d4f',
   '천살':'#666','지살':'#666','월살':'#666','망신':'#666','육해':'#666'
 };
-const OH_EXERCISE={
-  목:{
-    title:"木 오행 — 간·담·근육·힘줄 강화",
-    principle:"간은 筋(근)을 주관한다 (황제내경). 뻗고 늘이는 움직임이 간담을 다스린다.",
-    items:[
-      {name:"요가 / 스트레칭",desc:"전신 힘줄·인대를 이완시켜 간 기운 소통",icon:"🧘"},
-      {name:"필라테스",desc:"코어와 유연성을 동시에 강화, 간·담 에너지 순환",icon:"🤸"},
-      {name:"태극권 / 기공",desc:"느리고 부드러운 흐름으로 목 기운 조화",icon:"☯️"}
-    ]
-  },
-  화:{
-    title:"火 오행 — 심장·소장·혈액순환 강화",
-    principle:"심장은 血脈(혈맥)을 주관한다 (황제내경). 심박수를 높이는 운동이 화 기운을 키운다.",
-    items:[
-      {name:"유산소 달리기",desc:"심박수 상승으로 심장과 혈액순환 강화",icon:"🏃"},
-      {name:"댄스 / 에어로빅",desc:"즐거운 리듬 속 심화(心火) 발산과 순환",icon:"💃"},
-      {name:"줄넘기 / 자전거",desc:"지속적인 유산소로 심장 지구력 강화",icon:"🚴"}
-    ]
-  },
-  토:{
-    title:"土 오행 — 비·위·소화기·복부 강화",
-    principle:"비장은 肌肉(기육)을 주관한다 (황제내경). 중심 안정과 복부 강화가 토 기운을 다스린다.",
-    items:[
-      {name:"걷기 / 등산",desc:"대지를 밟는 운동으로 비위 기운 안정화",icon:"🚶"},
-      {name:"코어 운동 / 플랭크",desc:"복부 중심근육 강화로 소화기 지지",icon:"💪"},
-      {name:"태극권 / 기공",desc:"중심 잡기와 호흡으로 비위 조화",icon:"☯️"}
-    ]
-  },
-  금:{
-    title:"金 오행 — 폐·대장·호흡기·피부 강화",
-    principle:"폐는 皮毛(피모)를 주관한다 (황제내경). 호흡과 상체 단련이 금 기운을 강화한다.",
-    items:[
-      {name:"수영",desc:"호흡 훈련과 전신 운동으로 폐 기능 극대화",icon:"🏊"},
-      {name:"호흡 명상 / 단전호흡",desc:"폐 용량 확장, 대장 기운 정화",icon:"🌬️"},
-      {name:"등산 / 트레킹",desc:"맑은 공기 속 유산소로 호흡기 강화",icon:"🏔️"}
-    ]
-  },
-  수:{
-    title:"水 오행 — 신장·방광·뼈·허리 강화",
-    principle:"신장은 骨(골)을 주관한다 (황제내경). 하체와 지구력 운동이 수 기운을 다스린다.",
-    items:[
-      {name:"수영 / 아쿠아로빅",desc:"물속 저항 운동으로 신장·방광 기운 강화",icon:"🏊"},
-      {name:"스쿼트 / 하체 근력",desc:"뼈와 허리 강화, 신장 에너지 비축",icon:"🏋️"},
-      {name:"요가 (음요가)",desc:"관절·뼈를 깊이 자극하는 정적 스트레칭",icon:"🧘"}
-    ]
-  }
-};
-
 const CAREER_DATA={
   비견:{
     기질:"독립심·자존심·경쟁심",
@@ -819,6 +838,54 @@ const CAREER_DATA={
       금:{r1:"의사·약사",r2:"변호사·법학 교수",r3:"국공립 연구기관",desc:"공인된 지식으로 사람을 돕는 직업"},
       수:{r1:"인문·철학 교수",r2:"작가·번역가",r3:"정책 연구원",desc:"지식의 바다에서 길을 찾는 직업"}
     }
+  }
+};
+
+const OH_EXERCISE={
+  목:{
+    title:"木 오행 — 간·담·근육·힘줄 강화",
+    principle:"간은 筋(근)을 주관한다 (황제내경). 뻗고 늘이는 움직임이 간담을 다스린다.",
+    items:[
+      {name:"요가 / 스트레칭",desc:"전신 힘줄·인대를 이완시켜 간 기운 소통",icon:"🧘"},
+      {name:"필라테스",desc:"코어와 유연성을 동시에 강화, 간·담 에너지 순환",icon:"🤸"},
+      {name:"태극권 / 기공",desc:"느리고 부드러운 흐름으로 목 기운 조화",icon:"☯️"}
+    ]
+  },
+  화:{
+    title:"火 오행 — 심장·소장·혈액순환 강화",
+    principle:"심장은 血脈(혈맥)을 주관한다 (황제내경). 심박수를 높이는 운동이 화 기운을 키운다.",
+    items:[
+      {name:"유산소 달리기",desc:"심박수 상승으로 심장과 혈액순환 강화",icon:"🏃"},
+      {name:"댄스 / 에어로빅",desc:"즐거운 리듬 속 심화(心火) 발산과 순환",icon:"💃"},
+      {name:"줄넘기 / 자전거",desc:"지속적인 유산소로 심장 지구력 강화",icon:"🚴"}
+    ]
+  },
+  토:{
+    title:"土 오행 — 비·위·소화기·복부 강화",
+    principle:"비장은 肌肉(기육)을 주관한다 (황제내경). 중심 안정과 복부 강화가 토 기운을 다스린다.",
+    items:[
+      {name:"걷기 / 등산",desc:"대지를 밟는 운동으로 비위 기운 안정화",icon:"🚶"},
+      {name:"코어 운동 / 플랭크",desc:"복부 중심근육 강화로 소화기 지지",icon:"💪"},
+      {name:"태극권 / 기공",desc:"중심 잡기와 호흡으로 비위 조화",icon:"☯️"}
+    ]
+  },
+  금:{
+    title:"金 오행 — 폐·대장·호흡기·피부 강화",
+    principle:"폐는 皮毛(피모)를 주관한다 (황제내경). 호흡과 상체 단련이 금 기운을 강화한다.",
+    items:[
+      {name:"수영",desc:"호흡 훈련과 전신 운동으로 폐 기능 극대화",icon:"🏊"},
+      {name:"호흡 명상 / 단전호흡",desc:"폐 용량 확장, 대장 기운 정화",icon:"🌬️"},
+      {name:"등산 / 트레킹",desc:"맑은 공기 속 유산소로 호흡기 강화",icon:"🏔️"}
+    ]
+  },
+  수:{
+    title:"水 오행 — 신장·방광·뼈·허리 강화",
+    principle:"신장은 骨(골)을 주관한다 (황제내경). 하체와 지구력 운동이 수 기운을 다스린다.",
+    items:[
+      {name:"수영 / 아쿠아로빅",desc:"물속 저항 운동으로 신장·방광 기운 강화",icon:"🏊"},
+      {name:"스쿼트 / 하체 근력",desc:"뼈와 허리 강화, 신장 에너지 비축",icon:"🏋️"},
+      {name:"요가 (음요가)",desc:"관절·뼈를 깊이 자극하는 정적 스트레칭",icon:"🧘"}
+    ]
   }
 };
 
@@ -1037,6 +1104,48 @@ const SEASON_BOOST={
 
 // ── 카페 메뉴 & 주문 링크 (오행별) ──
 // delivery:true = 택배 가능 (주문 모달 연결) / false = 카페 현장 전용
+const CAFE_MENU={
+  목:{
+    title:"木 오행 — 간·담 보강 추천", oh:"목",
+    items:[
+      {name:"민들레 녹차 블렌드",desc:"간 해독 + 항산화 · 따뜻하게 제공",price:"6,500",delivery:false},
+      {name:"사과·셀러리·레몬 주스",desc:"간 해독 시너지 트리오 · 당일 착즙",price:"7,000",delivery:false},
+      {name:"밀크시슬 에너지 세트",desc:"밀크시슬(실리마린) + NAC + 강황 1개월분",price:"28,000",delivery:true},
+    ]
+  },
+  화:{
+    title:"火 오행 — 심장·소장 보강 추천", oh:"화",
+    items:[
+      {name:"대추·히비스커스 블렌드",desc:"심신 안정 + 혈액순환 · 따뜻하게 제공",price:"6,500",delivery:false},
+      {name:"비트·석류·체리 주스",desc:"심혈관 폴리페놀 트리오 · 당일 착즙",price:"7,500",delivery:false},
+      {name:"CoQ10 + 유산균 세트",desc:"심장 에너지(CoQ10) + 소장 유산균 1개월분",price:"28,000",delivery:true},
+    ]
+  },
+  토:{
+    title:"土 오행 — 비위 보강 추천", oh:"토",
+    items:[
+      {name:"생강·진피·계피 블렌드",desc:"위장 온열 + 소화 촉진 · 따뜻하게 제공",price:"6,000",delivery:false},
+      {name:"당근·생강·꿀 주스",desc:"비위 보강 + 장 점막 보호 · 당일 착즙",price:"6,500",delivery:false},
+      {name:"소화효소 + 프로바이오틱스",desc:"소화효소 복합 + 비피더스 프로바이오틱스 1개월분",price:"22,000",delivery:true},
+    ]
+  },
+  금:{
+    title:"金 오행 — 폐·대장 보강 추천", oh:"금",
+    items:[
+      {name:"도라지·배·유자 블렌드",desc:"폐 윤택 + 기관지 보호 · 따뜻하게 제공",price:"6,500",delivery:false},
+      {name:"배·무·생강 주스",desc:"윤폐 + 가래 제거 · 당일 착즙",price:"7,000",delivery:false},
+      {name:"낙산균(미야리산) + 이눌린",desc:"대장 낙산균(CBM588) + 프리바이오틱스 1개월분",price:"25,000",delivery:true},
+    ]
+  },
+  수:{
+    title:"水 오행 — 신장·방광 보강 추천", oh:"수",
+    items:[
+      {name:"구기자·두충·맥문동 블렌드",desc:"신음 보충 + 항노화 · 따뜻하게 제공",price:"7,000",delivery:false},
+      {name:"블루베리·검정콩·크랜베리",desc:"신장 보호 안토시아닌 주스 · 당일 착즙",price:"7,500",delivery:false},
+      {name:"CoQ10 + 비타민D3K2 세트",desc:"신장 에너지(CoQ10) + 골밀도(D3K2) 1개월분",price:"30,000",delivery:true},
+    ]
+  }
+};
 
 // 용신 → 오행 변환
 const YONGSIN_TO_OH={甲:"목",乙:"목",丙:"화",丁:"화",戊:"토",己:"토",庚:"금",辛:"금",壬:"수",癸:"수"};
@@ -1248,7 +1357,36 @@ function renderHealth(s){
     gutHtml=makeAcc('🔗 장 건강 사슬 보기', gutInner, '#7a6040');
   }
 
-  let orderHtml="";
+  // ── 주문 CTA ──
+  let orderHtml='';
+  const menu=CAFE_MENU[oh1];
+  if(menu){
+    if(!window._orderRegistry) window._orderRegistry=[];
+    const items2=menu.items.map(it=>{
+      const isDelivery=it.delivery;
+      let btnHtml;
+      if(isDelivery){
+        const idx=window._orderRegistry.length;
+        window._orderRegistry.push({product:it,oh:menu.oh});
+        btnHtml=`<button class="oi-btn" onclick="openOrderModal(${idx})">📦 주문하기</button>`;
+      }else{
+        btnHtml=`<button class="oi-btn" style="background:#e0d0b0;color:#7a6040;cursor:default">카운터 주문</button>`;
+      }
+      return`<div class="order-item">
+        <div class="oi-info">
+          <div class="oi-name">${it.name}</div>
+          <div class="oi-desc">${it.desc}</div>
+        </div>${btnHtml}
+      </div>`;
+    }).join('');
+    const orderInner=`<div style="padding:4px 0">
+      <div style="font-size:11px;color:#8a6200;margin-bottom:10px;line-height:1.6">${menu.title}<br>📦 건강기능식품은 택배 주문 가능 · 음료는 카운터에서 주문하세요</div>
+      <div class="order-menu">${items2}</div>
+      ${buildTodayDrinkRec(oh1)}
+      <button class="btn-share" onclick="shareResult()" style="margin-top:6px">📋 내 에너지 코드 복사해서 공유</button>
+    </div>`;
+    orderHtml=makeAcc(`🛒 ${oh1} 오행 맞춤 메뉴 주문`, orderInner, '#8a6200');
+  }
 
   return`<div class="health-panel">
 
@@ -1305,7 +1443,110 @@ function renderHealth(s){
   </div>`;
 }
 
+// ── 오늘의 특별 추천 로직 ──
+const OH_OF_CG_IDX=[0,0,1,1,2,2,3,3,4,4]; // 甲乙=목 丙丁=화 戊己=토 庚辛=금 壬癸=수
+const OH_OF_JJ_IDX=[4,2,0,0,2,1,1,2,3,3,2,4]; // 子丑寅卯辰巳午未申酉戌亥
+const OH_LIST=['목','화','토','금','수'];
+// 상생: idx→(idx+1)%5 생조
+// 상극: idx→(idx+2)%5 극
 
+function getRelation(fromOH, toOH){
+  // 상생: 목(0)→화(1)→토(2)→금(3)→수(4)→목
+  const fi=OH_LIST.indexOf(fromOH), ti=OH_LIST.indexOf(toOH);
+  if(fi<0||ti<0) return 'none';
+  if(fi===ti) return 'same';
+  if((fi+1)%5===ti) return 'from_gen_to';   // from이 to를 生 (예: 목→화)
+  if((ti+1)%5===fi) return 'to_gen_from';   // to가 from을 生 (예: 화→토: to=화, from=토)
+  if((fi+2)%5===ti) return 'from_ctl_to';   // from이 to를 克 (예: 목→토)
+  if((ti+2)%5===fi) return 'to_ctl_from';   // to가 from을 克
+  return 'none';
+}
+
+function buildTodayDrinkRec(yongOH){
+  const t=calcTodayGanji();
+  const cgOH=OH_LIST[OH_OF_CG_IDX[t.day.cg]];
+  const jjOH=OH_LIST[OH_OF_JJ_IDX[t.day.jj]];
+  // cgRel: 천간 오행이 용신에 미치는 관계
+  const cgRel=getRelation(cgOH, yongOH);
+  // jjRel: 지지 오행이 용신에 미치는 관계
+  const jjRel=getRelation(jjOH, yongOH);
+
+  const now=new Date();
+  const dateStr=now.getFullYear()+'.'+(now.getMonth()+1)+'.'+now.getDate();
+  const dayStr=CG[t.day.cg]+JJ[t.day.jj]+'일 ('+CG_KR[t.day.cg]+JJ_KR[t.day.jj]+')';
+
+  let recOH=null, reason='', subReason='';
+
+  // ① 천간이 용신을 生 (핵심 케이스: 예 甲木→火용신)
+  if(cgRel==='from_gen_to'){
+    recOH=cgOH;
+    reason=`오늘 ${CG[t.day.cg]}(${cgOH})이 용신 ${yongOH} 에너지를 도와주는 날입니다.`;
+    if(jjRel==='to_gen_from'){
+      // 지지가 용신 설기 (예: 辰土가 火 설기)
+      subReason=`지지 ${JJ[t.day.jj]}(${jjOH})이 ${yongOH}의 기운을 소모시키므로, ${cgOH} 계열 음료로 채워주세요.`;
+    } else {
+      subReason=`${cgOH} 계열 음료가 오늘 용신 에너지를 직접 보충해줍니다.`;
+    }
+  }
+  // ② 천간이 용신과 동일 오행
+  else if(cgRel==='same'){
+    recOH=yongOH;
+    reason=`오늘 천간 ${CG[t.day.cg]}이 용신 ${yongOH}과 같은 오행입니다.`;
+    subReason=`용신 에너지가 가장 강한 날 — 평소 음료를 오늘 특히 챙겨드세요.`;
+  }
+  // ③ 용신이 천간을 生 (용신이 천간 오행으로 설기)
+  else if(cgRel==='to_gen_from'){
+    recOH=yongOH;
+    reason=`오늘 용신 ${yongOH}이 천간 ${cgOH}으로 기운이 흘러나가는 날입니다.`;
+    subReason=`용신 ${yongOH} 음료를 보충해 에너지 소모를 보완하세요.`;
+  }
+  // ④ 천간이 용신을 克
+  else if(cgRel==='from_ctl_to'){
+    // 통관 오행: 천간과 용신 사이를 잇는 오행
+    const throughIdx=(OH_LIST.indexOf(cgOH)+1)%5;
+    recOH=OH_LIST[throughIdx];
+    reason=`오늘 ${CG[t.day.cg]}(${cgOH})이 용신 ${yongOH}을 압박하는 날입니다.`;
+    subReason=`${recOH} 계열 음료로 흐름을 부드럽게 연결해 균형을 잡으세요.`;
+  }
+  // ⑤ 용신이 천간을 克 (용신 활발)
+  else if(cgRel==='to_ctl_from'){
+    recOH=yongOH;
+    reason=`오늘 용신 ${yongOH}이 천간 ${cgOH}을 다스리는 힘 있는 날입니다.`;
+    subReason=`용신 에너지가 활발히 작동합니다. ${yongOH} 음료로 기세를 살리세요.`;
+  }
+  else {
+    recOH=yongOH;
+    reason=`오늘 일진 ${dayStr}과 용신의 관계를 확인했습니다.`;
+    subReason=`기본 용신 ${yongOH} 계열 음료를 권장합니다.`;
+  }
+
+  const rec=recOH?OH_HEALTH[recOH]:null;
+  if(!rec) return '';
+  const c=CO[recOH];
+  const ohHanja={목:'木',화:'火',토:'土',금:'金',수:'水'};
+
+  const drinks=[
+    rec.teas[0]?{icon:'☕',name:rec.teas[0].name,effect:rec.teas[0].effect}:null,
+    rec.juices[0]?{icon:'🥤',name:rec.juices[0].name,effect:rec.juices[0].effect}:null,
+  ].filter(Boolean);
+
+  const drinkCards=drinks.map(d=>`
+    <div class="today-rec-drink">
+      <div class="trd-icon">${d.icon}</div>
+      <div>
+        <div class="trd-name" style="color:${c.t}">${d.name}</div>
+        <div class="trd-effect">${d.effect}</div>
+      </div>
+    </div>`).join('');
+
+  return`<div class="today-rec-box" style="background:${c.bg};border:1.5px solid ${c.b}">
+    <div class="tr-date" style="color:${c.t}">📅 오늘의 특별 추천 · ${dateStr} ${dayStr}</div>
+    <div class="tr-title" style="color:${c.t}">${recOH}(${ohHanja[recOH]||recOH}) 계열 음료를 드세요</div>
+    <div class="tr-reason" style="color:${c.t}">${reason}<br>${subReason}</div>
+    <div class="tr-drinks">${drinkCards}</div>
+    <div class="today-rec-deco" style="color:${c.t}">${rec.deco||recOH}</div>
+  </div>`;
+}
 
 function toggleAcc(id){
   const hdr=document.getElementById('hdr_'+id);
@@ -1337,9 +1578,69 @@ const OH_EMOJI_MAP={목:"🌿",화:"🔥",토:"🌍",금:"💎",수:"💧"};
 let _currentOrderProduct = null;
 let _currentOrderOh = null;
 
+function openOrderModal(idx) {
+  const entry = window._orderRegistry[idx];
+  if(!entry){ alert('상품 정보를 불러올 수 없습니다. 다시 시도해 주세요.'); return; }
+  const product = entry.product;
+  const oh = entry.oh;
+  _currentOrderProduct = product;
+  _currentOrderOh = oh;
+  const area = document.getElementById('order-form-area');
+  const emoji = OH_EMOJI_MAP[oh] || "🌿";
+  area.innerHTML = `
+    <div class="order-sheet-title">📦 배송 주문</div>
+    <div class="order-sheet-sub">주문 후 계좌이체로 입금하시면 1~3 영업일 내 발송됩니다</div>
+
+    <div class="order-product-card">
+      <div class="opc-emoji">${emoji}</div>
+      <div class="opc-body">
+        <div class="opc-name">${product.name}</div>
+        <div class="opc-desc">${product.desc}</div>
+      </div>
+      <div class="opc-price">${product.price}원</div>
+    </div>
+
+    <div class="order-field">
+      <label>수령인 이름 *</label>
+      <input type="text" id="ord-name" placeholder="홍길동">
+    </div>
+    <div class="order-field">
+      <label>연락처 (휴대폰) *</label>
+      <input type="tel" id="ord-phone" placeholder="010-0000-0000" oninput="autoHyphen(this)">
+    </div>
+    <div class="order-field">
+      <label>배송 주소 *</label>
+      <div class="addr-row" style="margin-bottom:6px">
+        <input type="text" id="ord-postcode" placeholder="우편번호" readonly>
+        <button class="btn-addr" onclick="searchAddress()">주소 검색</button>
+      </div>
+      <input type="text" id="ord-addr1" placeholder="도로명 주소 (검색 후 자동 입력)" readonly style="margin-bottom:6px">
+      <input type="text" id="ord-addr2" placeholder="상세 주소 (동/호수 등)">
+    </div>
+    <div class="order-field">
+      <label>배송 메모 (선택)</label>
+      <input type="text" id="ord-memo" placeholder="예) 부재시 문 앞에 놓아주세요">
+    </div>
+
+    <div class="order-divider"></div>
+    <div class="bank-info-box">
+      <div class="bi-title">💳 입금 계좌 안내</div>
+      <div class="bi-account">${SHOP_CONFIG.bankName} ${SHOP_CONFIG.bankAccount}</div>
+      <div class="bi-name">예금주: ${SHOP_CONFIG.accountHolder}</div>
+      <div class="bi-note">• 주문 완료 후 <b>${product.price}원</b>을 위 계좌로 입금해주세요<br>
+      • 입금 확인 후 1~3 영업일 내 발송<br>
+      • 카카오 채널로 운송장 번호를 알려드립니다</div>
+    </div>
+
+    <button class="btn-cancel-order" onclick="closeOrderModal()">취소</button>
+  `;
+  document.getElementById('order-modal').classList.add('open');
+  // 모달 열릴 때 배경 스크롤 막기
+  document.body.style.overflow = 'hidden';
+}
 
 function closeOrderModal() {
-  
+  document.getElementById('order-modal').classList.remove('open');
   document.body.style.overflow = '';
 }
 
@@ -1426,16 +1727,95 @@ async function submitOrder() {
         <div class="bi-note">• 입금자명에 <b>${name}</b>으로 입금해주세요<br>
         • 운송장 번호는 카카오 채널로 안내드립니다</div>
       </div>
-      <button class="btn-submit-order" onclick="window.open('${SHOP_CONFIG.kakaoChannel}','_blank')">
-        💬 카카오 채널에서 입금 확인 요청
-      </button>
       <button class="btn-cancel-order" onclick="closeOrderModal()">닫기</button>
     </div>
   `;
 }
 
 // ────────────────────────────────────────────────
+// 관리자 화면 (?admin=1 로 접근)
+// ────────────────────────────────────────────────
+async function loadAdminView() {
+  const pw = prompt('관리자 비밀번호를 입력하세요:');
+  // ★ 아래 비밀번호를 원하는 값으로 바꿔주세요 ★
+  if(pw !== 'cafe1234') { alert('비밀번호가 틀렸습니다.'); return; }
 
+  document.body.innerHTML = '';
+  const wrap = document.createElement('div');
+  wrap.className = 'admin-wrap';
+  wrap.innerHTML = `
+    <div class="admin-header">
+      <h2>🏪 카페 본캐 — 주문 관리</h2>
+      <p>건강기능식품 주문 목록</p>
+    </div>
+    <div id="admin-list">불러오는 중...</div>
+  `;
+  document.body.appendChild(wrap);
+  document.body.style.background = '#f4f0e8';
+
+  let orders = [];
+
+  // Firebase에서 불러오기
+  try {
+    if(window._fbReady && window._db) {
+      const q = window._fbQuery(window._fbCol(window._db,'orders'), window._fbOrderBy('createdAt','desc'));
+      const snap = await window._fbGetDocs(q);
+      snap.forEach(d => orders.push({id:d.id,...d.data()}));
+    } else {
+      orders = JSON.parse(localStorage.getItem('cafeOrders')||'[]').reverse();
+    }
+  } catch(e) {
+    orders = JSON.parse(localStorage.getItem('cafeOrders')||'[]').reverse();
+  }
+
+  const list = document.getElementById('admin-list');
+  if(!orders.length) {
+    list.innerHTML = '<div class="admin-empty">📭 주문 내역이 없습니다</div>';
+    return;
+  }
+
+  list.innerHTML = orders.map(o => {
+    const statusLabel = o.status==='done' ? '발송완료' : '입금대기';
+    const statusClass = o.status==='done' ? 'done' : 'wait';
+    const date = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleDateString('ko-KR') : (o.createdAt||'').slice(0,10);
+    return `<div class="order-card">
+      <div class="oc-top">
+        <span class="oc-no">${date} · ${(o.id||'').slice(-6).toUpperCase()}</span>
+        <span class="oc-status ${statusClass}">${statusLabel}</span>
+      </div>
+      <div class="oc-product">${o.product}</div>
+      <div class="oc-price">${o.price}원</div>
+      <div class="oc-info">👤 ${o.name} &nbsp;📱 ${o.phone}</div>
+      <div class="oc-addr">📦 ${o.address}${o.memo?'<br>💬 '+o.memo:''}</div>
+      ${o.status!=='done'?`<button class="btn-done" onclick="markDone('${o.id}',this)">✅ 발송 완료 처리</button>`:''}
+    </div>`;
+  }).join('');
+}
+
+async function markDone(id, btn) {
+  if(!confirm('발송 완료로 처리하시겠습니까?')) return;
+  try {
+    if(window._fbReady && window._db) {
+      await window._fbUpdate(window._fbDoc(window._db,'orders',id), {status:'done'});
+    } else {
+      const orders = JSON.parse(localStorage.getItem('cafeOrders')||'[]');
+      const o = orders.find(x=>x.id===id);
+      if(o) o.status='done';
+      localStorage.setItem('cafeOrders', JSON.stringify(orders));
+    }
+    btn.closest('.order-card').querySelector('.oc-status').textContent='발송완료';
+    btn.closest('.order-card').querySelector('.oc-status').className='oc-status done';
+    btn.remove();
+  } catch(e) { alert('처리 실패: '+e.message); }
+}
+
+// 관리자 모드 진입 감지
+if(location.search.includes('admin=1')){
+  document.addEventListener('DOMContentLoaded', ()=>{
+    setTimeout(loadAdminView, 500);
+  });
+  document.addEventListener('fbReady', ()=>{ loadAdminView(); }, {once:true});
+}
 
 // 일간별 이모지
 const ILGAN_EMOJI={
@@ -1455,6 +1835,26 @@ const GEK_EMOJI={
 };
 
 
+
+function shareResult(){
+  if(!currentSaju){alert('먼저 원국을 뽑아주세요.');return;}
+  const s=currentSaju;
+  const dc=s.dc;
+  const moJJ=s.pillars[1].jj;
+  const moIdx=jjToMoIdx(moJJ);
+  const gek=getGekInfo(dc,moJJ);
+  const yong=YONGSIN_DATA[dc][moIdx];
+  const oh1=yongsinToOH(yong.yongsin);
+  const rec=oh1?OH_HEALTH[oh1]:null;
+  const mbti=document.getElementById('mbti').value;
+  const mbtiInfo=mbti&&MBTI_DATA[mbti]?`\n${mbti} ${MBTI_DATA[mbti].name} — ${MBTI_DATA[mbti].core}`:'';
+  const ilganName=ILGAN_NAME[dc];
+  const ilganEmoji=ILGAN_EMOJI[ilganName]||'✨';
+  const ohEmoji=OH_EMOJI[oh1]||'🌿';
+  const gekEmoji=GEK_EMOJI[gek.label]||'✦';
+  const text=`나의 본캐 🔖\n━━━━━━━━━━━━━━\n${ilganEmoji} ${ilganName} — ${ILGAN_NAT[dc]}\n${gekEmoji} ${gek.label}${mbtiInfo}\n${ohEmoji} 밸런스 오행: ${oh1||'미정'}(${OH_HANJA[oh1]||''}) · ${rec?rec.organ:''}\n\n☕ 건강차: ${rec?rec.teas[0].name:''}\n🥤 주스: ${rec?rec.juices[0].name:''}\n💊 건기품: ${rec?rec.supps[0].name:''}\n━━━━━━━━━━━━━━\n🌿 카페 본캐 (에너지 밸런스 카페)\nhttps://02010714.github.io/sajumanse/saju-mbti.html`;
+  navigator.clipboard.writeText(text).then(()=>alert('복사됐습니다! 카카오톡이나 SNS에 붙여넣기 하세요.')).catch(()=>prompt('아래 내용을 복사하세요:',text));
+}
 
 // ── 기존 코드 (십신, 운성, 사주 계산) ──
 const CG=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
@@ -1796,7 +2196,7 @@ function renderEnergyCode(s){
         <span class="gek-badge" style="background:${gc}">${gek.sipsin}</span>
         ${mbtiHtml}
       </div>
-      <div style="margin-top:6px;padding:8px 10px;background:rgba(255,255,255,0.6);border-radius:7px;border:1px solid #e8d8a0">
+            <div style="margin-top:6px;padding:8px 10px;background:rgba(255,255,255,0.6);border-radius:7px;border:1px solid #e8d8a0">
         <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:5px">
           <span style="font-size:9px;font-weight:700;color:#8a6200">${gekDetail.tuChul?'✅ 成格':'⚠️ 未成格'}</span>
           <span style="font-size:11px;font-weight:700;color:#2c4a2c">${gekDetail.gekName}</span>
@@ -1852,7 +2252,7 @@ function renderChart(s){
   const ohCnt={목:0,화:0,토:0,금:0,수:0};
   pillars.forEach(p=>{ohCnt[OH[OH_CG[p.cg]]]++;ohCnt[OH[OH_JJ[p.jj]]]++;});
   const displayOrder=[3,2,1,0];
-  const ynJJ=pillars[0].jj; // 연지 (신살 기준)
+  const ynJJ=pillars[0].jj;
   const gmJJ2=gongmang&&gongmang.jj?gongmang.jj:[];
   const pillarCards=displayOrder.map(origIdx=>{
     const p=pillars[origIdx];const isDay=(origIdx===2);
@@ -1873,23 +2273,146 @@ function renderChart(s){
     </div>`;
   }).join('');
 
-  // 사주원국 아코디언 (컴팩트)
   const pillarAcc=makeAcc('📋 사주 원국 보기',
     '<div style="overflow-x:auto"><div class="pillar-section" style="margin:0">'
     +'<div class="pillar-row">'+pillarCards+'</div>'
     +'</div></div>', '#5a3e00');
 
-  // 대운 아코디언
   const daeunAcc=makeAcc('📅 대운 흐름 보기',
     '<div>'+renderDaeun(s)+'</div>', '#1565a0');
 
+  const kakaoBtn='<div style="margin-top:6px">'
+    +'<button class="btn-kakao" onclick="shareKakao()">'
+    +'<span style="font-size:18px;line-height:1">💬</span> 카카오톡으로 공유하기'
+    +'</button></div>';
   return renderEnergyCode(s)
+    +kakaoBtn
     +aiMenuBlock()
     +'<div style="margin-top:10px">'+pillarAcc+'</div>'
     +'<div style="margin-top:6px">'+daeunAcc+'</div>';
 }
 
-function aiMenuBlock(){
+function buildGekPrompt(s){
+  if(!s) return '';
+  const dc=s.pillars[2].cg;
+  const moJJ=s.pillars[1].jj;
+  const moIdx=jjToMoIdx(moJJ);
+  const gd=document.getElementById('gd').value;
+  const gek=analyzeGek(s);
+  const yong=YONGSIN_DATA[dc][moIdx];
+  const pillarStr=s.pillars.map(p=>
+    p.label+': '+CG[p.cg]+JJ[p.jj]+
+    ' ['+CG_KR[p.cg]+'('+OH[OH_CG[p.cg]]+') / '+JJ_KR[p.jj]+'('+OH[OH_JJ[p.jj]]+')]'
+  ).join('\n');
+  const ohArr=['목','화','토','금','수'];
+  const ohCount=gek.ohCount.map((n,i)=>ohArr[i]+' '+n+'개').join(' / ');
+  return '[格局·용신 정밀 검증 요청]\n'
+    +'성별: '+gd+'성\n\n'
+    +'[사주 원국]\n'+pillarStr+'\n\n'
+    +'[오행 분포] '+ohCount+'\n\n'
+    +'[Energy Code 앱 1차 판단]\n'
+    +'格局: '+gek.sipsin+' / 成格여부: '+(gek.tuChul?'成格('+gek.tuChulChar+' 투출)':'未成格(미투출)')+'\n'
+    +'格局명: '+gek.gekName+'\n'
+    +'格局용신(앱): '+( gek.gekYongOH||'미성격→조후용신 적용')+'\n'
+    +'조후용신(궁통보감): '+yong.yongsin+' / 희신: '+yong.hesin+'\n\n'
+    +'아래 기준으로 정밀 검증해주세요:\n'
+    +'① 오행 생극제화 — 格을 生·보호하는 오행이 원국에서 실제로 작동하는가\n'
+    +'② 합충형파해 — 格 또는 용신이 합거·충으로 훼손되지 않는가\n'
+    +'③ 格局용신과 조후용신 일치 여부 — 충돌 시 어느 쪽을 우선하는가\n'
+    +'④ 최종 용신 오행과 格局명을 확정해주세요\n'
+    +'⑤ 확정된 용신 오행 기준으로 음식·운동·직업 추천 방향도 알려주세요';
+}
+
+function build2ndPrompt(s, gdOverride){
+  const{pillars,dc,daeun,gongmang}=s;
+  const yr=parseInt(document.getElementById('yr').value);
+  const gd=gdOverride||document.getElementById('gd').value;
+  const ynJJ=pillars[0].jj;
+  const base=buildCopyText(s, gdOverride);
+  const unsungRow=pillars.map(p=>{
+    const u=getUnsungJJ(dc,p.jj);
+    return p.label+'지('+JJ[p.jj]+'): '+u;
+  }).join(' | ');
+  const sinsalRow=pillars.map(p=>{
+    const ss=getSinsal(ynJJ,p.jj);
+    return p.label+'지('+JJ[p.jj]+'): '+ss;
+  }).join(' | ');
+  const gmJJ=gongmang&&gongmang.jj?gongmang.jj:[];
+  const gmInChart=pillars.filter(p=>gmJJ.includes(p.jj)).map(p=>p.label+'('+JJ[p.jj]+')');
+  const gmStr=gmInChart.length>0?
+    '공망 지지(일주 기준): '+gmInChart.join(', ')+' — 공망 순: '+gongmang.sunName:
+    '공망 지지(일주 기준): 원국 내 해당 없음 — 공망 순: '+(gongmang?gongmang.sunName:'');
+  return base+
+    '\n\n[12운성 — 일간('+CG[pillars[2].cg]+') 기준]\n'+unsungRow+
+    '\n\n[12신살 — 연지('+JJ[ynJJ]+') 기준]\n'+sinsalRow+
+    '\n\n[공망]\n'+gmStr+
+    '\n\n[2단계 심층 분석 요청]\n'+
+    '위 사주에서 다음을 분석해주세요:\n'+
+    '1. 12운성으로 본 일간의 에너지 상태 — 각 기둥(년·월·일·시)별 의미와 종합\n'+
+    '2. 12신살의 작용 — 어떤 신살이 강하게 작용하는지, 삶의 패턴과 연결\n'+
+    '3. 12운성 × 신살 교차 분석 — 같은 지지에서 두 정보가 겹칠 때의 의미\n'+
+    '4. 공망의 정화 기능 검토 — 결핍 독법과 정화 독법 양면\n'+
+    '5. 이 구조에서 주의할 것과 활용할 것 (구체적 삶의 방향 제시)';
+}
+
+function toggleDepth2(){
+  const area=document.getElementById('depth2-area');
+  const ta=document.getElementById('depth2-text');
+  const gd=document.getElementById('gd').value;
+  const show=area.style.display==='none';
+  area.style.display=show?'block':'none';
+  if(show&&currentSaju){
+    const txt=build2ndPrompt(currentSaju,gd);
+    ta.value=txt;
+    try{navigator.clipboard.writeText(txt);}catch(e){}
+  }
+}
+
+function toggleGek(){
+  if(!currentSaju){alert('먼저 사주를 조회해주세요.');return;}
+  const text=buildGekPrompt(currentSaju);
+  const btn=document.getElementById('gek-btn');
+  const area=document.getElementById('gek-area');
+  const ta=document.getElementById('gek-text');
+  ta.value=text;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='✅ 복사됐습니다! AI 채팅창에 붙여넣으세요';
+    btn.style.background='#e8f5e9';btn.style.borderColor='#66bb6a';btn.style.color='#2e7d32';
+    area.style.display='';
+    setTimeout(()=>{
+      btn.textContent='🔍 格局·용신 검증 프롬프트 복사';
+      btn.style.background='linear-gradient(135deg,#f0f4ff,#e8f0ff)';
+      btn.style.borderColor='#a0b8e0';btn.style.color='#1a3a6c';
+    },3000);
+  }).catch(()=>{
+    area.style.display='';
+    ta.select();
+  });
+}
+function copyGekPrompt(){toggleGek();}
+
+function changeYong(oh, btn){
+  currentYongOverride=oh;
+  if(currentSaju){
+    document.getElementById('panel-health').innerHTML=renderHealth(currentSaju);
+    document.getElementById('panel-career').innerHTML=renderCareer(currentSaju);
+    document.getElementById('panel-compat').innerHTML=renderCompatPanel();
+  }
+  document.getElementById('panel-chart').innerHTML=renderChart(currentSaju);
+  setTab('chart');
+}
+function resetYong(){
+  currentYongOverride=null;
+  if(currentSaju){
+    document.getElementById('panel-health').innerHTML=renderHealth(currentSaju);
+    document.getElementById('panel-career').innerHTML=renderCareer(currentSaju);
+    document.getElementById('panel-compat').innerHTML=renderCompatPanel();
+  }
+  document.getElementById('panel-chart').innerHTML=renderChart(currentSaju);
+  setTab('chart');
+}
+
+function cafeAiMenuBlock(){
   return '<div style="margin-top:12px;border:1.5px solid #c9a227;border-radius:11px;overflow:hidden;background:#fffbf0">'
     +'<div onclick="toggleAiMenu()" id="ai-menu-hdr" style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;background:linear-gradient(135deg,#fffbf0,#fff5e0)">'
     +'<div>'
@@ -1991,10 +2514,6 @@ function gh_isHap(a,b){
   return null;
 }
 
-function getSajuYongshinOH(s){
-  const dc=s.pillars[2].cg, moJJ=s.pillars[1].jj;
-  try{return yongsinToOH(YONGSIN_DATA[dc][jjToMoIdx(moJJ)].yongsin);}catch(e){return null;}
-}
 
 // ── 1순위: 용신 보유 강도 ──
 function calcR1(s1, s2){
@@ -2130,31 +2649,54 @@ function calcR3(s1, s2){
     detail:`나의 귀인 ${guinNames} — 상대 원국에 없음`};
 }
 
-// ── 종합 판정 ──
-function compatVerdict(r1,r2,r3){
+// ── 4순위: 일간 천간합 ──
+function calcR4(s1, s2){
+  // 천간합 5쌍: 甲(0)己(5) 乙(1)庚(6) 丙(2)辛(7) 丁(3)壬(8) 戊(4)癸(9)
+  const CHEONGAN_HAP=[[0,5],[1,6],[2,7],[3,8],[4,9]];
+  const my=s1.pillars[2].cg;
+  const pt=s2.pillars[2].cg;
+  const pair=CHEONGAN_HAP.find(p=>(p[0]===my&&p[1]===pt)||(p[1]===my&&p[0]===pt));
+  if(pair)
+    return{met:true,
+      detail:`${CG[my]}일간과 ${CG[pt]}일간은 천간합(天干合) — 서로 끌리는 인력이 있습니다`};
+  return{met:false,
+    detail:`${CG[my]}일간과 ${CG[pt]}일간은 천간합 아님`};
+}
+
+// ── 종합 판정 (완화된 기준) ──
+function compatVerdict(r1,r2,r3,r4){
+  // 천우신조: r1 최고 + r2 + r3 모두 충족
   if(r1.score===3&&r2.met&&r3.met)
+    return{label:'천우신조(天佑神助)',stars:'★★★★★★',color:'#8b0000',
+      bg:'rgba(139,0,0,0.07)',border:'#d4706a',
+      msg:'용신·일지·천을귀인 세 가지 모두 완전 충족. 하늘이 도운 인연입니다.'};
+  // 천생연분: r1 최고 + r2, 또는 r4(천간합) + r2 + r3
+  if((r1.score===3&&r2.met)||(r4.met&&r2.met&&r3.met))
     return{label:'천생연분',stars:'★★★★★',color:'#c0392b',
       bg:'rgba(192,57,43,0.06)',border:'#e8a090',
-      msg:'세 가지 기준 완전 충족. 에너지 구조가 이상적으로 맞닿아 있습니다.'};
-  if(r1.score===3||(r1.score>=2&&r2.met&&r3.met))
+      msg:'에너지가 깊게 맞닿아 있습니다. 함께할수록 서로의 기운이 살아납니다.'};
+  // 상합: r1 강함+r2, 또는 r1 최고, 또는 r4(천간합)+r2
+  if((r1.score>=2&&r2.met)||r1.score===3||(r4.met&&r2.met))
     return{label:'상합(上合)',stars:'★★★★',color:'#8a6200',
       bg:'rgba(138,98,0,0.06)',border:'#d4a830',
-      msg:'핵심 기준이 강하게 충족됩니다. 함께할수록 에너지가 살아납니다.'};
-  if((r1.met&&r2.met)||(r1.met&&r3.met)||(r2.bidirectional))
+      msg:'핵심 에너지 구조가 잘 맞습니다. 서로에게 좋은 기운이 됩니다.'};
+  // 중합: r1 충족, r2, r3, r4(천간합) 중 하나라도 충족
+  if(r1.met||r2.met||r2.bidirectional||r3.met||r4.met)
     return{label:'중합(中合)',stars:'★★★',color:'#2e7d4f',
       bg:'rgba(46,125,79,0.06)',border:'#7ab890',
-      msg:'두 가지 이상 기준 충족. 서로를 보완하는 힘이 있습니다.'};
-  if(r1.met||r2.met||r3.met)
+      msg:'에너지 보완 관계가 있습니다. 서로를 채워주는 힘이 있습니다.'};
+  // 하합: r1 score 1 이상
+  if(r1.score>=1)
     return{label:'하합(下合)',stars:'★★',color:'#1565a0',
       bg:'rgba(21,101,160,0.06)',border:'#7090c0',
-      msg:'일부 기준 충족. 노력으로 에너지를 맞춰갈 수 있습니다.'};
+      msg:'인연의 실마리가 있습니다. 노력으로 좋은 관계를 만들 수 있습니다.'};
   return{label:'참고 필요',stars:'★',color:'#7a6040',
     bg:'rgba(122,96,64,0.06)',border:'#c0a878',
-    msg:'3가지 기준 미충족. AI 심층 분석으로 다른 면을 함께 확인해보세요.'};
+    msg:'AI 심층 분석으로 숨겨진 인연의 고리를 확인해보세요.'};
 }
 
 // ── AI 프롬프트 생성 ──
-function buildCompatPrompt(s1, s2, r1, r2, r3, verdict){
+function buildCompatPrompt(s1, s2, r1, r2, r3, r4, verdict){
   const fmt=s=>s.pillars.map(p=>CG[p.cg]+JJ[p.jj]).join(' ');
   const myYong=getSajuYongshinOH(s1)||'?';
   const ptYong=getSajuYongshinOH(s2)||'?';
@@ -2170,6 +2712,7 @@ function buildCompatPrompt(s1, s2, r1, r2, r3, verdict){
 1순위(용신보유) ${r1.stars||'미해당'}: ${r1.detail}
 2순위(일지관계) ${r2.bidirectional?'쌍방':r2.met?'단방향':'미해당'}: ${r2.detail}
 3순위(천을귀인) ${r3.met?'해당':'미해당'}: ${r3.detail}
+4순위(천간합) ${r4.met?'해당':'미해당'}: ${r4.detail}
 종합 판정: ${verdict.label} ${verdict.stars}
 
 아래 항목을 고전 기준으로 심층 분석해주세요:
@@ -2180,13 +2723,14 @@ function buildCompatPrompt(s1, s2, r1, r2, r3, verdict){
 ⑤ 상대방이 나에게 어떤 에너지 역할을 하는지 종합 정리`;
 }
 
+
+// ── 직업적성 탭 ──
 function renderCareer(s){
   if(!s) return '<div style="padding:30px;text-align:center;color:#9a8a6a">사주 원국을 먼저 조회해주세요.</div>';
   const dc=s.pillars[2].cg;
   const moJJ=s.pillars[1].jj;
   const moIdx=jjToMoIdx(moJJ);
   const gek=getGekInfo(dc,moJJ);
-  const gekDetail=analyzeGek(s);
   const ss=gek.sipsin;
   const oh1=getSajuYongshinOH(s);
   const oh2=currentYongOverride?null:(()=>{try{const d=YONGSIN_DATA[dc][moIdx];return d.hesin&&d.hesin!=="-"?yongsinToOH(d.hesin):null;}catch(e){return null;}})();
@@ -2260,144 +2804,6 @@ function renderCareer(s){
     +"</div></div>";
 }
 
-function buildGekPrompt(s){
-  if(!s) return '';
-  const dc=s.pillars[2].cg;
-  const moJJ=s.pillars[1].jj;
-  const moIdx=jjToMoIdx(moJJ);
-  const gd=document.getElementById('gd').value;
-  const gek=analyzeGek(s);
-  const yong=YONGSIN_DATA[dc][moIdx];
-  const pillarStr=s.pillars.map(p=>
-    p.label+': '+CG[p.cg]+JJ[p.jj]+
-    ' ['+CG_KR[p.cg]+'('+OH[OH_CG[p.cg]]+') / '+JJ_KR[p.jj]+'('+OH[OH_JJ[p.jj]]+')]'
-  ).join('\n');
-  const ohArr=['목','화','토','금','수'];
-  const ohCount=gek.ohCount.map((n,i)=>ohArr[i]+' '+n+'개').join(' / ');
-  return '[格局·용신 정밀 검증 요청]\n'
-    +'성별: '+gd+'성\n\n'
-    +'[사주 원국]\n'+pillarStr+'\n\n'
-    +'[오행 분포] '+ohCount+'\n\n'
-    +'[Energy Code 앱 1차 판단]\n'
-    +'格局: '+gek.sipsin+' / 成格여부: '+(gek.tuChul?'成格('+gek.tuChulChar+' 투출)':'未成格(미투출)')+'\n'
-    +'格局명: '+gek.gekName+'\n'
-    +'格局용신(앱): '+( gek.gekYongOH||'미성격→조후용신 적용')+'\n'
-    +'조후용신(궁통보감): '+yong.yongsin+' / 희신: '+yong.hesin+'\n\n'
-    +'아래 기준으로 정밀 검증해주세요:\n'
-    +'① 오행 생극제화 — 格을 生·보호하는 오행이 원국에서 실제로 작동하는가\n'
-    +'② 합충형파해 — 格 또는 용신이 합거·충으로 훼손되지 않는가\n'
-    +'③ 格局용신과 조후용신 일치 여부 — 충돌 시 어느 쪽을 우선하는가\n'
-    +'④ 최종 용신 오행과 格局명을 확정해주세요\n'
-    +'⑤ 확정된 용신 오행 기준으로 음식·운동·직업 추천 방향도 알려주세요';
-}
-
-function build2ndPrompt(s, gdOverride){
-  const{pillars,dc,daeun,gongmang}=s;
-  const yr=parseInt(document.getElementById('yr').value);
-  const gd=gdOverride||document.getElementById('gd').value;
-  const ynJJ=pillars[0].jj;
-
-  // 기존 원국+대운 텍스트
-  const base=buildCopyText(s, gdOverride);
-
-  // 격국·용신 (있으면 포함)
-  let gykStr='';
-  if(currentSaju&&currentSaju.gek){
-    const g=currentSaju.gek;
-    gykStr='\n격국: '+g.name+(g.sung?'(성격)':'(파격)')+'\n용신 오행: '+(currentYongOverride||'미확정')+'\n';
-  }
-
-  // 12운성 (일간 기준)
-  const unsungRow=pillars.map(p=>{
-    const u=getUnsungJJ(dc,p.jj);
-    return p.label+'지('+JJ[p.jj]+'): '+u;
-  }).join(' | ');
-
-  // 12신살 (연지 기준)
-  const sinsalRow=pillars.map(p=>{
-    const ss=getSinsal(ynJJ,p.jj);
-    return p.label+'지('+JJ[p.jj]+'): '+ss;
-  }).join(' | ');
-
-  // 공망 (일주 기준 — 일간이 속한 순(旬)의 공망 지지)
-  const gmJJ=gongmang&&gongmang.jj?gongmang.jj:[];
-  // 원국 4지지 중 공망에 해당하는 지지만 표시
-  const gmInChart=pillars.filter(p=>gmJJ.includes(p.jj)).map(p=>p.label+'('+JJ[p.jj]+')');
-  const gmStr=gmInChart.length>0?
-    '공망 지지(일주 기준): '+gmInChart.join(', ')+' — 공망 순: '+gongmang.sunName:
-    '공망 지지(일주 기준): 원국 내 해당 없음 — 공망 순: '+(gongmang?gongmang.sunName:'');
-
-  return base+gykStr+
-    '\n[12운성 — 일간('+CG[pillars[2].cg]+') 기준]\n'+unsungRow+
-    '\n\n[12신살 — 연지('+JJ[ynJJ]+') 기준]\n'+sinsalRow+
-    '\n\n[공망]\n'+gmStr+
-    '\n\n[2단계 심층 분석 요청]\n'+
-    '위 사주에서 다음을 분석해주세요:\n'+
-    '1. 12운성으로 본 일간의 에너지 상태 — 각 기둥(년·월·일·시)별 의미와 종합\n'+
-    '2. 12신살의 작용 — 어떤 신살이 강하게 작용하는지, 삶의 패턴과 연결\n'+
-    '3. 12운성 × 신살 교차 분석 — 같은 지지에서 두 정보가 겹칠 때의 의미\n'+
-    '4. 공망의 정화 기능 검토 — 결핍 독법과 정화 독법 양면\n'+
-    '5. 이 구조에서 주의할 것과 활용할 것 (구체적 삶의 방향 제시)';
-}
-
-function toggleDepth2(){
-  const area=document.getElementById('depth2-area');
-  const ta=document.getElementById('depth2-text');
-  const gd=document.getElementById('gd').value;
-  const show=area.style.display==='none';
-  area.style.display=show?'block':'none';
-  if(show&&currentSaju){
-    const txt=build2ndPrompt(currentSaju,gd);
-    ta.value=txt;
-    try{navigator.clipboard.writeText(txt);}catch(e){}
-  }
-}
-
-function toggleGek(){
-  if(!currentSaju){alert('먼저 사주를 조회해주세요.');return;}
-  const text=buildGekPrompt(currentSaju);
-  const btn=document.getElementById('gek-btn');
-  const area=document.getElementById('gek-area');
-  const ta=document.getElementById('gek-text');
-  ta.value=text;
-  navigator.clipboard.writeText(text).then(()=>{
-    btn.textContent='✅ 복사됐습니다! AI 채팅창에 붙여넣으세요';
-    btn.style.background='#e8f5e9';btn.style.borderColor='#66bb6a';btn.style.color='#2e7d32';
-    area.style.display='';
-    setTimeout(()=>{
-      btn.textContent='🔍 格局·용신 검증 프롬프트 복사';
-      btn.style.background='linear-gradient(135deg,#f0f4ff,#e8f0ff)';
-      btn.style.borderColor='#a0b8e0';btn.style.color='#1a3a6c';
-    },3000);
-  }).catch(()=>{
-    area.style.display='';
-    ta.select();
-  });
-}
-function copyGekPrompt(){toggleGek();}
-
-function changeYong(oh, btn){
-  currentYongOverride=oh;
-  if(currentSaju){
-    document.getElementById('panel-health').innerHTML=renderHealth(currentSaju);
-    document.getElementById('panel-career').innerHTML=renderCareer(currentSaju);
-    // 궁합 탭도 갱신 (용신 기준 바뀌므로)
-    document.getElementById('panel-compat').innerHTML=renderCompatPanel();
-  }
-  document.getElementById('panel-chart').innerHTML=renderChart(currentSaju);
-  setTab('chart');
-}
-function resetYong(){
-  currentYongOverride=null;
-  if(currentSaju){
-    document.getElementById('panel-health').innerHTML=renderHealth(currentSaju);
-    document.getElementById('panel-career').innerHTML=renderCareer(currentSaju);
-    document.getElementById('panel-compat').innerHTML=renderCompatPanel();
-  }
-  document.getElementById('panel-chart').innerHTML=renderChart(currentSaju);
-  setTab('chart');
-}
-
 function renderCompatPanel(){
   return`<div class="compat-input-box">
     <h3>💑 사주 궁합 분석</h3>
@@ -2447,9 +2853,10 @@ function calcCompat(){
   const mn=mnVal===''?0:parseInt(mnVal);
   if(!yr||!mo||!dy){alert('상대방의 생년·월·일을 입력해주세요.');return;}
   try{
-    const s2=buildSaju(yr,mo,dy,hr,mn,compatGd,JEOL_DATA,document.getElementById('birthplace').value==='korea');
+    const s2=buildSaju(yr,mo,dy,hr,mn,compatGd,JEOL_DATA,currentIsKorea);
     renderCompatResult(currentSaju, s2);
   }catch(e){
+    console.error('calcCompat 오류:', e);
     document.getElementById('compat-result-area').innerHTML=
       `<div style="padding:14px;text-align:center;color:#8b1a1a;font-size:12px">⚠️ 사주 계산 중 오류가 발생했습니다.<br>입력값을 확인해주세요.</div>`;
   }
@@ -2462,14 +2869,15 @@ function renderCompatResult(s1, s2){
   const r1=calcR1(s1,s2);
   const r2=calcR2(s1,s2);
   const r3=calcR3(s1,s2);
-  const verdict=compatVerdict(r1,r2,r3);
+  const r4=calcR4(s1,s2);
+  const verdict=compatVerdict(r1,r2,r3,r4);
 
   const day1=s1.pillars[2], day2=s2.pillars[2];
   const oh1=OH[OH_CG[day1.cg]], oh2=OH[OH_CG[day2.cg]];
 
-  const rankBg =['rgba(192,57,43,0.05)','rgba(138,98,0,0.05)','rgba(21,101,160,0.05)'];
-  const rankBdr=['rgba(192,57,43,0.25)','rgba(138,98,0,0.25)','rgba(21,101,160,0.25)'];
-  const rankCol=['#c0392b','#8a6200','#1565a0'];
+  const rankBg =['rgba(192,57,43,0.05)','rgba(138,98,0,0.05)','rgba(21,101,160,0.05)','rgba(80,40,120,0.05)'];
+  const rankBdr=['rgba(192,57,43,0.25)','rgba(138,98,0,0.25)','rgba(21,101,160,0.25)','rgba(80,40,120,0.25)'];
+  const rankCol=['#c0392b','#8a6200','#1565a0','#5b21b6'];
 
   function rankRow(n, title, obj, stars){
     const met=obj.met;
@@ -2516,6 +2924,7 @@ function renderCompatResult(s1, s2){
     ${rankRow(1,'나의 용신 오행 보유',r1,r1.stars)}
     ${rankRow(2,'일지 관계 (生·合·冲)',r2,r2.bidirectional?'쌍방':'단방')}
     ${rankRow(3,'천을귀인 인연',r3,'✅')}
+    ${rankRow(4,'일간 천간합(天干合)',r4,'💫')}
 
     <div class="compat-tip" style="margin-top:10px">
       💡 이 분석은 자평진전·궁통보감 기반 3가지 핵심 기준입니다.<br>
@@ -2533,7 +2942,7 @@ function renderCompatResult(s1, s2){
   </div>`;
 
   // 프롬프트 미리 세팅
-  document.getElementById('compat-prompt-text').value=buildCompatPrompt(s1,s2,r1,r2,r3,verdict);
+  document.getElementById('compat-prompt-text').value=buildCompatPrompt(s1,s2,r1,r2,r3,r4,verdict);
 }
 
 function toggleCompatPrompt(){
@@ -2544,13 +2953,14 @@ function toggleCompatPrompt(){
 }
 
 let currentSaju=null;
+let currentIsKorea=true; // 기본값: 한국
 let nowYear=new Date().getFullYear();
 
 
 
 function setTab(t){
-  const _mb=document.getElementById('ai-menu-body');if(_mb)_mb.style.display='none';
-  const _ma=document.getElementById('ai-menu-arrow');if(_ma)_ma.style.transform='';
+  const _mb=document.getElementById("ai-menu-body");if(_mb)_mb.style.display="none";
+  const _ma=document.getElementById("ai-menu-arrow");if(_ma)_ma.style.transform="";
   document.getElementById('panel-chart').style.display=t==='chart'?'':'none';
   document.getElementById('panel-compat').style.display=t==='compat'?'':'none';
   document.getElementById('panel-health').style.display=t==='health'?'':'none';
@@ -2561,6 +2971,12 @@ function setTab(t){
   if(t==='chart'){setTimeout(()=>{const el=document.getElementById('daeun-scroll');if(el)el.scrollLeft=el.scrollWidth;},50);}
 }
 
+function requestGimyeong(){
+  alert('🔮 AI 정밀 간명 서비스\n\n현재 오픈 준비 중입니다.\n카카오 채널을 추가하시면\n오픈 즉시 가장 먼저 알려드립니다!');
+  setTimeout(()=>{
+    window.open('http://pf.kakao.com/_GrHVX','_blank');
+  }, 1500);
+}
 
 function toggleAiMenu(){
   const body=document.getElementById('ai-menu-body');
@@ -2597,7 +3013,6 @@ function toggleCopy(){
       btn.style.background='';btn.style.borderColor='';btn.style.color='';
     },3000);
   }).catch(()=>{
-    // 클립보드 실패 시 textarea 표시
     const area=document.getElementById('copy-area');
     const show=area.style.display==='none';
     area.style.display=show?'':'none';
@@ -2667,7 +3082,6 @@ function toggleToday(){
       btn.style.borderColor='#e0c870';btn.style.color='#5a3e00';
     },3000);
   }).catch(()=>{
-    // 클립보드 실패 시 textarea 표시
     const area=document.getElementById('today-area');
     const show=area.style.display==='none';
     area.style.display=show?'':'none';
@@ -2696,7 +3110,6 @@ window.addEventListener('load', function(){ loadSavedInput(); renderProfiles(); 
 function handleCalc(){
   const btn=document.querySelector('.btn-main');
   btn.disabled=true;btn.textContent='계산 중...';
-  // 입력값 localStorage 저장
   try{
     const saveData={
       yr:document.getElementById('yr').value,
@@ -2716,14 +3129,16 @@ function handleCalc(){
   const hr=parseInt(document.getElementById('hr').value)||0;
   const min=parseInt(document.getElementById('min').value)||0;
   const gd=document.getElementById('gd').value;
-  const isKorea=document.getElementById('birthplace').value==='korea';
+  currentIsKorea=document.getElementById('birthplace').value==='korea';
   const gmap=JEOL_DATA; // 내장 절기 데이터
-  const s=buildSaju(yr,mo,dy,hr,min,gd,gmap,isKorea);
+  try{
+  const s=buildSaju(yr,mo,dy,hr,min,gd,gmap,currentIsKorea);
   currentSaju=s;
   document.getElementById('panel-chart').innerHTML=renderChart(s);
   document.getElementById('panel-compat').innerHTML=renderCompatPanel();
   document.getElementById('panel-health').innerHTML=renderHealth(s);
   document.getElementById('panel-career').innerHTML=renderCareer(s);
+  }catch(e){console.error('handleCalc 오류:',e);alert('오류: '+e.message);btn.disabled=false;btn.textContent='✦ 나의 에너지 코드 확인하기';return;}
   setTimeout(()=>{const el=document.getElementById('daeun-scroll');if(el)el.scrollLeft=el.scrollWidth;},50);
   document.getElementById('result').style.display='';
   setTab('chart');
@@ -2906,12 +3321,9 @@ function refreshEnergyCode(){
 
 // ── 인물 저장 기능 ──
 const PROFILE_KEY = 'innerme_profiles';
-
 function loadProfiles() {
-  try { return JSON.parse(localStorage.getItem(PROFILE_KEY) || '[]'); }
-  catch(e) { return []; }
+  try { return JSON.parse(localStorage.getItem(PROFILE_KEY) || '[]'); } catch(e) { return []; }
 }
-
 function toggleProfilePanel() {
   const panel = document.getElementById('profile-panel');
   const arrow = document.getElementById('profile-panel-arrow');
@@ -2920,7 +3332,6 @@ function toggleProfilePanel() {
   arrow.style.transform = isHidden ? 'rotate(180deg)' : '';
   if (isHidden) renderProfiles();
 }
-
 function toggleSaveInput() {
   const row = document.getElementById('save-name-row');
   const input = document.getElementById('save-name-input');
@@ -2928,7 +3339,6 @@ function toggleSaveInput() {
   row.style.display = isHidden ? 'block' : 'none';
   if (isHidden) { input.value = ''; input.focus(); }
 }
-
 function confirmSaveProfile() {
   const input = document.getElementById('save-name-input');
   const name = input.value.trim();
@@ -2943,22 +3353,18 @@ function confirmSaveProfile() {
   const mbti = document.getElementById('mbti').value;
   if (!yr || !mo || !dy) { alert('생년월일을 먼저 입력해주세요.'); return; }
   const profiles = loadProfiles();
-  const profile = { id: Date.now(), name, yr, mo, dy, hr, min, gd, birthplace, mbti };
-  profiles.push(profile);
+  profiles.push({ id: Date.now(), name, yr, mo, dy, hr, min, gd, birthplace, mbti });
   localStorage.setItem(PROFILE_KEY, JSON.stringify(profiles));
   document.getElementById('save-name-row').style.display = 'none';
   renderProfiles();
 }
-
 function deleteProfile(id) {
   const profiles = loadProfiles().filter(p => p.id !== id);
   localStorage.setItem(PROFILE_KEY, JSON.stringify(profiles));
   renderProfiles();
 }
-
 function loadProfileToForm(id) {
-  const profiles = loadProfiles();
-  const p = profiles.find(x => x.id === id);
+  const p = loadProfiles().find(x => x.id === id);
   if (!p) return;
   document.getElementById('yr').value = p.yr || '';
   document.getElementById('mo').value = p.mo || '';
@@ -2970,7 +3376,6 @@ function loadProfileToForm(id) {
   document.getElementById('mbti').value = p.mbti || '';
   if(typeof updatePreview==='function') updatePreview();
 }
-
 function renderProfiles() {
   const list = document.getElementById('profile-list');
   if (!list) return;
@@ -2990,6 +3395,106 @@ function renderProfiles() {
   `).join('');
 }
 
+
+
+
+function shareKakao(){
+  if(!currentSaju){alert('먼저 원국을 뽑아주세요.');return;}
+  if(!window.Kakao){alert('카카오 SDK 로딩 중입니다. 잠시 후 다시 시도해주세요.');return;}
+  if(!Kakao.isInitialized()) Kakao.init('1e949e3ffc63fa45564c57e4a1093064');
+
+  const s=currentSaju;
+  const dc=s.dc;
+  const moJJ=s.pillars[1].jj;
+  const moIdx=jjToMoIdx(moJJ);
+  const gek=getGekInfo(dc,moJJ);
+  const yong=YONGSIN_DATA[dc][moIdx];
+  const oh1=yongsinToOH(yong.yongsin);
+  const rec=oh1?OH_HEALTH[oh1]:null;
+  const mbti=document.getElementById('mbti').value;
+  const mbtiInfo=mbti&&MBTI_DATA[mbti]?` · ${mbti} ${MBTI_DATA[mbti].name}`:'';
+  const ilganName=ILGAN_NAME[dc];
+  const ilganEmoji=ILGAN_EMOJI[ilganName]||'✨';
+  const ohEmoji=OH_EMOJI[oh1]||'🌿';
+  const ohHanja=OH_HANJA[oh1]||'';
+  const gekEmoji=GEK_EMOJI[gek.label]||'✦';
+  const tea=rec?rec.teas[0].name:'';
+  const juice=rec?rec.juices[0].name:'';
+  const supp=rec?rec.supps[0].name:'';
+  const pageUrl='https://02010714.github.io/sajumanse/saju-mbti.html';
+
+  const shareText=`나의 에너지 코드 ${ilganEmoji}${ilganName} ${gekEmoji}${gek.label}${mbtiInfo} | ${ohEmoji}밸런스 오행: ${oh1}(${ohHanja}) | ☕${tea} · 🥤${juice} · 💊${supp}`;
+
+  try{
+    Kakao.Share.sendDefault({
+      objectType:'text',
+      text:shareText,
+      link:{mobileWebUrl:pageUrl,webUrl:pageUrl},
+      buttons:[{title:'내 에너지 코드 확인하기 →',link:{mobileWebUrl:pageUrl,webUrl:pageUrl}}]
+    });
+  } catch(e){
+    if(navigator.share){
+      navigator.share({title:'나의 에너지 코드',text:shareText,url:pageUrl});
+    } else {
+      navigator.clipboard.writeText(shareText+'\n'+pageUrl)
+        .then(()=>alert('복사됐습니다! 카카오톡에 붙여넣기 하세요.'));
+    }
+  }
+}
+
+
+
+function aiMenuBlock(){
+  return '<div style="margin-top:12px;border:1.5px solid #c9a227;border-radius:11px;overflow:hidden;background:#fffbf0">'
+    +'<div onclick="toggleAiMenu()" id="ai-menu-hdr" style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;background:linear-gradient(135deg,#fffbf0,#fff5e0)">'
+    +'<div>'
+    +'<div style="font-size:10px;color:#8a6200;letter-spacing:.08em;font-weight:700;margin-bottom:2px">✦ AI에게 사주 물어보기</div>'
+    +'<div style="font-size:12px;font-weight:700;color:#5a3e00">사주 데이터 복사 → AI 채팅창에 붙여넣기</div>'
+    +'</div>'
+    +'<span id="ai-menu-arrow" style="font-size:12px;color:#c9a227;transition:transform .2s">▼</span>'
+    +'</div>'
+    +'<div id="ai-menu-body" style="display:none;padding:12px 14px 14px;border-top:1px solid #e8d8a0">'
+    +'<div style="margin-bottom:10px">'
+    +'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">1 · 나의 사주 종합간명 <span style="font-size:9px;color:#9a8a6a;font-weight:400">원국+대운</span></div>'
+    +'<button class="copy-btn" id="copy-btn" onclick="toggleCopy()" style="margin-bottom:0">📋 텍스트 복사하기</button>'
+    +'<div class="copy-area" id="copy-area" style="display:none;margin-top:8px">'
+    +'<div class="hint">▼ 클릭 → Ctrl+A → Ctrl+C → AI 붙여넣기</div>'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:7px 10px;background:#fdf9f0;border:1px solid #e0c870;border-radius:7px">'
+    +'<span style="font-size:10px;color:#8a6200;font-weight:700;white-space:nowrap">성별 확인</span>'
+    +'<button onclick="setCopyGender(&quot;남&quot;)" id="gd-btn-m" style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #c9a227;background:#c9a227;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">남성</button>'
+    +'<button onclick="setCopyGender(&quot;여&quot;)" id="gd-btn-f" style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #ddd0b0;background:#faf8f4;color:#7a6040;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">여성</button>'
+    +'</div>'
+    +'<textarea id="copy-text" readonly onclick="this.select()"></textarea>'
+    +'<div class="hint2">복사 후 AI 채팅창에 붙여넣으세요</div>'
+    +'</div></div>'
+    +'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'
+    +'<div>'
+    +'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">2 · 오늘 나의 인생전략 <span style="font-size:9px;color:#9a8a6a;font-weight:400">원국+대운+세운+월운+일진</span></div>'
+    +'<button class="copy-btn" id="today-btn" onclick="toggleToday()" style="margin-bottom:0;background:linear-gradient(135deg,#fffbf0,#fff8e8);border-color:#e0c870;color:#5a3e00">📅 텍스트 복사하기</button>'
+    +'<div class="copy-area" id="today-area" style="display:none;margin-top:8px">'
+    +'<div class="hint" style="color:#8a6200">▼ 클릭 → Ctrl+A → Ctrl+C → AI 붙여넣기</div>'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:7px 10px;background:#fdf9f0;border:1px solid #e0c870;border-radius:7px">'
+    +'<span style="font-size:10px;color:#8a6200;font-weight:700;white-space:nowrap">성별 확인</span>'
+    +'<button onclick="setTodayGender(&quot;남&quot;)" id="tgd-btn-m" style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #c9a227;background:#c9a227;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">남성</button>'
+    +'<button onclick="setTodayGender(&quot;여&quot;)" id="tgd-btn-f" style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #ddd0b0;background:#faf8f4;color:#7a6040;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">여성</button>'
+    +'</div>'
+    +'<textarea id="today-text" readonly onclick="this.select()" style="height:280px"></textarea>'
+    +'<div class="hint2">오늘 날짜 기준 5층 자동 계산</div>'
+    +'</div></div>'
+    +'<div style="height:1px;background:#e8d8a0;margin:8px 0"></div>'+'<div style="margin-bottom:8px">'+'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'
+    +'<div style="margin-bottom:10px">'
+    +'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">3 · 格局·용신 정밀 검증 <span style="font-size:9px;color:#9a8a6a;font-weight:400">AI가 생극제화로 최종 확정</span></div>'
+    +'<button class="copy-btn" id="gek-btn" onclick="toggleGek()" style="margin-bottom:0;background:linear-gradient(135deg,#f0f4ff,#e8f0ff);border-color:#a0b8e0;color:#1a3a6c">🔍 格局·용신 검증 프롬프트 복사</button>'
+    +'<div class="copy-area" id="gek-area" style="display:none;margin-top:8px">'
+    +'<div class="hint" style="color:#1a3a6c">클립보드 복사 실패 시 아래에서 직접 선택하세요</div>'
+    +'<textarea id="gek-text" readonly onclick="this.select()" style="height:200px"></textarea>'
+    +'<div class="hint2">AI 채팅창에 붙여넣으면 格局·용신 정밀 분석을 받을 수 있습니다</div>'
+    +'</div>'
+    +'</div>'
+    +'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'
+    +'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">4 · 궁합 심층 분석 <span style="font-size:9px;color:#9a8a6a;font-weight:400">궁합 탭에서 분석 후 복사</span></div>'+'<button onclick="setTab(\'compat\')" style="width:100%;padding:11px;border-radius:9px;border:1px solid #e8a090;background:#fff5f5;color:#c0392b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">💑 궁합 탭으로 이동</button>'+'</div>'+'<div>'+'<div style="font-size:10px;color:#8a6200;font-weight:700;margin-bottom:5px">5 · 직업적성 심층 분석 <span style="font-size:9px;color:#9a8a6a;font-weight:400">직업 탭에서 확인 후 복사</span></div>'+'<button onclick="setTab(\'career\')" style="width:100%;padding:11px;border-radius:9px;border:1px solid #b0c8e0;background:#f0f8ff;color:#1565a0;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">💼 직업 탭으로 이동</button>'+'</div>'
+    +'</div></div>';
+}
 </script>
 </body>
 </html>
