@@ -411,6 +411,13 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
   <button class="btn-main" onclick="handleCalc()">✦ 나의 에너지 코드 확인하기</button>
 </div>
 
+<div id="kakao-share-wrap" style="display:none;margin-bottom:10px">
+  <button onclick="shareKakao()" style="width:100%;padding:13px;border-radius:11px;border:none;background:#FEE500;color:#3C1E1E;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
+    <img src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_small.png" style="width:20px;height:20px;border-radius:4px">
+    카카오톡으로 공유하기
+  </button>
+</div>
+
 <div id="result" style="display:none">
   <div class="tabs">
     <button class="tab-btn active" id="tab-chart" onclick="setTab('chart')">🔮 원국·대운</button>
@@ -1376,9 +1383,6 @@ function renderHealth(s){
       <div style="font-size:11px;color:#8a6200;margin-bottom:10px;line-height:1.6">${menu.title}<br>📦 건강기능식품은 택배 주문 가능 · 음료는 카운터에서 주문하세요</div>
       <div class="order-menu">${items2}</div>
       ${buildTodayDrinkRec(oh1)}
-      <button class="btn-kakao" onclick="shareKakao()" style="margin-top:10px">
-        <span style="font-size:18px;line-height:1">💬</span> 카카오톡으로 결과 공유하기
-      </button>
       <button class="btn-share" onclick="shareResult()" style="margin-top:6px">📋 내 에너지 코드 복사해서 공유</button>
     </div>`;
     orderHtml=makeAcc(`🛒 ${oh1} 오행 맞춤 메뉴 주문`, orderInner, '#8a6200');
@@ -1834,59 +1838,7 @@ const GEK_EMOJI={
   '단련·극복':'🔥','규범·책임':'⚖️','직관·탐구':'🔭','수용·배움':'📚'
 };
 
-function shareKakao(){
-  if(!currentSaju){alert('먼저 원국을 뽑아주세요.');return;}
-  if(!window.Kakao){alert('카카오 SDK 로딩 중입니다. 잠시 후 다시 시도해주세요.');return;}
-  if(!Kakao.isInitialized()) Kakao.init('1e949e3ffc63fa45564c57e4a1093064');
 
-  const s=currentSaju;
-  const dc=s.dc;
-  const moJJ=s.pillars[1].jj;
-  const moIdx=jjToMoIdx(moJJ);
-  const gek=getGekInfo(dc,moJJ);
-  const yong=YONGSIN_DATA[dc][moIdx];
-  const oh1=yongsinToOH(yong.yongsin);
-  const rec=oh1?OH_HEALTH[oh1]:null;
-  const mbti=document.getElementById('mbti').value;
-  const mbtiInfo=mbti&&MBTI_DATA[mbti]?` · ${mbti} ${MBTI_DATA[mbti].name}`:'';
-  const ilganName=ILGAN_NAME[dc];
-  const ilganEmoji=ILGAN_EMOJI[ilganName]||'✨';
-  const ohEmoji=OH_EMOJI[oh1]||'🌿';
-  const ohHanja=OH_HANJA[oh1]||'';
-  const gekEmoji=GEK_EMOJI[gek.label]||'✦';
-  const pageUrl='https://02010714.github.io/sajumanse/saju-mbti.html';
-
-  // 추천식품 1종씩
-  const tea=rec?rec.teas[0].name:'';
-  const juice=rec?rec.juices[0].name:'';
-  const supp=rec?rec.supps[0].name:'';
-
-  const shareText=`나의 본캐 ${ilganEmoji}${ilganName} ${gekEmoji}${gek.label}${mbtiInfo} | ${ohEmoji}밸런스 오행: ${oh1}(${ohHanja}) | ☕${tea} · ${juice}`;
-
-  // sendScrap 방식 — URL만 넘기면 카드+링크 자동 생성
-  try {
-    Kakao.Share.sendDefault({
-      objectType:'text',
-      text:shareText,
-      link:{
-        mobileWebUrl:pageUrl,
-        webUrl:pageUrl
-      },
-      buttons:[{
-        title:'내 본캐 확인하기 →',
-        link:{mobileWebUrl:pageUrl,webUrl:pageUrl}
-      }]
-    });
-  } catch(e) {
-    // 실패 시 네이티브 공유로 폴백
-    if(navigator.share){
-      navigator.share({title:'나의 본캐',text:shareText,url:pageUrl});
-    } else {
-      navigator.clipboard.writeText(shareText+'\n'+pageUrl)
-        .then(()=>alert('복사됐습니다! 카카오톡에 붙여넣기 하세요.'));
-    }
-  }
-}
 
 function shareResult(){
   if(!currentSaju){alert('먼저 원국을 뽑아주세요.');return;}
@@ -2333,7 +2285,12 @@ function renderChart(s){
   const daeunAcc=makeAcc('📅 대운 흐름 보기',
     '<div>'+renderDaeun(s)+'</div>', '#1565a0');
 
+  const kakaoBtn='<div style="margin-top:6px">'
+    +'<button class="btn-kakao" onclick="shareKakao()">'
+    +'<span style="font-size:18px;line-height:1">💬</span> 카카오톡으로 공유하기'
+    +'</button></div>';
   return renderEnergyCode(s)
+    +kakaoBtn
     +cafeAiMenuBlock()
     +'<div style="margin-top:10px">'+pillarAcc+'</div>'
     +'<div style="margin-top:6px">'+daeunAcc+'</div>';
@@ -3440,6 +3397,189 @@ function renderProfiles() {
       <button onclick="event.stopPropagation();deleteProfile(${p.id})" style="background:none;border:none;color:#bbb0a0;font-size:13px;cursor:pointer;padding:0;line-height:1;margin-left:2px">×</button>
     </div>
   `).join('');
+}
+
+
+function buildCharSVG(dc,bg,border,hanja,hangul,ohText,ohEmoji,desc,textDark){
+  const bodies=[
+    `<rect x="330" y="390" width="24" height="90" rx="5" fill="#8B5E3C"/>
+    <ellipse cx="342" cy="310" rx="80" ry="66" fill="#63A822"/>
+    <ellipse cx="288" cy="352" rx="52" ry="40" fill="#4A8A10"/>
+    <ellipse cx="396" cy="352" rx="52" ry="40" fill="#4A8A10"/>
+    <circle cx="342" cy="288" r="42" fill="#FFE0B2" stroke="#8B5E3C" stroke-width="5"/>
+    <circle cx="328" cy="279" r="8.5" fill="#2A1A0A"/><circle cx="356" cy="279" r="8.5" fill="#2A1A0A"/>
+    <path d="M328 300 Q342 313 356 300" stroke="#2A1A0A" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <line x1="342" y1="246" x2="342" y2="226" stroke="#4A8A10" stroke-width="6"/>
+    <ellipse cx="342" cy="220" rx="18" ry="13" fill="#7DC840"/>`,
+    `<path d="M342 460 Q354 378 374 332 Q392 286 378 242" stroke="#7DC840" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M374 332 Q418 308 432 268" stroke="#7DC840" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M360 396 Q314 372 302 334" stroke="#7DC840" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="378" cy="242" rx="36" ry="23" fill="#A8D870" transform="rotate(-20,378,242)"/>
+    <ellipse cx="432" cy="268" rx="30" ry="20" fill="#A8D870" transform="rotate(15,432,268)"/>
+    <ellipse cx="302" cy="334" rx="28" ry="20" fill="#A8D870" transform="rotate(-30,302,334)"/>
+    <circle cx="374" cy="320" r="40" fill="#FFE0B2" stroke="#7DC840" stroke-width="5"/>
+    <circle cx="360" cy="310" r="8" fill="#2A1A0A"/><circle cx="388" cy="310" r="8" fill="#2A1A0A"/>
+    <path d="M360 330 Q374 343 388 330" stroke="#2A1A0A" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+    `<circle cx="342" cy="310" r="110" fill="#FFB830"/>
+    <circle cx="342" cy="310" r="80" fill="#FF8800"/>
+    <line x1="342" y1="188" x2="342" y2="164" stroke="#FFB830" stroke-width="12" stroke-linecap="round"/>
+    <line x1="342" y1="432" x2="342" y2="456" stroke="#FFB830" stroke-width="12" stroke-linecap="round"/>
+    <line x1="220" y1="310" x2="196" y2="310" stroke="#FFB830" stroke-width="12" stroke-linecap="round"/>
+    <line x1="464" y1="310" x2="488" y2="310" stroke="#FFB830" stroke-width="12" stroke-linecap="round"/>
+    <line x1="256" y1="224" x2="239" y2="207" stroke="#FFB830" stroke-width="11" stroke-linecap="round"/>
+    <line x1="428" y1="224" x2="445" y2="207" stroke="#FFB830" stroke-width="11" stroke-linecap="round"/>
+    <line x1="256" y1="396" x2="239" y2="413" stroke="#FFB830" stroke-width="11" stroke-linecap="round"/>
+    <line x1="428" y1="396" x2="445" y2="413" stroke="#FFB830" stroke-width="11" stroke-linecap="round"/>
+    <circle cx="328" cy="304" r="11" fill="#3A1A00"/><circle cx="356" cy="304" r="11" fill="#3A1A00"/>
+    <path d="M322 326 Q342 342 362 326" stroke="#3A1A00" stroke-width="6" fill="none" stroke-linecap="round"/>`,
+    `<rect x="314" y="370" width="60" height="100" rx="14" fill="#FFE8F0" stroke="#D04080" stroke-width="4"/>
+    <ellipse cx="344" cy="334" rx="32" ry="52" fill="#FF8040"/>
+    <ellipse cx="344" cy="326" rx="20" ry="38" fill="#FFD040"/>
+    <ellipse cx="344" cy="342" rx="11" ry="18" fill="white" opacity="0.5"/>
+    <line x1="344" y1="370" x2="344" y2="354" stroke="#3A2A1A" stroke-width="5"/>
+    <circle cx="344" cy="306" r="36" fill="#FFD040"/>
+    <circle cx="331" cy="299" r="8" fill="#3A1A00"/><circle cx="357" cy="299" r="8" fill="#3A1A00"/>
+    <path d="M331 318 Q344 329 357 318" stroke="#3A1A00" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+    `<polygon points="342,224 490,448 194,448" fill="#D4A830"/>
+    <polygon points="342,224 490,448 342,448" fill="#B07820"/>
+    <polygon points="342,224 274,322 342,322" fill="#E8C050"/>
+    <polygon points="272,226 342,226 308,250" fill="white" opacity="0.6"/>
+    <ellipse cx="224" cy="296" rx="54" ry="32" fill="white" opacity="0.72"/>
+    <circle cx="342" cy="398" r="42" fill="#FFE0B2" stroke="#B07820" stroke-width="5"/>
+    <circle cx="328" cy="390" r="8.5" fill="#2A1A0A"/><circle cx="356" cy="390" r="8.5" fill="#2A1A0A"/>
+    <path d="M328 410 Q342 422 356 410" stroke="#2A1A0A" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+    `<rect x="172" y="336" width="356" height="142" rx="14" fill="#D4C060"/>
+    <line x1="172" y1="380" x2="528" y2="380" stroke="#A08010" stroke-width="5"/>
+    <line x1="172" y1="424" x2="528" y2="424" stroke="#A08010" stroke-width="5"/>
+    <line x1="350" y1="336" x2="350" y2="478" stroke="#A08010" stroke-width="5"/>
+    <line x1="240" y1="292" x2="240" y2="264" stroke="#6A8A20" stroke-width="6"/>
+    <ellipse cx="240" cy="258" rx="17" ry="12" fill="#8AB830"/>
+    <line x1="410" y1="292" x2="410" y2="264" stroke="#6A8A20" stroke-width="6"/>
+    <ellipse cx="410" cy="258" rx="17" ry="12" fill="#8AB830"/>
+    <circle cx="350" cy="290" r="46" fill="#FFE0B2" stroke="#C8A020" stroke-width="5"/>
+    <circle cx="335" cy="281" r="8.5" fill="#2A1A0A"/><circle cx="365" cy="281" r="8.5" fill="#2A1A0A"/>
+    <path d="M335 302 Q350 314 365 302" stroke="#2A1A0A" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+    `<polygon points="350,236 464,296 470,390 432,438 264,430 234,350 246,258" fill="#A09888" stroke="#706860" stroke-width="6"/>
+    <polygon points="350,236 464,296 432,314 350,292" fill="#C8C0B0"/>
+    <polygon points="350,236 246,258 270,282 350,292" fill="#B8B0A0"/>
+    <polygon points="350,292 432,314 432,438 350,422 270,430 270,282" fill="#908878"/>
+    <line x1="282" y1="332" x2="406" y2="368" stroke="#D4C070" stroke-width="6" opacity="0.85"/>
+    <circle cx="350" cy="354" r="44" fill="#FFE0B2" stroke="#706860" stroke-width="5"/>
+    <circle cx="335" cy="345" r="8.5" fill="#2A1A0A"/><circle cx="365" cy="345" r="8.5" fill="#2A1A0A"/>
+    <path d="M335 365 Q350 377 365 365" stroke="#2A1A0A" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <line x1="448" y1="248" x2="480" y2="214" stroke="#706860" stroke-width="11" stroke-linecap="round"/>
+    <line x1="468" y1="234" x2="498" y2="266" stroke="#888070" stroke-width="11" stroke-linecap="round"/>`,
+    `<polygon points="350,224 480,336 350,488 220,336" fill="#B0C8F0" stroke="#6080C0" stroke-width="5"/>
+    <polygon points="350,224 480,336 350,336" fill="#DCF0FF"/>
+    <polygon points="350,224 220,336 350,336" fill="#A0B8E0"/>
+    <polygon points="350,336 480,336 350,488" fill="#8090C0"/>
+    <polygon points="350,336 220,336 350,488" fill="#90A8D8"/>
+    <line x1="350" y1="208" x2="350" y2="188" stroke="#A0C0FF" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="350" cy="336" r="44" fill="#E8F0FF" stroke="#6080C0" stroke-width="5"/>
+    <circle cx="335" cy="327" r="8.5" fill="#203060"/><circle cx="365" cy="327" r="8.5" fill="#203060"/>
+    <path d="M335 347 Q350 359 365 347" stroke="#203060" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+    `<path d="M180,378 Q230,344 280,378 Q330,412 380,378 Q430,344 480,378 Q510,396 520,384" stroke="#2060C0" stroke-width="11" fill="none" stroke-linecap="round"/>
+    <path d="M180,422 Q230,388 280,422 Q330,456 380,422 Q430,388 480,422" stroke="#6090E0" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <ellipse cx="342" cy="286" rx="78" ry="94" fill="#2878D0"/>
+    <path d="M342,192 Q372,220 342,286 Q312,220 342,192" fill="#1A5AA0"/>
+    <circle cx="320" cy="274" r="12" fill="white"/><circle cx="364" cy="274" r="12" fill="white"/>
+    <path d="M318 300 Q342 316 366 300" stroke="white" stroke-width="7" fill="none" stroke-linecap="round"/>`,
+    `<ellipse cx="342" cy="254" rx="100" ry="62" fill="#C8D0F0"/>
+    <ellipse cx="288" cy="278" rx="70" ry="48" fill="#C8D0F0"/>
+    <ellipse cx="396" cy="272" rx="68" ry="46" fill="#B8C0E0"/>
+    <ellipse cx="258" cy="354" rx="20" ry="33" fill="#6878D0"/>
+    <ellipse cx="304" cy="378" rx="20" ry="33" fill="#6878D0"/>
+    <ellipse cx="350" cy="348" rx="20" ry="33" fill="#6878D0"/>
+    <ellipse cx="396" cy="372" rx="20" ry="33" fill="#5868C0"/>
+    <ellipse cx="442" cy="352" rx="20" ry="33" fill="#6878D0"/>
+    <circle cx="342" cy="252" r="44" fill="#E0E8FF" stroke="#5060B0" stroke-width="5"/>
+    <circle cx="327" cy="243" r="8.5" fill="#2A2A5A"/><circle cx="357" cy="243" r="8.5" fill="#2A2A5A"/>
+    <path d="M327 264 Q342 276 357 264" stroke="#2A2A5A" stroke-width="5" fill="none" stroke-linecap="round"/>`
+  ];
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="700" height="700" viewBox="0 0 700 700">
+    <rect width="700" height="700" fill="${bg}" rx="48"/>
+    <rect x="16" y="16" width="668" height="668" rx="36" fill="none" stroke="${border}" stroke-width="4" opacity="0.5"/>
+    ${bodies[dc]}
+    <rect x="38" y="38" width="84" height="36" rx="18" fill="${border}"/>
+    <text x="80" y="62" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold" fill="white">${ohText} ${ohEmoji}</text>
+    <line x1="38" y1="512" x2="662" y2="512" stroke="${border}" stroke-width="2" opacity="0.3"/>
+    <text x="52" y="586" font-family="serif" font-size="72" font-weight="bold" fill="${border}">${hanja}</text>
+    <text x="148" y="568" font-family="sans-serif" font-size="28" font-weight="bold" fill="${textDark}">${hangul}</text>
+    <text x="148" y="608" font-family="sans-serif" font-size="19" fill="${border}" opacity="0.85">${desc}</text>
+    <text x="52" y="652" font-family="sans-serif" font-size="14" fill="${border}" opacity="0.5">Energy Code</text>
+    <text x="660" y="652" text-anchor="end" font-family="serif" font-size="20" fill="${border}" opacity="0.4">&#x2726;</text>
+  </svg>`;
+}
+
+const CHAR_DATA=[
+  {bg:'#E8F5E0',border:'#4A8A10',textDark:'#2E6000',desc:'거목 · 리더'},
+  {bg:'#F0FAE8',border:'#7DC840',textDark:'#3A6A00',desc:'화초 · 유연'},
+  {bg:'#FFF4E0',border:'#F07000',textDark:'#8B3A00',desc:'태양 · 열정'},
+  {bg:'#FFF0F5',border:'#D04080',textDark:'#901850',desc:'촛불 · 섬세'},
+  {bg:'#FFF8E8',border:'#B07820',textDark:'#6B4200',desc:'큰산 · 포용'},
+  {bg:'#FFFAE8',border:'#C8A020',textDark:'#6B4A00',desc:'평야 · 현실'},
+  {bg:'#F2F0EC',border:'#706860',textDark:'#4A4038',desc:'원석 · 결단'},
+  {bg:'#F0F4FF',border:'#6080C0',textDark:'#203060',desc:'보석 · 예리'},
+  {bg:'#E8F2FF',border:'#2060C0',textDark:'#0A3A80',desc:'강바다 · 지혜'},
+  {bg:'#EEF0FF',border:'#5060B0',textDark:'#2A2A6A',desc:'이슬 · 감성'},
+];
+
+function shareKakao(){
+  if(!currentSaju){alert('먼저 원국을 뽑아주세요.');return;}
+  const s=currentSaju;
+  const dc=s.dc;
+  const moJJ=s.pillars[1].jj;
+  const moIdx=jjToMoIdx(moJJ);
+  const gek=getGekInfo(dc,moJJ);
+  const yong=YONGSIN_DATA[dc][moIdx];
+  const oh1=yongsinToOH(yong.yongsin);
+  const rec=oh1?OH_HEALTH[oh1]:null;
+  const mbti=document.getElementById('mbti').value;
+  const mbtiInfo=mbti&&MBTI_DATA[mbti]?` · ${mbti}`:'';
+  const ilganName=ILGAN_NAME[dc];
+  const ilganEmoji=ILGAN_EMOJI[ilganName]||'✨';
+  const ohEmoji=OH_EMOJI[oh1]||'🌿';
+  const ohHanja=OH_HANJA[oh1]||'';
+  const gekEmoji=GEK_EMOJI[gek.label]||'✦';
+  const tea=rec?rec.teas[0].name:'';
+  const juice=rec?rec.juices[0].name:'';
+  const supp=rec?rec.supps[0].name:'';
+  const pageUrl='https://02010714.github.io/sajumanse/saju-mbti.html';
+  const title=`${ilganEmoji} 나의 에너지 코드 — ${ilganName}`;
+  const desc=`${gekEmoji}${gek.label}${mbtiInfo} | ${ohEmoji}밸런스 오행: ${oh1}(${ohHanja}) | ☕${tea} · 🥤${juice} · 💊${supp}`;
+
+  const cd=CHAR_DATA[dc];
+  const svgStr=buildCharSVG(dc,cd.bg,cd.border,CG[dc],CG_KR[dc],oh1,ohEmoji,cd.desc,cd.textDark);
+  const blob=new Blob([svgStr],{type:'image/svg+xml;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const img=new Image();
+  img.onload=function(){
+    const canvas=document.createElement('canvas');
+    canvas.width=700;canvas.height=700;
+    const ctx=canvas.getContext('2d');
+    ctx.drawImage(img,0,0,700,700);
+    URL.revokeObjectURL(url);
+    canvas.toBlob(function(pngBlob){
+      const file=new File([pngBlob],'energy-code.png',{type:'image/png'});
+      if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+        navigator.share({title,text:desc,url:pageUrl,files:[file]})
+          .catch(e=>{if(e.name!=='AbortError')shareTextOnly(title,desc,pageUrl);});
+      } else if(navigator.share){
+        navigator.share({title,text:desc,url:pageUrl})
+          .catch(e=>{if(e.name!=='AbortError')shareTextOnly(title,desc,pageUrl);});
+      } else {
+        shareTextOnly(title,desc,pageUrl);
+      }
+    },'image/png');
+  };
+  img.onerror=function(){shareTextOnly(title,desc,pageUrl);};
+  img.src=url;
+}
+
+function shareTextOnly(title,desc,url){
+  navigator.clipboard.writeText(title+'\n'+desc+'\n'+url)
+    .then(()=>alert('복사됐습니다! 카카오톡에 붙여넣기 하세요.'))
+    .catch(()=>alert(title+'\n'+desc));
 }
 
 </script>
