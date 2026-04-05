@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.innerme.energycode",
+    "sha256_cert_fingerprints": [
+      "19:52:DC:08:76:12:FF:26:7A:78:F6:0D:E2:90:3E:8D:31:7D:70:3B:92:33:0B:76:B6:B4:DA:C3:90:08:BF:1A"
+    ]
+  }
+}]
