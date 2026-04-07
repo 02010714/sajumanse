@@ -552,9 +552,9 @@ const GEK_BODY_YONG={
     {yong:'gwanseong', name:'財滋弱殺格', ohKey:'gwanseong'},
   ], default:{name:'편재격', ohKey:'siksang'}},
   정재:{ rules:[
-    {yong:'siksang',   name:'食傷生財格', ohKey:'siksang'},  // 相神=식상(화) — 식상이 재를 生
-    {yong:'gwanseong', name:'財生官格',   ohKey:'gwanseong'}, // 相神=관성(금) — 재가 관을 生
-  ], default:{name:'정재격', ohKey:'siksang'}},
+    {yong:'gwanseong', name:'財生官格',   ohKey:'gwanseong'}, // 관성이 있으면 財生官格 우선 (자평진전)
+    {yong:'siksang',   name:'食傷生財格', ohKey:'siksang'},   // 관성 없고 식상 있을 때
+  ], default:{name:'정재格', ohKey:'siksang'}},
   편관:{ rules:[
     {yong:'inseong',   name:'殺印相生格', ohKey:'inseong'},
     {yong:'siksang',   name:'食神制殺格', ohKey:'siksang'},
@@ -1756,7 +1756,19 @@ function renderHealth(s){
     <div style="background:#fffef5;border-left:3px solid #c9a227;border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:10px;font-size:12px;color:#3a2a00;line-height:1.9">
       <b style="color:#8a6200">왜 ${oh1} 오행인가요?</b><br>
       당신의 일간은 <b>${CG[dc]}(${CG_KR[dc]})</b>, 월지는 <b>${JJ[s.pillars[1].jj]}(${JJ_KR[s.pillars[1].jj]})</b>입니다.<br>
-      ${friendlyEnergyText(YONG_REASON[dc][moIdx])}<br>
+      ${(()=>{
+        const gekD=analyzeGek(s);
+        const chOH=yongsinToOH(yongData.yongsin);
+        if(oh1===chOH) return friendlyEnergyText(YONG_REASON[dc][moIdx]);
+        const gn=gekD.gekName||'';
+        if(gn.includes('통관용신')){
+          const pair=gn.match(/\((.+)↔(.+)\)/);
+          if(pair) return `원국에서 <b>${pair[1]}</b>와 <b>${pair[2]}</b> 에너지가 충돌하고 있습니다.<br><b>${oh1}</b>이 두 에너지 사이의 다리 역할을 하여 흐름을 만들어 줍니다(통관용신 — 적천수).`;
+        }
+        if(gn.includes('보완필요')) return `계절 균형 오행(${chOH})이 원국에 이미 충분히 있어, 부족한 <b>${oh1}</b>이 더 필요합니다(궁통보감 2오행 원칙).`;
+        if(gn.includes('이미충분')||gn.includes('과왕')) return `格에서 필요한 ${chOH} 에너지가 원국에 이미 많아, 계절 균형 방향의 <b>${oh1}</b>으로 전환합니다.`;
+        return friendlyEnergyText(YONG_REASON[dc][moIdx]);
+      })()}<br>
       <span style="font-size:10px;color:#7a6040">📖 황제내경 — ${oh1}${['목','화','금'].includes(oh1)?'은':'는'} ${rec1.organ.split('·')[0].trim()}을 주관 &nbsp;|&nbsp; 📖 동의보감 — ${rec1.taste}은 ${rec1.organ.split('·')[0].trim()}으로 귀납</span>
     </div>
 
@@ -2737,7 +2749,17 @@ function renderEnergyCode(s){
   const yong=YONGSIN_DATA[dc][moIdx];
   const GEK_COLOR={"독립·자생":"#1e8449","경쟁·도전":"#c0392b","표현·생산":"#1a6b3c","혁신·자유":"#922b21","행동·현실":"#784212","안정·성실":"#1a5276","단련·극복":"#6e2f1a","규범·책임":"#1f618d","직관·탐구":"#512e5f","수용·배움":"#1a5276"};
   // 체용론 재설정이 반영된 실제 格 십신 — analyzeGek.sipsin 우선 사용
-  const realSipsin=gekDetail.sipsin||gek.sipsin;
+  // 格局名 → 대표 십신 매핑 (格의 핵심 목표 오행이 십신 레이블)
+  // 예: 財生官格 → 관성이 목표 → '정관' 표시
+  // 格局名 → 십신 보정: 財生官格·傷官佩印格만 명시적 매핑
+  const GEK_NAME_SIPSIN={
+    '財生官格':'정관',
+    '傷官佩印格':'상관',
+  };
+  const realSipsin=(()=>{
+    const gn=gekDetail.gekName.replace(/→.*/,'');
+    return GEK_NAME_SIPSIN[gn]||gekDetail.sipsin||gek.sipsin;
+  })();
   const realGekLabel=GEK_LABEL[realSipsin]||GEK_LABEL[gek.sipsin]||{label:'',desc:''};
   const gc=GEK_COLOR[realGekLabel.label]||"#5a3e00";
   const mbti=document.getElementById('mbti').value;
@@ -3464,7 +3486,11 @@ function renderCareer(s){
   const gek=getGekInfo(dc,moJJ,s.pillars);
   const ss=gek.sipsin;
   const oh1=getSajuYongshinOH(s);
-  const oh2=currentYongOverride?null:(()=>{try{const d=YONGSIN_DATA[dc][moIdx];return d.hesin&&d.hesin!=="-"?yongsinToOH(d.hesin):null;}catch(e){return null;}})();
+  const yongData2=YONGSIN_DATA[dc][moIdx];
+  const chohuOH2=yongsinToOH(yongData2.yongsin);
+  const oh2=(!currentYongOverride && oh1!==chohuOH2)
+    ? chohuOH2
+    : (currentYongOverride?null:yongsinToOH(yongData2.hesin));
   const careerSS=CAREER_DATA[ss];
   const c1=CO[oh1]||{bg:"#faf8f4",t:"#5a4020",b:"#e0d0b0"};
   if(!careerSS||!oh1) return "<div style='padding:20px;text-align:center;color:#9a8a6a;font-size:12px'>격국 또는 용신 정보를 확인할 수 없습니다.<br>사주 원국 탭을 먼저 확인해주세요.</div>";
