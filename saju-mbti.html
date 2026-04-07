@@ -620,24 +620,54 @@ function analyzeGek(s){
     // 4정위: 투간 불문 정기로 成格
     tuChulCg=jzgan[jzgan.length-1];
   } else {
-    const reversed=[...jzgan].reverse();
-    for(const cgIdx of reversed){
-      if(천간들.includes(cgIdx)){
-        const isKisin=yongOHstr&&OH_NAME[OH_GEUGG_IDX[OH_CG[cgIdx]]]===yongOHstr;
-        if(!isKisin){ tuChulCg=cgIdx; break; }
-        isBroken=true;
+    // ── 사령(司令) 우선 투간 체크 ──────────────────────────────
+    // 1. 사령 천간이 원국에 있으면 최우선 格 주체로 설정
+    // 2. 없으면 나머지 지장간을 역순(정기→중기→여기)으로 체크
+    const saryeongCg=getSaryeong(moJJ, s.bornJDN, s.moJeolKey);
+
+    const saryeongOH=(saryeongCg!==null)?OH_CG[saryeongCg]:null;
+
+    // ① 사령 천간이 원국에 직접 있으면 최우선
+    if(saryeongCg!==null && 천간들.includes(saryeongCg)){
+      const isKisin=yongOHstr&&OH_NAME[OH_GEUGG_IDX[OH_CG[saryeongCg]]]===yongOHstr;
+      if(!isKisin) tuChulCg=saryeongCg;
+    }
+
+    // ② 사령 천간이 없어도 같은 오행 천간이 있으면 格 대표로 인정
+    //    예: 사령=庚(금) 없음 → 辛(금)이 있으면 辛으로 식신格 성립
+    if(tuChulCg===null && saryeongOH!==null){
+      const sameOhCgs=천간들.filter(cg=>OH_CG[cg]===saryeongOH);
+      for(const cg of sameOhCgs){
+        const isKisin=yongOHstr&&OH_NAME[OH_GEUGG_IDX[OH_CG[cg]]]===yongOHstr;
+        if(!isKisin){ tuChulCg=cg; break; }
+      }
+    }
+
+    // ③ 그래도 없으면 지장간 역순(정기→중기→여기) fallback
+    if(tuChulCg===null){
+      const reversed=[...jzgan].reverse();
+      for(const cgIdx of reversed){
+        if(OH_CG[cgIdx]===saryeongOH) continue; // 사령 오행은 이미 ②에서 처리
+        if(천간들.includes(cgIdx)){
+          const isKisin=yongOHstr&&OH_NAME[OH_GEUGG_IDX[OH_CG[cgIdx]]]===yongOHstr;
+          if(!isKisin){ tuChulCg=cgIdx; break; }
+        }
       }
     }
     if(tuChulCg===null) tuChulCg=jzgan[jzgan.length-1]; // 정기로 fallback
   }
+
+  // 실제 투간 여부 (합거 판단 기준): fallback 정기는 합거 대상에서 제외
+  const tuChul=jjType==='정위'||천간들.includes(tuChulCg);
 
   // ── 합충 파격 판단 (합충형파해조견표.docx + 통변_핵심원칙.txt 기반) ──────
   // 합거 독법 3원칙:
   //   1. 格 주체 합거 + 합화 오행 ≠ 格 주체 오행 → 파격(格 기능 소멸)
   //   2. 格 주체 합거 + 합화 오행 = 格 주체 오행 → 格 강화 (예: 甲己합土 → 己土格 강화)
   //   3. 기신 합거 → 格 정화(淨化) → 成格에 도움
+  // ※ tuChul=false(미투출)이면 합거 자체가 성립 안 함 — 없는 천간은 합 대상 아님
   let hapGeoJeong=null; // null=없음 / 'gang'=格강화합거 / 'jeong'=기신합거정화
-  if(!isBroken && tuChulCg!==null && jjType!=='정위'){
+  if(!isBroken && tuChul && tuChulCg!==null && jjType!=='정위'){
     const otherCgs=천간들.filter(c=>c!==tuChulCg);
     for(const c of otherCgs){
       const hapOH=getCgHep(tuChulCg,c);
@@ -728,7 +758,6 @@ function analyzeGek(s){
     }
   }
 
-  const tuChul=jjType==='정위'||천간들.includes(tuChulCg);
   let sipsin=getSipsinByCg(dc, tuChulCg);
 
   // ② 원국 오행 분포
@@ -2280,6 +2309,46 @@ const UNSEONG=[
 // 목욕·쇠·양(2) / 태·병(1) / 사·묘·절(0)
 const UNSEONG_SCORE={건록:5,제왕:5,장생:4,관대:3,목욕:2,쇠:2,양:2,태:1,병:1,사:0,묘:0,절:0};
 
+// ══════════════════════════════════════════════════════════════════
+// 지장간 일수표 (사령 판단 기준) — 여기→중기→정기 순서
+// 출처: 궁통보감·적천수 공통 통용 일수
+// [여기_CG, 여기_일수, 중기_CG, 중기_일수, 정기_CG, 정기_일수]
+// 중기 없는 경우: 중기_CG=null, 중기_일수=0
+// ══════════════════════════════════════════════════════════════════
+const JJGAN_DAYS=[
+  [8,10,null,0,9,20],   // 子: 壬(10)·癸(20)
+  [9,9,7,3,5,18],       // 丑: 癸(9)·辛(3)·己(18)
+  [4,7,2,7,0,16],       // 寅: 戊(7)·丙(7)·甲(16)
+  [0,10,null,0,1,20],   // 卯: 甲(10)·乙(20)
+  [1,9,9,3,4,18],       // 辰: 乙(9)·癸(3)·戊(18)
+  [4,7,6,7,2,16],       // 巳: 戊(7)·庚(7)·丙(16)
+  [2,10,5,9,3,11],      // 午: 丙(10)·己(9)·丁(11)
+  [3,9,1,3,5,18],       // 未: 丁(9)·乙(3)·己(18)
+  [4,7,8,7,6,16],       // 申: 戊(7)·壬(7)·庚(16)
+  [6,10,null,0,7,20],   // 酉: 庚(10)·辛(20)
+  [7,9,3,3,4,18],       // 戌: 辛(9)·丁(3)·戊(18)
+  [4,7,0,7,8,16],       // 亥: 戊(7)·甲(7)·壬(16)
+];
+
+// ── 사령(司令) 계산 함수 ──────────────────────────────────────────
+// 입기일로부터 경과일수로 해당 월의 사령 천간(CG index)을 반환
+// s.bornJDN, s.moJeolKey가 있어야 작동 (buildSaju에서 저장)
+function getSaryeong(moJJ, bornJDN, moJeolKey){
+  if(!bornJDN || !moJeolKey || !JEOL_DATA[moJeolKey]) return null;
+  const ibgiJDN=JEOL_DATA[moJeolKey];
+  const elapsed=bornJDN-ibgiJDN; // 0-based: 입기일=0일
+  if(elapsed<0) return null; // 입기 전 (오류 방지)
+
+  const [cg1,d1,cg2,d2,cg3,d3]=JJGAN_DAYS[moJJ];
+  // 여기: 0 ~ d1-1일
+  if(elapsed<d1) return cg1;
+  // 중기: d1 ~ d1+d2-1일
+  if(cg2!==null && elapsed<d1+d2) return cg2;
+  // 정기: d1+d2 이후
+  return cg3;
+}
+
+
 function toJDN(y,m,d){const a=Math.floor((14-m)/12),yr=y+4800-a,mn=m+12*a-3;return d+Math.floor((153*mn+2)/5)+365*yr+Math.floor(yr/4)-Math.floor(yr/100)+Math.floor(yr/400)-32045;}
 
 function calcYear(y,m,d,gmap){
@@ -2377,6 +2446,19 @@ function buildSaju(y,m,d,h,min,gender,gmap,isKorea){
     ],
     dc,gongmang:gm,
     daeun:calcDaeun(y,m,d,h,min,gender,dc,mp,gmap,yp.cg),
+    // ── 사령 계산용 ──
+    bornJDN:toJDN(y,m,d),
+    moJeolKey:(()=>{
+      // 실제 월지 기준 절기명 찾기 (calcMonth에서 결정된 mp.jj 기준)
+      const moNames=['대설','소한','입춘','경칩','청명','입하','망종','소서','입추','백로','한로','입동']; // 子=대설,丑=소한,寅=입춘,...,亥=입동
+      const moJeolName=moNames[mp.jj]; // mp.jj=월지 인덱스 (子=0…亥=11)
+      // 해당 년도 또는 전년도에서 절기 JDN 탐색
+      for(const yr of[y,y-1]){
+        const key=moJeolName+'_'+yr;
+        if(JEOL_DATA[key]) return key;
+      }
+      return null;
+    })(),
   };
 }
 
@@ -3007,12 +3089,28 @@ function renderChart(s){
   const displayOrder=[3,2,1,0];
   const ynJJ=pillars[0].jj;
   const gmJJ2=gongmang&&gongmang.jj?gongmang.jj:[];
+  // 사령(司令) 계산
+  const saryeongCg=getSaryeong(s.pillars[1].jj, s.bornJDN, s.moJeolKey);
+  const CG_KR_SHORT=['갑','을','병','정','무','기','경','신','임','계'];
+  const OH_NAME_KO=['목','화','토','금','수'];
+
   const pillarCards=displayOrder.map(origIdx=>{
     const p=pillars[origIdx];const isDay=(origIdx===2);
+    const isMo=(origIdx===1); // 월주 여부
     const co=OH[OH_CG[p.cg]],jo=OH[OH_JJ[p.jj]];
     const unsung=getUnsungJJ(dc,p.jj);
     const sinsal=getSinsal(ynJJ,p.jj);
     const sinsalColor=SINSAL_COLOR[sinsal]||'#9a8a6a';
+
+    // 월주에만 사령 표시
+    const saryeongHtml=isMo&&saryeongCg!==null
+      ?`<div style="margin-top:3px;padding:2px 5px;background:rgba(201,162,39,0.15);border:1px solid #c9a227;border-radius:4px;display:inline-block">
+          <span style="font-size:7px;color:#8a6200;font-weight:700;letter-spacing:.03em">사령</span>
+          <span style="font-size:10px;font-weight:700;color:${CO[OH_NAME_KO[OH_CG[saryeongCg]]].t};margin-left:2px">${CG[saryeongCg]}</span>
+          <span style="font-size:7px;color:#8a6200;margin-left:1px">(${OH_NAME_KO[OH_CG[saryeongCg]]})</span>
+        </div>`
+      :'';
+
     return`<div class="pillar${isDay?' day':''}">
       ${p.warn?'<div class="warn">절기경계</div>':''}
       <div class="col-label">${p.label}</div>
@@ -3023,6 +3121,7 @@ function renderChart(s){
       <div class="hj" style="color:${CO[jo].t}">${JJ[p.jj]}${gmJJ2.includes(p.jj)?'<span style="font-size:8px;color:#c0392b;font-weight:700;margin-left:2px">空</span>':''}</div>
       <div style="font-size:8px;color:#7a6040;margin-top:2px;font-weight:600">${unsung}</div>
       <div style="font-size:8px;color:${sinsalColor};font-weight:700">${sinsal}</div>
+      ${saryeongHtml}
     </div>`;
   }).join('');
 
@@ -3082,30 +3181,52 @@ function build2ndPrompt(s, gdOverride){
   const gd=gdOverride||document.getElementById('gd').value;
   const ynJJ=pillars[0].jj;
   const base=buildCopyText(s, gdOverride);
-  const unsungRow=pillars.map(p=>{
-    const u=getUnsungJJ(dc,p.jj);
-    return p.label+'지('+JJ[p.jj]+'): '+u;
-  }).join(' | ');
-  const sinsalRow=pillars.map(p=>{
-    const ss=getSinsal(ynJJ,p.jj);
-    return p.label+'지('+JJ[p.jj]+'): '+ss;
-  }).join(' | ');
   const gmJJ=gongmang&&gongmang.jj?gongmang.jj:[];
   const gmInChart=pillars.filter(p=>gmJJ.includes(p.jj)).map(p=>p.label+'('+JJ[p.jj]+')');
   const gmStr=gmInChart.length>0?
-    '공망 지지(일주 기준): '+gmInChart.join(', ')+' — 공망 순: '+gongmang.sunName:
-    '공망 지지(일주 기준): 원국 내 해당 없음 — 공망 순: '+(gongmang?gongmang.sunName:'');
+    '원국 내 공망 지지: '+gmInChart.join(', ')+' (공망 순: '+gongmang.sunName+')':
+    '원국 내 공망 해당 없음 (공망 순: '+(gongmang?gongmang.sunName:'')+')';
+
+  // ── 사령(司令) ──
+  const saryeongCg=getSaryeong(s.pillars[1].jj, s.bornJDN, s.moJeolKey);
+  const saryeongStr=saryeongCg!==null
+    ?CG[saryeongCg]+'('+['목','화','토','금','수'][OH_CG[saryeongCg]]+')'
+    :'정기(날짜정보없음)';
+
+  // ── 원국 상세 표 (기둥별) ──
+  const cols=['년주','월주','일주','시주'];
+  const pillarTable=pillars.map((p,i)=>{
+    const unsung=getUnsungJJ(dc,p.jj);
+    const sinsal=getSinsal(ynJJ,p.jj);
+    const cgSS=getSS(dc,p.cg);
+    const jjSS=getSS(dc,JJ_JEONGGI[p.jj]);
+    const gm=gmJJ.includes(p.jj)?'공망':'';
+    return cols[i]+'  '+CG[p.cg]+'('+cgSS+') / '+JJ[p.jj]+'('+jjSS+') — 12운성:'+unsung+' 신살:'+sinsal+(gm?' ★'+gm:'');
+  }).join('\n');
+
+  // ── 格局·용신 앱 분석 결과 ──
+  const gekD=analyzeGek(s);
+  const finalOH=getSajuYongshinOH(s);
+  const gekStr='格局: '+gekD.gekName+' | 일간강약: '+(gekD.ilganScore?gekD.ilganScore.isStrong?'신강':'신약':'미산출')+
+    ' | 格局용신: '+(gekD.gekYongOH||'조후적용')+' | 실질용신: '+(finalOH||'미정');
+
   return base+
-    '\n\n[12운성 — 일간('+CG[pillars[2].cg]+') 기준]\n'+unsungRow+
-    '\n\n[12신살 — 연지('+JJ[ynJJ]+') 기준]\n'+sinsalRow+
+    '\n\n[사주 원국 상세표 — 12운성·12신살·공망 포함]\n'+pillarTable+
+    '\n\n[월지 사령(司令)]\n'+
+    '월지 '+JJ[pillars[1].jj]+'의 사령: '+saryeongStr+
+    ' — 입기일로부터 경과일수 기준으로 실제 월령을 장악한 천간\n'+
+    '→ 格局 판단의 실질적 기준이 됨 (자평진전 사령 원칙)'+
     '\n\n[공망]\n'+gmStr+
-    '\n\n[2단계 심층 분석 요청]\n'+
-    '위 사주에서 다음을 분석해주세요:\n'+
-    '1. 12운성으로 본 일간의 에너지 상태 — 각 기둥(년·월·일·시)별 의미와 종합\n'+
-    '2. 12신살의 작용 — 어떤 신살이 강하게 작용하는지, 삶의 패턴과 연결\n'+
-    '3. 12운성 × 신살 교차 분석 — 같은 지지에서 두 정보가 겹칠 때의 의미\n'+
-    '4. 공망의 정화 기능 검토 — 결핍 독법과 정화 독법 양면\n'+
-    '5. 이 구조에서 주의할 것과 활용할 것 (구체적 삶의 방향 제시)';
+    '\n\n[앱 格局·용신 분석 결과]\n'+gekStr+
+    '\n\n[2단계 종합 간명 요청]\n'+
+    '위 사주를 자평진전·궁통보감·적천수 3대 고전 기준으로 종합 간명해주세요:\n'+
+    '① 사령('+saryeongStr+') 기준 格局 확정 및 성격·파격 판단\n'+
+    '② 12운성으로 본 일간 에너지 상태 및 기둥별 의미\n'+
+    '③ 12신살 작용 — 강하게 작용하는 신살과 삶의 패턴\n'+
+    '④ 공망 작용 — 결핍 독법과 정화 독법 양면\n'+
+    '⑤ 합충형파해가 格·용신에 미치는 영향\n'+
+    '⑥ 용신·기신 확정 및 현재 대운과의 관계\n'+
+    '⑦ 실질적 삶의 방향과 주의사항 (구체적으로)';
 }
 
 function toggleDepth2(){
