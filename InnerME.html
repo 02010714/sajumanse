@@ -3052,10 +3052,10 @@ function renderChart(s){
       ${p.warn?'<div class="warn">절기경계</div>':''}
       <div class="col-label">${p.label}</div>
       <div class="ss">${p.ss}</div>
-      <div class="hj" style="color:${CO[co].t}">${CG[p.cg]}</div>
+      <div class="hj" style="color:${CO[co].t}">${CG[p.cg]}<span style="font-size:9px;color:#9a8a6a;font-weight:500;margin-left:2px">(${CG_KR[p.cg]})</span></div>
       <div class="divider"></div>
       <div class="ss">${getSS(dc,JJ_JEONGGI[p.jj])}</div>
-      <div class="hj" style="color:${CO[jo].t}">${JJ[p.jj]}${gmJJ2.includes(p.jj)?'<span style="font-size:8px;color:#c0392b;font-weight:700;margin-left:2px">空</span>':''}</div>
+      <div class="hj" style="color:${CO[jo].t}">${JJ[p.jj]}<span style="font-size:9px;color:#9a8a6a;font-weight:500;margin-left:2px">(${JJ_KR[p.jj]})</span>${gmJJ2.includes(p.jj)?'<span style="font-size:8px;color:#c0392b;font-weight:700;margin-left:2px">空</span>':''}</div>
       <div style="font-size:8px;color:#7a6040;margin-top:2px;font-weight:600">${unsung}</div>
       <div style="font-size:8px;color:${sinsalColor};font-weight:700">${sinsal}</div>
       ${saryeongHtml}
@@ -3246,9 +3246,9 @@ function renderDaeun(s){
     return`<div class="daeun-card${isNow?' now':''}">
       ${isNow?'<div class="now-lbl">현재</div>':''}
       <div class="age">${d.age}세</div><div class="sy">${sy}~</div>
-      <div class="cg" style="color:${CO[co].t}">${CG[d.cg]}</div>
+      <div class="cg" style="color:${CO[co].t}">${CG[d.cg]}<span style="font-size:9px;color:#9a8a6a;font-weight:500;margin-left:2px">(${CG_KR[d.cg]})</span></div>
       <div class="ss">${d.ss}</div><div class="div"></div>
-      <div class="jj" style="color:${CO[jo].t}">${JJ[d.jj]}</div>
+      <div class="jj" style="color:${CO[jo].t}">${JJ[d.jj]}<span style="font-size:9px;color:#9a8a6a;font-weight:500;margin-left:2px">(${JJ_KR[d.jj]})</span></div>
       ${ohBadge(jo)}
     </div>`;
   }).join('');
@@ -3258,7 +3258,7 @@ function renderDaeun(s){
     const co=OH[OH_CG[cd.cg]],jo=OH[OH_JJ[cd.jj]];
     nowBox=`<div class="now-box"><div class="lbl">현재 대운 (${nowYear}년)</div>
       <div class="inner">
-        <div><span class="hj" style="color:${CO[co].t}">${CG[cd.cg]}</span><span class="hj" style="color:${CO[jo].t}">${JJ[cd.jj]}</span></div>
+        <div><span class="hj" style="color:${CO[co].t}">${CG[cd.cg]}</span><span style="font-size:9px;color:#9a8a6a;font-weight:500;margin-left:1px">(${CG_KR[cd.cg]})</span><span class="hj" style="color:${CO[jo].t};margin-left:4px">${JJ[cd.jj]}</span><span style="font-size:9px;color:#9a8a6a;font-weight:500;margin-left:1px">(${JJ_KR[cd.jj]})</span></div>
         <div><div class="name">${CG_KR[cd.cg]}${JJ_KR[cd.jj]} · ${cd.ss}</div>
         <div class="years">${yr+cd.age} ~ ${yr+cd.age+9}년</div>
         <div class="badges">${ohBadge(co)}${ohBadge(jo)}</div></div>
