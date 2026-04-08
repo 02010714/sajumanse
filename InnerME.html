@@ -3209,6 +3209,123 @@ function buildGekPrompt(s){
     +'⑤ 확정된 용신 오행 기준으로 음식·운동·직업 추천 방향도 알려주세요';
 }
 
+// ── 원국 합충형파해 전체 계산 함수 ──────────────────────────────────────
+// 출처: 합충형파해조견표.docx (CG_HEP, JJ_CHUNG, JJ_YUGHEP, JJ_SAMHEP, JJ_HYEONG, JJ_PA 테이블)
+// 처리 우선순위: 충 > 합 > 형 > 파 > 해
+function calcHapChungAll(pillars){
+  const cgs=pillars.map(p=>p.cg);
+  const jjs=pillars.map(p=>p.jj);
+  const labels=['년','월','일','시'];
+  const OH_NAME=['목','화','토','금','수'];
+  const dc=pillars[2].cg;
+  const results=[];
+
+  // ── 1. 천간합 ──
+  for(let i=0;i<4;i++){
+    for(let j=i+1;j<4;j++){
+      for(const [a,b,ohIdx] of CG_HEP){
+        if((cgs[i]===a&&cgs[j]===b)||(cgs[i]===b&&cgs[j]===a)){
+          const hapOH=OH_NAME[ohIdx];
+          const ssA=getSS(dc,cgs[i]), ssB=getSS(dc,cgs[j]);
+          results.push('천간합: '+labels[i]+'간 '+CG[cgs[i]]+'('+ssA+') + '+labels[j]+'간 '+CG[cgs[j]]+'('+ssB+') → '+CG[cgs[i]]+CG[cgs[j]]+'합 합화오행: '+hapOH);
+        }
+      }
+    }
+  }
+
+  // ── 2. 지지 충 ──
+  for(let i=0;i<4;i++){
+    for(let j=i+1;j<4;j++){
+      for(const [a,b] of JJ_CHUNG){
+        if((jjs[i]===a&&jjs[j]===b)||(jjs[i]===b&&jjs[j]===a)){
+          const ssA=getSS(dc,JJ_JEONGGI[jjs[i]]), ssB=getSS(dc,JJ_JEONGGI[jjs[j]]);
+          results.push('지지충: '+labels[i]+'지 '+JJ[jjs[i]]+'('+ssA+') ↔ '+labels[j]+'지 '+JJ[jjs[j]]+'('+ssB+') — '+JJ[jjs[i]]+JJ[jjs[j]]+'충');
+        }
+      }
+    }
+  }
+
+  // ── 3. 지지 육합 (충으로 깨지는지 확인) ──
+  for(let i=0;i<4;i++){
+    for(let j=i+1;j<4;j++){
+      for(const [a,b,ohIdx] of JJ_YUGHEP){
+        if((jjs[i]===a&&jjs[j]===b)||(jjs[i]===b&&jjs[j]===a)){
+          const hapOH=OH_NAME[ohIdx];
+          const ssA=getSS(dc,JJ_JEONGGI[jjs[i]]), ssB=getSS(dc,JJ_JEONGGI[jjs[j]]);
+          // 합 상대 중 하나를 충하는 지지가 있으면 합 불성립
+          const chungBreak=jjs.some((jj,k)=>{
+            if(k===i||k===j) return false;
+            return JJ_CHUNG.some(([x,y])=>(jj===x&&jjs[i]===y)||(jj===y&&jjs[i]===x)||(jj===x&&jjs[j]===y)||(jj===y&&jjs[j]===x));
+          });
+          if(chungBreak){
+            results.push('지지육합(충파): '+labels[i]+'지 '+JJ[jjs[i]]+'('+ssA+') + '+labels[j]+'지 '+JJ[jjs[j]]+'('+ssB+') → 충으로 합 불성립');
+          } else {
+            results.push('지지육합: '+labels[i]+'지 '+JJ[jjs[i]]+'('+ssA+') + '+labels[j]+'지 '+JJ[jjs[j]]+'('+ssB+') → '+JJ[jjs[i]]+JJ[jjs[j]]+'합 합화오행: '+hapOH);
+          }
+        }
+      }
+    }
+  }
+
+  // ── 4. 지지 삼합 ──
+  for(const [[a,b,c],ohIdx] of JJ_SAMHEP){
+    const found=[a,b,c].filter(x=>jjs.includes(x));
+    const hapOH=OH_NAME[ohIdx];
+    if(found.length===3){
+      const names=found.map(x=>labels[jjs.indexOf(x)]+'지 '+JJ[x]+'('+getSS(dc,JJ_JEONGGI[x])+')');
+      results.push('지지삼합: '+names.join(' + ')+' → '+hapOH+'국(局) 완전삼합');
+    } else if(found.length===2){
+      const names=found.map(x=>labels[jjs.indexOf(x)]+'지 '+JJ[x]+'('+getSS(dc,JJ_JEONGGI[x])+')');
+      results.push('지지반합: '+names.join(' + ')+' → '+hapOH+' 기운 강화 (삼합 미완성)');
+    }
+  }
+
+  // ── 5. 지지 형 ──
+  for(const [combo,name] of JJ_HYEONG){
+    if(combo.length===1){
+      const cnt=jjs.filter(x=>x===combo[0]).length;
+      if(cnt>=2){
+        const ss=getSS(dc,JJ_JEONGGI[combo[0]]);
+        results.push('지지형: '+JJ[combo[0]]+'('+ss+') 자형(自刑) — 원국에 '+cnt+'개');
+      }
+    } else {
+      const found=combo.filter(x=>jjs.includes(x));
+      if(found.length>=2){
+        const names=found.map(x=>labels[jjs.indexOf(x)]+'지 '+JJ[x]+'('+getSS(dc,JJ_JEONGGI[x])+')');
+        results.push('지지형: '+names.join(' + ')+' — '+name);
+      }
+    }
+  }
+
+  // ── 6. 지지 파 ──
+  for(let i=0;i<4;i++){
+    for(let j=i+1;j<4;j++){
+      for(const [a,b] of JJ_PA){
+        if((jjs[i]===a&&jjs[j]===b)||(jjs[i]===b&&jjs[j]===a)){
+          const ssA=getSS(dc,JJ_JEONGGI[jjs[i]]), ssB=getSS(dc,JJ_JEONGGI[jjs[j]]);
+          results.push('지지파: '+labels[i]+'지 '+JJ[jjs[i]]+'('+ssA+') ↔ '+labels[j]+'지 '+JJ[jjs[j]]+'('+ssB+') — '+JJ[jjs[i]]+JJ[jjs[j]]+'파');
+        }
+      }
+    }
+  }
+
+  // ── 7. 지지 해 ──
+  // 子(0)未(7) / 丑(1)午(6) / 寅(2)巳(5) / 卯(3)辰(4) / 申(8)亥(11) / 酉(9)戌(10)
+  const JJ_HAE=[[0,7],[1,6],[2,5],[3,4],[8,11],[9,10]];
+  for(let i=0;i<4;i++){
+    for(let j=i+1;j<4;j++){
+      for(const [a,b] of JJ_HAE){
+        if((jjs[i]===a&&jjs[j]===b)||(jjs[i]===b&&jjs[j]===a)){
+          const ssA=getSS(dc,JJ_JEONGGI[jjs[i]]), ssB=getSS(dc,JJ_JEONGGI[jjs[j]]);
+          results.push('지지해: '+labels[i]+'지 '+JJ[jjs[i]]+'('+ssA+') ↔ '+labels[j]+'지 '+JJ[jjs[j]]+'('+ssB+') — '+JJ[jjs[i]]+JJ[jjs[j]]+'해');
+        }
+      }
+    }
+  }
+
+  return results.length>0 ? results.join('\n') : '해당 없음 (원국 내 합충형파해 없음)';
+}
+
 function build2ndPrompt(s, gdOverride){
   const{pillars,dc,daeun,gongmang}=s;
   const yr=parseInt(document.getElementById('yr').value);
@@ -3241,8 +3358,25 @@ function build2ndPrompt(s, gdOverride){
   // ── 格局·용신 앱 분석 결과 ──
   const gekD=analyzeGek(s);
   const finalOH=getSajuYongshinOH(s);
-  const gekStr='格局: '+gekD.gekName+' | 일간강약: '+(gekD.ilganScore?gekD.ilganScore.isStrong?'신강':'신약':'미산출')+
-    ' | 格局용신: '+(gekD.gekYongOH||'조후적용')+' | 실질용신: '+(finalOH||'미정');
+  const ilganScore=gekD.ilganScore;
+  const ilganStr=ilganScore
+    ?(ilganScore.isStrong?'신강':'신약')+
+      ' (득령:'+ilganScore.deokryeong+'점 운성:'+ilganScore.unseong+
+      ' / 통근:'+ilganScore.tonggeun+'개 / 득세:'+ilganScore.deukse+'개 / 합계:'+ilganScore.total+'점)'
+    :'미산출';
+  const gekStr='格局: '+gekD.gekName+
+    '\n일간강약: '+ilganStr+
+    '\n格局용신: '+(gekD.gekYongOH||'조후적용')+
+    '\n실질용신: '+(finalOH||'미정')+
+    (gekD.hapGeoJeong?'\n합거정화: '+(gekD.hapGeoJeong==='gang'?'格 강화 합거':'기신 합거 → 格 정화'):'');
+
+  // ── 합충형파해 전체 계산 ──
+  const hapChungStr=calcHapChungAll(pillars);
+
+  // ── AI 지침 고정값 선언 ──
+  const fixedValNote=
+    '※ 위 계산값(십신·12운성·12신살·공망·합충형파해)은 에너지코드 앱에서 산출한 고정값입니다.\n'+
+    '   AI는 이 값들을 독자적으로 재계산하지 말고 그대로 사용하여 해석에만 집중하십시오.';
 
   return base+
     '\n\n[사주 원국 상세표 — 12운성·12신살·공망 포함]\n'+pillarTable+
@@ -3251,7 +3385,9 @@ function build2ndPrompt(s, gdOverride){
     ' — 입기일로부터 경과일수 기준으로 실제 월령을 장악한 천간\n'+
     '→ 格局 판단의 실질적 기준이 됨 (자평진전 사령 원칙)'+
     '\n\n[공망]\n'+gmStr+
+    '\n\n[합충형파해 — 원국 전체]\n'+hapChungStr+
     '\n\n[앱 格局·용신 분석 결과]\n'+gekStr+
+    '\n\n'+fixedValNote+
     '\n\n[2단계 종합 간명 요청]\n'+
     '위 사주를 자평진전·궁통보감·적천수 3대 고전 기준으로 종합 간명해주세요:\n'+
     '① 사령('+saryeongStr+') 기준 格局 확정 및 성격·파격 판단\n'+
