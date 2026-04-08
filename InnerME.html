@@ -3015,6 +3015,45 @@ function renderEnergyCode(s){
   </div>`;
 }
 
+
+function renderUnBox(){
+  const t=calcTodayGanji();
+  const now=new Date();
+  const dateStr=now.getFullYear()+'년 '+(now.getMonth()+1)+'월 '+now.getDate()+'일';
+
+  function unPill(cg,jj){
+    const co=OH[OH_CG[cg]],jo=OH[OH_JJ[jj]];
+    const c=CO[co];
+    return `<span style="display:inline-flex;align-items:center;gap:3px;background:${c.bg};border:1px solid ${c.b};border-radius:6px;padding:3px 8px">
+      <span style="font-size:14px;font-weight:700;color:${c.t}">${CG[cg]}</span>
+      <span style="font-size:9px;color:#9a8a6a">(${CG_KR[cg]})</span>
+      <span style="font-size:14px;font-weight:700;color:${CO[jo].t}">${JJ[jj]}</span>
+      <span style="font-size:9px;color:#9a8a6a">(${JJ_KR[jj]})</span>
+    </span>`;
+  }
+
+  return `<div style="margin-top:10px;padding:12px 14px;background:rgba(255,255,255,0.7);border:1px solid #e0d0a0;border-radius:10px">
+    <div style="font-size:9px;font-weight:700;color:#8a6200;letter-spacing:.08em;margin-bottom:8px">📅 오늘의 에너지 — ${dateStr}</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:9px;font-weight:700;color:#5a4020;width:32px;flex-shrink:0">세 운</span>
+        ${unPill(t.year.cg,t.year.jj)}
+        <span style="font-size:9px;color:#9a8a6a">올해의 에너지 · 입춘 기준</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:9px;font-weight:700;color:#5a4020;width:32px;flex-shrink:0">월 운</span>
+        ${unPill(t.month.cg,t.month.jj)}
+        <span style="font-size:9px;color:#9a8a6a">이달의 에너지</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:9px;font-weight:700;color:#5a4020;width:32px;flex-shrink:0">일 진</span>
+        ${unPill(t.day.cg,t.day.jj)}
+        <span style="font-size:9px;color:#9a8a6a">오늘의 에너지</span>
+      </div>
+    </div>
+  </div>`;
+}
+
 function toggleStory(id){
   const toggle=document.getElementById('toggle_'+id);
   const body=document.getElementById('body_'+id);
@@ -3062,23 +3101,29 @@ function renderChart(s){
     </div>`;
   }).join('');
 
-  const pillarAcc=makeAcc('📋 사주 원국 보기',
+  const pillarAcc=makeAcc('📋 사주 원국 · 대운 보기',
     '<div style="overflow-x:auto"><div class="pillar-section" style="margin:0">'
     +'<div class="pillar-row">'+pillarCards+'</div>'
-    +'</div></div>', '#5a3e00');
-
-  const daeunAcc=makeAcc('📅 대운 흐름 보기',
-    '<div>'+renderDaeun(s)+'</div>', '#1565a0');
+    +'</div></div>'
+    +'<div style="border-top:1px solid #e8d8b0;margin-top:4px">'+renderDaeun(s)+'</div>'
+    , '#5a3e00');
 
   const kakaoBtn='<div style="margin-top:6px">'
     +'<button class="btn-kakao" onclick="shareKakao()">'
     +'<span style="font-size:18px;line-height:1">💬</span> 카카오톡으로 공유하기'
     +'</button></div>';
+  // 일진 아코디언
+  const iljinAcc=makeAcc('📅 오늘의 일진 보기', renderUnBox(), '#1565a0');
+  const integratedAcc=
+    '<div style="margin-top:10px;border:1px solid #e0d0a0;border-radius:10px;overflow:hidden">'
+    +pillarAcc
+    +'<div style="border-top:1px solid #e8d8b0">'+iljinAcc+'</div>'
+    +'</div>';
+
   return renderEnergyCode(s)
     +kakaoBtn
     +cafeAiMenuBlock()
-    +'<div style="margin-top:10px">'+pillarAcc+'</div>'
-    +'<div style="margin-top:6px">'+daeunAcc+'</div>';
+    +integratedAcc;
 }
 
 function buildGekPrompt(s){
