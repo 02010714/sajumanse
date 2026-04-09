@@ -434,6 +434,17 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 
 <div class="footer">
   <p>Energy Code — 나의 에너지 코드</p>
+
+  <a href="https://www.notion.so/33df39144c0181f393b4d13924e4a9d5"
+     target="_blank"
+     style="display:block;margin:0 auto 16px;max-width:280px;padding:12px 0;
+            background:linear-gradient(135deg,#fffbf0,#fff8e8);
+            border:1.5px solid #e0c870;border-radius:10px;
+            color:#8a6200;font-size:12px;font-weight:700;
+            text-align:center;text-decoration:none;letter-spacing:.05em;">
+    📚 독자 자료실 — AI 사주비서 세팅 자료
+  </a>
+
   <p>© 2026 김준범 (시우 時雨). All rights reserved.</p>
   <p>본 앱은 《AI한테 사주 물어보는 법》의 저자가 개발한 전용 도구입니다.<br>
   무단 복제·배포·상업적 이용을 금합니다.</p>
@@ -2086,8 +2097,8 @@ function toggleAcc(id){
 function toggleSecondary(){
   const btn=document.getElementById('sec-toggle');
   const body=document.getElementById('sec-body');
-  btn.classList.toggle('open');
-  body.classList.toggle('open');
+  if(btn) btn.classList.toggle('open');
+  if(body) body.classList.toggle('open');
 }
 
 // ────────────────────────────────────────────────
@@ -3454,7 +3465,7 @@ function resetYong(){
 }
 
 function cafeAiMenuBlock(){
-  return '<div style="margin-top:12px;border:1.5px solid #c9a227;border-radius:11px;overflow:hidden;background:#fffbf0">'+'<div onclick="toggleAiMenu()" id="ai-menu-hdr" style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;background:linear-gradient(135deg,#fffbf0,#fff5e0)">'+'<div>'+'<div style="font-size:10px;color:#8a6200;letter-spacing:.08em;font-weight:700;margin-bottom:2px">✦ AI에게 사주 물어보기</div>'+'<div style="font-size:12px;font-weight:700;color:#5a3e00">사주 데이터 복사 → AI 채팅창에 붙여넣기</div>'+'</div>'+'<span id="ai-menu-arrow" style="font-size:12px;color:#c9a227;transition:transform .2s">▼</span>'+'</div>'+'<div id="ai-menu-body" style="display:none;padding:12px 14px 14px;border-top:1px solid #e8d8a0">'+'<div style="margin-bottom:10px">'+'<div style="font-size:10px;color:#5a3e00;font-weight:700;margin-bottom:6px">1 · 나의 사주 기본간명 <span style="font-size:9px;color:#9a8a6a;font-weight:400">원국 + 대운</span></div>'+'<button class="copy-btn" id="copy-btn" onclick="toggleCopy()" style="margin-bottom:0;width:100%;padding:10px;border-radius:8px;border:1px solid #d0c0a0;background:#faf8f4;color:#5a3e00;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">📋 복사하기</button>'+'<div class="copy-area" id="copy-area" style="display:none;margin-top:8px">'+'<div class="hint">▼ 클릭 → Ctrl+A → Ctrl+C → AI 붙여넣기</div>'+'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:7px 10px;background:#faf8f4;border:1px solid #d0c0a0;border-radius:7px">'+'<span style="font-size:10px;color:#5a3e00;font-weight:700;white-space:nowrap">성별 확인</span>'+'<button onclick="setCopyGender(&quot;남&quot;)" id="gd-btn-m" style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #c9a227;background:#c9a227;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">남성</button>'+'<button onclick="setCopyGender(&quot;여&quot;)" id="gd-btn-f" style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #d0c0a0;background:#fff;color:#5a3e00;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">여성</button>'+'</div>'+'<textarea id="copy-text" readonly onclick="this.select()"></textarea>'+'<div class="hint2">복사 후 AI 채팅창에 붙여넣으세요</div>'+'</div></div>'+'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'+'<div style="margin-bottom:10px">'+'<div style="font-size:10px;color:#5a3e00;font-weight:700;margin-bottom:6px">2 · 格局·용신 정밀 검증 <span style="font-size:9px;color:#9a8a6a;font-weight:400">AI가 생극제화로 최종 확정</span></div>'+'<button class="copy-btn" id="gek-btn" onclick="toggleGek()" style="margin-bottom:0;width:100%;padding:10px;border-radius:8px;border:1px solid #d0c0a0;background:#faf8f4;color:#5a3e00;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">🔍 복사하기</button>'+'<div class="copy-area" id="gek-area" style="display:none;margin-top:8px">'+'<div class="hint">▼ 클릭 → Ctrl+A → Ctrl+C → AI 붙여넣기</div>'+'<textarea id="gek-text" readonly onclick="this.select()" style="height:200px"></textarea>'+'<div class="hint2">AI 채팅창에 붙여넣으면 格局·용신 정밀 분석을 받을 수 있습니다</div>'+'</div></div>'+'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'+'<div style="margin-bottom:10px">'+'<div style="font-size:10px;color:#5a3e00;font-weight:700;margin-bottom:6px">3 · 나의 사주 종합간명 <span style="font-size:9px;color:#9a8a6a;font-weight:400">원국+대운+格局용신+12운성+12신살+합충형파해+공망+천을귀인</span></div>'+'<button class="copy-btn" id="depth2-btn" onclick="toggleDepth2()" style="margin-bottom:0;width:100%;padding:10px;border-radius:8px;border:1px solid #d0c0a0;background:#faf8f4;color:#5a3e00;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">📋 복사하기</button>'+'<div class="copy-area" id="depth2-area" style="display:none;margin-top:8px">'+'<div class="hint">▼ 클릭 → Ctrl+A → Ctrl+C → AI 붙여넣기</div>'+'<textarea id="depth2-text" readonly onclick="this.select()" style="height:200px"></textarea>'+'<div class="hint2">12운성·신살·공망·합충형파해를 포함한 심층 분석</div>'+'</div></div>'+'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'+'<div style="margin-bottom:10px">'+'<div style="font-size:10px;color:#5a3e00;font-weight:700;margin-bottom:6px">4 · 오늘 나의 인생전략 <span style="font-size:9px;color:#9a8a6a;font-weight:400">원국+대운+세운+월운+일진</span></div>'+'<button class="copy-btn" id="today-btn" onclick="toggleToday()" style="margin-bottom:0;width:100%;padding:10px;border-radius:8px;border:1px solid #d0c0a0;background:#faf8f4;color:#5a3e00;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">📅 복사하기</button>'+'<div class="copy-area" id="today-area" style="display:none;margin-top:8px">'+'<div class="hint">▼ 클릭 → Ctrl+A → Ctrl+C → AI 붙여넣기</div>'+'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:7px 10px;background:#faf8f4;border:1px solid #d0c0a0;border-radius:7px">'+'<span style="font-size:10px;color:#5a3e00;font-weight:700;white-space:nowrap">성별 확인</span>'+'<button onclick="setTodayGender(&quot;남&quot;)" id="tgd-btn-m" style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #c9a227;background:#c9a227;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">남성</button>'+'<button onclick="setTodayGender(&quot;여&quot;)" id="tgd-btn-f" style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #d0c0a0;background:#fff;color:#5a3e00;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">여성</button>'+'</div>'+'<textarea id="today-text" readonly onclick="this.select()" style="height:280px"></textarea>'+'<div class="hint2">오늘 날짜 기준 자동 계산</div>'+'</div></div>'+'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'+'<div style="margin-bottom:10px">'+'<div style="font-size:10px;color:#5a3e00;font-weight:700;margin-bottom:6px">5 · 궁합 심층 분석 <span style="font-size:9px;color:#9a8a6a;font-weight:400">궁합 탭에서 두 사람 원국 입력 후 복사</span></div>'+'<button onclick="setTab(\'compat\')" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0c0a0;background:#faf8f4;color:#5a3e00;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">💑 궁합 탭으로 이동</button>'+'</div>'+'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'+'<div>'+'<div style="font-size:10px;color:#5a3e00;font-weight:700;margin-bottom:6px">6 · 직업적성 심층 분석 <span style="font-size:9px;color:#9a8a6a;font-weight:400">직업 탭에서 확인 후 복사</span></div>'+'<button onclick="setTab(\'career\')" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0c0a0;background:#faf8f4;color:#5a3e00;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">💼 직업 탭으로 이동</button>'+'</div>'+'</div></div>';
+  return '<div style="margin-top:12px;border:1.5px solid #c9a227;border-radius:11px;overflow:hidden;background:#fffbf0">'+'<div onclick="toggleAiMenu()" id="ai-menu-hdr" style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;background:linear-gradient(135deg,#fffbf0,#fff5e0)">'+'<div>'+'<div style="font-size:10px;color:#8a6200;letter-spacing:.08em;font-weight:700;margin-bottom:2px">✦ AI에게 사주 물어보기</div>'+'<div style="font-size:12px;font-weight:700;color:#5a3e00">사주 데이터 복사 → AI 채팅창에 붙여넣기</div>'+'</div>'+'<span id="ai-menu-arrow" style="font-size:12px;color:#c9a227;transition:transform .2s">▼</span>'+'</div>'+'<div id="ai-menu-body" style="display:none;padding:12px 14px 14px;border-top:1px solid #e8d8a0">'+'<div style="margin-bottom:10px">'+'<div style="font-size:10px;color:#5a3e00;font-weight:700;margin-bottom:6px">1 · 나의 사주 종합간명 <span style="font-size:9px;color:#9a8a6a;font-weight:400">원국+대운+格局용신+12운성+12신살+합충형파해+공망+천을귀인</span></div>'+'<button class="copy-btn" id="depth2-btn" onclick="toggleDepth2()" style="margin-bottom:0;width:100%;padding:10px;border-radius:8px;border:1px solid #d0c0a0;background:#faf8f4;color:#5a3e00;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">📋 복사하기</button>'+'<div class="copy-area" id="depth2-area" style="display:none;margin-top:8px">'+'<div class="hint">▼ 클릭 → Ctrl+A → Ctrl+C → AI 붙여넣기</div>'+'<textarea id="depth2-text" readonly onclick="this.select()" style="height:200px"></textarea>'+'<div class="hint2">복사 후 AI 채팅창에 붙여넣고, 알고 싶은 것을 한 줄 추가하세요</div>'+'</div></div>'+'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'+'<div style="margin-bottom:10px">'+'<div style="font-size:10px;color:#5a3e00;font-weight:700;margin-bottom:6px">2 · 오늘 나의 인생전략 <span style="font-size:9px;color:#9a8a6a;font-weight:400">원국+대운+세운+월운+일진</span></div>'+'<button class="copy-btn" id="today-btn" onclick="toggleToday()" style="margin-bottom:0;width:100%;padding:10px;border-radius:8px;border:1px solid #d0c0a0;background:#faf8f4;color:#5a3e00;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">📅 복사하기</button>'+'<div class="copy-area" id="today-area" style="display:none;margin-top:8px">'+'<div class="hint">▼ 클릭 → Ctrl+A → Ctrl+C → AI 붙여넣기</div>'+'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:7px 10px;background:#faf8f4;border:1px solid #d0c0a0;border-radius:7px">'+'<span style="font-size:10px;color:#5a3e00;font-weight:700;white-space:nowrap">성별 확인</span>'+'<button onclick="setTodayGender(&quot;남&quot;)" id="tgd-btn-m" style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #c9a227;background:#c9a227;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">남성</button>'+'<button onclick="setTodayGender(&quot;여&quot;)" id="tgd-btn-f" style="flex:1;padding:5px;border-radius:6px;border:1.5px solid #d0c0a0;background:#fff;color:#5a3e00;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">여성</button>'+'</div>'+'<textarea id="today-text" readonly onclick="this.select()" style="height:280px"></textarea>'+'<div class="hint2">오늘 날짜 기준 자동 계산</div>'+'</div></div>'+'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'+'<div style="margin-bottom:10px">'+'<div style="font-size:10px;color:#5a3e00;font-weight:700;margin-bottom:6px">3 · 궁합 심층 분석 <span style="font-size:9px;color:#9a8a6a;font-weight:400">궁합 탭에서 두 사람 원국 입력 후 복사</span></div>'+'<button onclick="setTab(\'compat\')" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0c0a0;background:#faf8f4;color:#5a3e00;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">💑 궁합 탭으로 이동</button>'+'</div>'+'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'+'<div>'+'<div style="font-size:10px;color:#5a3e00;font-weight:700;margin-bottom:6px">4 · 직업적성 심층 분석 <span style="font-size:9px;color:#9a8a6a;font-weight:400">직업 탭에서 확인 후 복사</span></div>'+'<button onclick="setTab(\'career\')" style="width:100%;padding:10px;border-radius:8px;border:1px solid #d0c0a0;background:#faf8f4;color:#5a3e00;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">💼 직업 탭으로 이동</button>'+'</div>'+'<div style="height:1px;background:#e8d8a0;margin-bottom:10px"></div>'+'<div style="margin-bottom:10px">'+'<div style="font-size:10px;color:#5a3e00;font-weight:700;margin-bottom:6px">5 · 格局·용신 정밀 검증 <span style="font-size:9px;color:#9a8a6a;font-weight:400">AI가 생극제화로 최종 확정</span></div>'+'<button class="copy-btn" id="gek-btn" onclick="toggleGek()" style="margin-bottom:0;width:100%;padding:10px;border-radius:8px;border:1px solid #d0c0a0;background:#faf8f4;color:#5a3e00;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">🔍 복사하기</button>'+'<div class="copy-area" id="gek-area" style="display:none;margin-top:8px">'+'<div class="hint">▼ 클릭 → Ctrl+A → Ctrl+C → AI 붙여넣기</div>'+'<textarea id="gek-text" readonly onclick="this.select()" style="height:200px"></textarea>'+'<div class="hint2">AI 채팅창에 붙여넣으면 格局·용신 정밀 분석을 받을 수 있습니다</div>'+'</div></div>'+'</div></div>';
 }
 
 function renderDaeun(s){
@@ -3505,11 +3516,17 @@ function buildCopyText(s, gdOverride){
   const dStr=daeun.daeuns.slice(0,8).map(d=>d.age+'세 '+CG[d.cg]+JJ[d.jj]).join(' / ');
   const cd=daeun.daeuns.find(d=>nowYear>=yr+d.age&&nowYear<=yr+d.age+9);
   const dir=daeun.forward?'순행':'역행';
+  let cdStr='';
+  if(cd){
+    const cdStart=yr+cd.age;
+    const elapsed=nowYear-cdStart;
+    const phase=elapsed<=2?'초반':elapsed<=6?'중반':'후반';
+    cdStr='\n현재 대운('+nowYear+'): '+CG[cd.cg]+JJ[cd.jj]+' ('+cdStart+'~'+(cdStart+9)+'년, '+phase+')';
+  }
   return'아래 사주를 종합 간명해주세요.\n\n'+
     '성별: '+gd+'성\n\n'+
     '[사주 원국]\n'+pillarStr+'\n\n'+
-    '[대운] '+dir+' | '+daeun.sy+'세 시작\n'+dStr+
-    (cd?'\n현재 대운('+nowYear+'): '+CG[cd.cg]+JJ[cd.jj]:'');
+    '[대운] '+dir+' | '+daeun.sy+'세 시작\n'+dStr+cdStr;
 }
 
 
@@ -4025,38 +4042,13 @@ function toggleAiMenu(){
 }
 
 function setCopyGender(gd){
-  // 버튼 활성화 표시
-  const btnM=document.getElementById('gd-btn-m');
-  const btnF=document.getElementById('gd-btn-f');
-  if(gd==='남'){
-    btnM.style.background='#c9a227';btnM.style.borderColor='#c9a227';btnM.style.color='#fff';
-    btnF.style.background='#faf8f4';btnF.style.borderColor='#ddd0b0';btnF.style.color='#7a6040';
-  }else{
-    btnF.style.background='#c9a227';btnF.style.borderColor='#c9a227';btnF.style.color='#fff';
-    btnM.style.background='#faf8f4';btnM.style.borderColor='#ddd0b0';btnM.style.color='#7a6040';
-  }
-  if(currentSaju) document.getElementById('copy-text').value=buildCopyText(currentSaju, gd);
+  // 구 1번 메뉴 삭제 후 사용 안 함 (안전 처리)
+  if(currentSaju) toggleDepth2();
 }
 
 function toggleCopy(){
-  if(!currentSaju) return;
-  const gd=document.getElementById('gd').value;
-  const text=buildCopyText(currentSaju, gd);
-  const btn=document.getElementById('copy-btn');
-  navigator.clipboard.writeText(text).then(()=>{
-    btn.textContent='✅ 복사됐습니다! AI 채팅창에 붙여넣으세요';
-    btn.style.background='#e8f5e9';btn.style.borderColor='#66bb6a';btn.style.color='#2e7d32';
-    setTimeout(()=>{
-      btn.textContent='📋 텍스트 복사하기';
-      btn.style.background='';btn.style.borderColor='';btn.style.color='';
-    },3000);
-  }).catch(()=>{
-    const area=document.getElementById('copy-area');
-    const show=area.style.display==='none';
-    area.style.display=show?'':'none';
-    if(show){setCopyGender(gd);}
-    btn.textContent=show?'▲ 닫기':'📋 텍스트 복사하기';
-  });
+  // 구 1번 메뉴 삭제 후 toggleDepth2로 위임
+  toggleDepth2();
 }
 
 // ── 오늘 나의 인생전략: 5층 간지 계산 및 복사 ──
@@ -4180,9 +4172,8 @@ function handleCalc(){
   setTimeout(()=>{const el=document.getElementById('daeun-scroll');if(el)el.scrollLeft=el.scrollWidth;},50);
   document.getElementById('result').style.display='';
   setTab('chart');
-  document.getElementById('copy-area').style.display='none';
-  document.getElementById('copy-btn').className='copy-btn';
-  document.getElementById('copy-btn').textContent='📋 텍스트 복사하기';
+  const _ca=document.getElementById('copy-area'); if(_ca)_ca.style.display='none';
+  const _cb=document.getElementById('copy-btn'); if(_cb){_cb.className='copy-btn';_cb.textContent='📋 텍스트 복사하기';}
   document.getElementById('today-area').style.display='none';
   const tb=document.getElementById('today-btn');
   tb.textContent='📅 텍스트 복사하기';
