@@ -1311,15 +1311,13 @@ const CAREER_DATA={
 };
 
 
-// ── 오행별 보석 데이터 ──
 const OH_GEM={
-  목:{gems:['에메랄드','비취','페리도트'],bg:'#1a6b3c',color:'#e8f5e9',border:'#1a6b3c'},
-  화:{gems:['루비','가넷','적산호'],bg:'#8b1a1a',color:'#fce8e8',border:'#8b1a1a'},
-  토:{gems:['황수정','호박','타이거아이'],bg:'#c9a227',color:'#fff8e0',border:'#c9a227'},
-  금:{gems:['다이아몬드','진주','백수정'],bg:'#f0f0f0',color:'#2c2c2c',border:'#c0c0c0'},
-  수:{gems:['블랙 다이아몬드','흑진주','블랙 스피넬'],bg:'#e8e4f0',color:'#1a1a2e',border:'#b0a0c8'},
+  목:{gems:["에메랄드","비취","페리도트"],bg:"#1a6b3c",color:"#e8f5e9",border:"#1a6b3c"},
+  화:{gems:["루비","가넷","적산호"],bg:"#8b1a1a",color:"#fce8e8",border:"#8b1a1a"},
+  토:{gems:["황수정","호박","타이거아이"],bg:"#c9a227",color:"#fff8e0",border:"#c9a227"},
+  금:{gems:["다이아몬드","진주","백수정"],bg:"#f0f0f0",color:"#2c2c2c",border:"#c0c0c0"},
+  수:{gems:["블랙 다이아몬드","흑진주","블랙 스피넬"],bg:"#e8e4f0",color:"#1a1a2e",border:"#b0a0c8"},
 };
-
 const OH_EXERCISE={
   목:{
     title:"木 오행 — 간·담·근육·힘줄 강화",
@@ -2423,7 +2421,7 @@ function shareResult(){
   const ilganEmoji=ILGAN_EMOJI[ilganName]||'✨';
   const ohEmoji=OH_EMOJI[oh1]||'🌿';
   const gekEmoji=GEK_EMOJI[gek.label]||'✦';
-  const text=`나의 본캐 🔖\n━━━━━━━━━━━━━━\n${ilganEmoji} ${ilganName} — ${ILGAN_NAT[dc]}\n${gekEmoji} ${gek.label}${mbtiInfo}\n${ohEmoji} 밸런스 오행: ${oh1||'미정'}(${OH_HANJA[oh1]||''}) · ${rec?rec.organ:''}\n\n☕ 건강차: ${rec?rec.teas[0].name:''}\n🥤 주스: ${rec?rec.juices[0].name:''}\n💊 건기품: ${rec?rec.supps[0].name:''}\n━━━━━━━━━━━━━━\n🌿 카페 본캐 (에너지 밸런스 카페)\nhttps://02010714.github.io/sajumanse/saju-mbti.html`;
+  const text=`나의 본캐 🔖\n━━━━━━━━━━━━━━\n${ilganEmoji} ${ilganName} — ${ILGAN_NAT[dc]}\n${gekEmoji} ${gek.label}${mbtiInfo}\n${ohEmoji} 밸런스 오행: ${oh1||'미정'}(${OH_HANJA[oh1]||''}) · ${rec?rec.organ:''}\n\n☕ 건강차: ${rec?rec.teas[0].name:''}\n🥤 주스: ${rec?rec.juices[0].name:''}\n💊 건기품: ${rec?rec.supps[0].name:''}\n━━━━━━━━━━━━━━\n🌿 카페 코드 (에너지 밸런스 카페)\nhttps://02010714.github.io/sajumanse/saju-mbti.html`;
   navigator.clipboard.writeText(text).then(()=>alert('복사됐습니다! 카카오톡이나 SNS에 붙여넣기 하세요.')).catch(()=>prompt('아래 내용을 복사하세요:',text));
 }
 
@@ -4469,7 +4467,7 @@ function shareKakao(){
   const tea=rec?rec.teas[0].name:'';
   const juice=rec?rec.juices[0].name:'';
   const supp=rec?rec.supps[0].name:'';
-  const pageUrl='https://02010714.github.io/sajumanse/saju-mbti.html';
+  const pageUrl='https://energycode.kr/InnerME.html';
 
   const ilganNat=ILGAN_NAT[dc]||'';
   const mbtiLine=mbti&&MBTI_DATA[mbti]?`\n${mbti} ${MBTI_DATA[mbti].name}`:'';
