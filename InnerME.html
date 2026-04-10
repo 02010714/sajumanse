@@ -26,8 +26,7 @@ window._db=db;window._fbCol=collection;window._fbAddDoc=addDoc;
 window._fbGetDocs=getDocs;window._fbDoc=doc;window._fbUpdate=updateDoc;
 window._fbQuery=query;window._fbOrderBy=orderBy;window._fbTS=serverTimestamp;
 window._fbReady=true;document.dispatchEvent(new Event('fbReady'));
-</script>
-<style>
+</script><style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f4f0e8;color:#2c2416;font-family:"Malgun Gothic","Apple SD Gothic Neo",serif;padding:20px 14px;min-height:100vh}
 .wrap{max-width:440px;margin:0 auto}
@@ -427,15 +426,15 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
   </button>
 </div>
 
-<!-- 탭 버튼 (숨김) -->
-<div style="display:none">
-  <button id="tab-chart"></button>
-  <button id="tab-compat"></button>
-  <button id="tab-health"></button>
-  <button id="tab-career"></button>
+<!-- 탭 버튼 -->
+<div class="tabs">
+    <button class="tab-btn active" id="tab-chart" onclick="setTab('chart')">🔮 원국·대운</button>
+    <button class="tab-btn" id="tab-compat" onclick="setTab('compat')">💑 궁합</button>
+    <button class="tab-btn" id="tab-health" onclick="setTab('health')">🌿 건강</button>
+    <button class="tab-btn" id="tab-career" onclick="setTab('career')">💼 직업</button>
 </div>
-<!-- 패널 div (숨김) -->
-<div id="panel-chart" style="display:none"></div>
+<!-- 패널 div -->
+<div id="panel-chart"></div>
 <div id="panel-compat" style="display:none"></div>
 <div id="panel-health" style="display:none"></div>
 <div id="panel-career" style="display:none"></div>
