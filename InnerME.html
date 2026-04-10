@@ -1310,6 +1310,16 @@ const CAREER_DATA={
   }
 };
 
+
+// ── 오행별 보석 데이터 ──
+const OH_GEM={
+  목:{gems:['에메랄드','비취','페리도트'],bg:'#1a6b3c',color:'#e8f5e9',border:'#1a6b3c'},
+  화:{gems:['루비','가넷','적산호'],bg:'#8b1a1a',color:'#fce8e8',border:'#8b1a1a'},
+  토:{gems:['황수정','호박','타이거아이'],bg:'#c9a227',color:'#fff8e0',border:'#c9a227'},
+  금:{gems:['다이아몬드','진주','백수정'],bg:'#f0f0f0',color:'#2c2c2c',border:'#c0c0c0'},
+  수:{gems:['블랙 다이아몬드','흑진주','블랙 스피넬'],bg:'#e8e4f0',color:'#1a1a2e',border:'#b0a0c8'},
+};
+
 const OH_EXERCISE={
   목:{
     title:"木 오행 — 간·담·근육·힘줄 강화",
@@ -1756,7 +1766,12 @@ function renderHealth(s){
   }
 
   // ── 제1 밸런스 오행 아코디언 섹션들 ──
-  const acc1Tea  = makeAcc(`☕ ${oh1} 보충 · 차 추천`, makeHCards(rec1.teas,3,c1), c1.t);
+  const acc1Tea  = makeAcc(`☕ ${oh1} 보충 · 차 추천`,
+    makeHCards(rec1.teas,3,c1)+
+    '<div style="margin-top:8px;padding:8px 10px;border-top:1px dashed #e0d0b0">'+
+    '<span style="background:#5a3e00;color:#fff8e8;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:500">💎 쌍화탕은 오행을 모두 포함합니다</span>'+
+    '</div>',
+    c1.t);
   const acc1Juice= makeAcc(`🥤 ${oh1} 보충 · 주스 추천`, makeHCards(rec1.juices,3,c1), c1.t);
   const acc1Supp = makeAcc(`💊 ${oh1} 보충 · 건강기능식품 추천`, makeHCards(rec1.supps,3,c1), c1.t);
 
@@ -1771,6 +1786,20 @@ function renderHealth(s){
       +'<div style="font-size:11px;color:#6a5a3a;line-height:1.6">'+it.desc+'</div></div>'
       +'</div>').join('')
     +'</div>', '#2e7d4f'):''
+
+  // ── 수호신 보석 블록 ──
+  const gemData=OH_GEM[oh1];
+  const accGem=gemData?makeAcc('💎 나의 수호신 보석',
+    '<div style="padding:6px 0">'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+
+    gemData.gems.map(g=>
+      '<span style="background:'+gemData.bg+';color:'+gemData.color+';border:1px solid '+gemData.border+';border-radius:20px;padding:5px 14px;font-size:12px;font-weight:500">💎 '+g+'</span>'
+    ).join('')+
+    '</div>'+
+    '<div style="padding-top:8px;border-top:1px dashed #e0d0b0">'+
+    '<span style="background:#5a3e00;color:#fff8e8;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:500">💎 나전칠기 장신구는 오행을 모두 포함합니다</span>'+
+    '</div></div>',
+    '#5a3e00'):''
 
   // ── 제2 밸런스 오행 ──
   let secondaryHtml='';
@@ -1916,6 +1945,7 @@ function renderHealth(s){
 
     <!-- 운동처방 -->
     ${accExercise}
+  ${accGem}
 
     <!-- 제1 오행 아코디언 -->
     ${acc1Tea}${acc1Juice}${acc1Supp}
