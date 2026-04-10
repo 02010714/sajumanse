@@ -2,11 +2,6 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta property="og:title" content="에너지 코드 — AI에게 사주 물어보는 법">
-<meta property="og:description" content="《AI에게 사주 물어보는 법》 독자 전용 앱 | 나의 오행 에너지 코드를 확인하세요">
-<meta property="og:url" content="https://energycode.kr/saju-mbti.html">
-<meta property="og:image" content="https://energycode.kr/book-og.png">
-<meta property="og:type" content="website">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Energy Code — 나의 에너지 코드</title>
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" crossorigin="anonymous"></script>
@@ -1863,9 +1858,7 @@ function renderHealth(s){
   }
 
   // ── 주문 CTA ──
-  let orderHtml='';
-
-  return`<div class="health-panel">
+  let orderHtml='';  return`<div class="health-panel">
 
     <!-- 제1 밸런스 오행 -->
     <div style="background:${c1.bg};border:1.5px solid ${c1.b};border-radius:10px;padding:10px 12px;margin-bottom:8px">
@@ -3399,7 +3392,9 @@ function build2ndPrompt(s, gdOverride){
     '④ 공망 작용 — 결핍 독법과 정화 독법 양면\n'+
     '⑤ 합충형파해가 格·용신에 미치는 영향\n'+
     '⑥ 용신·기신 확정 및 현재 대운과의 관계\n'+
-    '⑦ 실질적 삶의 방향과 주의사항 (구체적으로)';
+    '⑦ 실질적 삶의 방향과 주의사항 (구체적으로)\n'+
+    '⑧ 일주론(日柱論) 특성을 格局·용신 해석과 연계하여 반영해주세요\n\n'+
+    '[일주] '+CG[pillars[2].cg]+JJ[pillars[2].jj]+'('+CG_KR[pillars[2].cg]+JJ_KR[pillars[2].jj]+')';
 }
 
 function toggleDepth2(){
