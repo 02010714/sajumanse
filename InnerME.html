@@ -1032,6 +1032,8 @@ function analyzeGek(s){
     }
   }
 
+  const originalGekYongOH=gekYongOH; // 통관·[F] 적용 전 格局용신 보존
+
   // ── 통관용신 (適天髓 체계) ────────────────────────────────────────────────
   // 적용 조건: 두 오행이 직충·직극으로 대립하고 格局·조후로 해소 안 될 때
   // 통관 오행 표: 木↔金=水 / 木↔土=火 / 火↔水=木 / 火↔金=土 / 土↔水=金
@@ -1064,11 +1066,15 @@ function analyzeGek(s){
   // ── [F] 궁통보감 2오행 원칙 ──────────────────────────────────────────────
   // 궁통보감은 월별로 두 오행을 병용하도록 처방한다 (예: 丙癸 병존이면 귀격)
   // 원칙: 제1오행(yongsin)이 원국에 충족(≥2개)하면 格·조후가 이미 실현된 것
-  //        → 제2오행(hesin)이 완전 결핍(=0개)이면 hesin이 제1용신으로 승격
+  //        → 제2오행(hesin)이 완전 결핍(=0개)이면 hesin이 실질 제1용신으로 승격
   //        단, hesin이 현재 용신을 生하면 승격 금지 (기신 가중 방지)
-  const originalGekYongOH=gekYongOH; // [F] 적용 전 格局용신 보존
-  // [F] 조후 2오행 원칙 — 통관용신과 독립적으로 판단 (설명 표시용)
-  let chohu2OhInfo=null; // {yongOH, hesinOH, yongCnt} — 2오행 원칙 발동 정보
+  // ★ 핵심 원칙 ★
+  //   格局용신 = 조후용신이 일치하는 경우(格이 조후를 이미 해결):
+  //   → gekYongOH(格局용신)는 유지. 실질 제1용신만 hesin으로 표시.
+  //   → 승격 이유: "오행 흐름의 출구(hesin) 부재" — 格局이 해결한 후 흘러가야 할 다음 오행이 없음
+  //   格局용신 ≠ 조후용신인 경우:
+  //   → 기존대로 gekYongOH를 hesin으로 교체 (조후 우선)
+  let chohu2OhInfo=null; // {yongOH, hesinOH, yongCnt, gekMatches} — 2오행 원칙 발동 정보
   {
     const 조후yongIdx=OH_NAME.indexOf(yongOHstr);
     const hesinOHstr=yongsinToOH(yongData.hesin);
@@ -1076,12 +1082,26 @@ function analyzeGek(s){
     if(조후yongIdx>=0 && ohCount[조후yongIdx]>=2 && hesinIdx>=0 && ohCount[hesinIdx]===0){
       const hesinGenYong=OH_SHENG_IDX[hesinIdx]===조후yongIdx;
       if(!hesinGenYong){
-        chohu2OhInfo={yongOH:yongOHstr, hesinOH:hesinOHstr, yongCnt:ohCount[조후yongIdx]};
-        // 통관이 이미 hesin과 같은 결론이면 승격 불필요, 정보만 보존
-        if(OH_NAME[OH_NAME.indexOf(hesinOHstr)]!==gekYongOH){
-          gekYongOH=hesinOHstr;
-          gekName=gekName+'→보완필요';
+        const gekMatchesChohu=(originalGekYongOH===yongOHstr); // 格局용신=조후용신 일치 여부
+        chohu2OhInfo={
+          yongOH:yongOHstr,
+          hesinOH:hesinOHstr,
+          yongCnt:ohCount[조후yongIdx],
+          gekMatches:gekMatchesChohu // true=格局이 조후를 이미 해결한 경우
+        };
+        if(gekMatchesChohu){
+          // 格局용신=조후용신 일치 → gekYongOH 유지, 표시만 "흐름 출구 부재"로
+          // 실질 용신(getSajuYongshinOH)은 hesin으로 표시하기 위해 chohu2OhInfo 활용
+          gekName=gekName+'→흐름출구부재';
           chohuOverride=true;
+          // ★ gekYongOH는 바꾸지 않음 — 格局용신은 화(火) 그대로 유지
+        } else {
+          // 格局용신 ≠ 조후용신 → 기존대로 hesin으로 교체
+          if(OH_NAME[OH_NAME.indexOf(hesinOHstr)]!==gekYongOH){
+            gekYongOH=hesinOHstr;
+            gekName=gekName+'→보완필요';
+            chohuOverride=true;
+          }
         }
       }
     }
@@ -1114,6 +1134,11 @@ let currentYongOverride=null;
 function getSajuYongshinOH(s){
   if(currentYongOverride) return currentYongOverride;
   const gek=analyzeGek(s);
+  // [F] 格局=조후 일치 + 흐름 출구 부재 → 실질 제1용신은 hesin(수)
+  // 건강·밸런스오행 추천은 실질 제1용신 기준
+  if(gek.chohu2OhInfo && gek.chohu2OhInfo.gekMatches && gek.chohu2OhInfo.hesinOH){
+    return gek.chohu2OhInfo.hesinOH;
+  }
   let yongOH=gek.gekYongOH;
   if(!yongOH){
     const dc=s.pillars[2].cg;
@@ -1934,6 +1959,10 @@ function renderHealth(s){
         if(gn.includes('통관용신')){
           const pair=gn.match(/\((.+)↔(.+)\)/);
           if(pair) return `원국에서 <b>${pair[1]}</b>와 <b>${pair[2]}</b> 에너지가 충돌하고 있습니다.<br><b>${oh1}</b>이 두 에너지 사이의 다리 역할을 하여 흐름을 만들어 줍니다(통관용신 — 적천수).`;
+        }
+        if(gn.includes('흐름출구부재')){
+          const c2=gekD.chohu2OhInfo;
+          return `格局용신(${c2?c2.yongOH:chOH})이 확정되어 있고 원국에 충족(${c2?c2.yongCnt:2}개)되어 있습니다.<br>그러나 오행 흐름의 출구인 <b>${oh1}</b>이 원국에 없어 일간이 도세·주옥을 못하고 흐름이 막혀 있습니다.<br>格局용신 <b>${c2?c2.yongOH:chOH}(火)</b>는 격의 구조적 방향이며, 실질 처방 제1오행은 <b>${oh1}</b>입니다.`;
         }
         if(gn.includes('보완필요')){
           return `계절 균형 오행(${chOH})이 원국에 이미 충분히 있어, 부족한 <b>${oh1}</b>이 더 필요합니다(궁통보감 2오행 원칙).`;
@@ -2925,14 +2954,16 @@ function renderEnergyCode(s){
           ${gekDetail.moJjYughep?`<span style="font-size:9px;color:#8e44ad">⚡ 月支 육합(합화:${gekDetail.moJjYughep}) — 月令 기운 합거</span>`:''}
           ${gekDetail.moLryeongByun?`<span style="font-size:9px;color:#8e44ad">⚡ 삼합·방합(${gekDetail.moLryeongByun}) — 月令 변질</span>`:''}
           ${gekDetail.ilganScore?`<span style="font-size:9px;color:#555">일간 ${gekDetail.ilganScore.unseong}(${gekDetail.ilganScore.isStrong?'신강':'신약'}·${gekDetail.ilganScore.total}점)</span>`:''}
-          ${gekDetail.chohuOverride&&!gekDetail.gekName.includes('보완필요')?`<span style="font-size:9px;font-weight:700;color:#c0392b">⚡ 조후우선</span>`:''}
-          <span style="font-size:11px;font-weight:700;color:#2c4a2c">${gekDetail.gekName.replace('→2오행원칙','')}</span>
+          ${gekDetail.chohuOverride&&!gekDetail.gekName.includes('보완필요')&&!gekDetail.gekName.includes('흐름출구부재')?`<span style="font-size:9px;font-weight:700;color:#c0392b">⚡ 조후우선</span>`:''}
+          <span style="font-size:11px;font-weight:700;color:#2c4a2c">${gekDetail.gekName.replace('→2오행원칙','').replace('→흐름출구부재','').replace('→보완필요','')}</span>
+          ${gekDetail.gekName.includes('흐름출구부재')?`<span style="font-size:9px;font-weight:700;color:#1565a0">📌 오행 흐름 출구 부재</span>`:''}
           ${gekDetail.gekName.includes('보완필요')?`<span style="font-size:9px;font-weight:700;color:#2e5fa3">📌 궁통보감 2오행 원칙</span>`:''}
         </div>
         <div style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:5px">
           <div>
             <span style="font-size:9px;color:#7a6040">格局용신</span><br>
             <span style="font-size:12px;font-weight:700;color:#1a3a6c">${(()=>{const r={'목':'甲乙(목)','화':'丙丁(화)','토':'戊己(토)','금':'庚辛(금)','수':'壬癸(수)'};const g=gekDetail.originalGekYongOH||gekDetail.gekYongOH;return r[g]||g||'조후적용';})()}</span>
+            ${gekDetail.chohu2OhInfo&&gekDetail.chohu2OhInfo.gekMatches?`<br><span style="font-size:9px;color:#1565a0;font-weight:700">실질 제1용신: ${{목:'甲乙(목)',화:'丙丁(화)',토:'戊己(토)',금:'庚辛(금)',수:'壬癸(수)'}[gekDetail.chohu2OhInfo.hesinOH]||''}</span><br><span style="font-size:8px;color:#9a8a6a">📌 오행 흐름 출구 부재</span>`:''}
           </div>
           <div style="color:#ccc;padding-top:14px">|</div>
           <div>
@@ -3430,9 +3461,7 @@ function build2ndPrompt(s, gdOverride){
     '④ 공망 작용 — 결핍 독법과 정화 독법 양면\n'+
     '⑤ 합충형파해가 格·용신에 미치는 영향\n'+
     '⑥ 용신·기신 확정 및 현재 대운과의 관계\n'+
-    '⑦ 실질적 삶의 방향과 주의사항 (구체적으로)\n'+
-    '⑧ 일주론(日柱論) 특성을 格局·용신 해석과 연계하여 반영해주세요\n\n'+
-    '[일주] '+CG[pillars[2].cg]+JJ[pillars[2].jj]+'('+CG_KR[pillars[2].cg]+JJ_KR[pillars[2].jj]+')';
+    '⑦ 실질적 삶의 방향과 주의사항 (구체적으로)';
 }
 
 function toggleDepth2(){
