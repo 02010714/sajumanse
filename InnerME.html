@@ -681,11 +681,15 @@ function getIlganStrengthScore(dc, pillars){
   const deokryeong=UNSEONG_SCORE[unseong]||0;
 
   // ② 통근: 지지 지장간에 일간 오행이 있으면 +1씩 (지장간 조견표 기반)
-  // JJGAN[지지] 배열에 일간 오행의 천간이 포함되면 통근
+  // 제왕·건록 지지에 통근하면 +2, 장생·관대 +1, 나머지 +1 (가중치 반영)
   let tonggeun=0;
   for(const p of pillars){
     const jzgan=JJGAN[p.jj];
-    if(jzgan.some(cg=>OH_CG[cg]===me)) tonggeun++;
+    if(jzgan.some(cg=>OH_CG[cg]===me)){
+      const us=UNSEONG[dc][p.jj];
+      // 제왕·건록 → +2점 (실질 뿌리가 강함), 나머지 → +1점
+      tonggeun+=(us==='제왕'||us==='건록')?2:1;
+    }
   }
 
   // ③ 득세: 천간에 비겁·인성 개수
@@ -898,12 +902,22 @@ function analyzeGek(s){
   // 신강(身强): 설기 방향(식상·재성·관성) 格이 활성화 → 생조格(인성·관인상생) 비활성
   // → 투간格이 인성格/관성格인데 일간이 신강하고 月支 정기가 식상格이면
   //   → 月支 정기(식상)로 格 재설정
+  // 극강신강(득령·통근·득세 모두 충족) 판단
+  // 극강신강 판단 — 통근 가중치 반영 후 기준 완화 (득령≥2 + 통근≥4 + 득세≥2)
+  const isExtremeStrong=ilganStrong&&ilganScore.deokryeong>=2&&ilganScore.tonggeun>=4&&ilganScore.deukse>=2;
+
   if(ilganStrong && (sipsin==='편인'||sipsin==='정인'||sipsin==='편관'||sipsin==='정관')){
-    const jeonggiCg=jzgan[jzgan.length-1]; // 월지 정기
-    const jeonggiSipsin=getSipsinByCg(dc, jeonggiCg);
-    if(jeonggiSipsin==='식신'||jeonggiSipsin==='상관'){
-      tuChulCg=jeonggiCg;
-      sipsin=jeonggiSipsin; // 식상格으로 재설정
+    // 월지 지장간 전체에서 식상 오행 찾기 (정기·중기·여기 모두)
+    let siksangCg=null;
+    for(const cgIdx of [...jzgan].reverse()){ // 정기 우선
+      const ss=getSipsinByCg(dc, cgIdx);
+      if(ss==='식신'||ss==='상관'){ siksangCg=cgIdx; break; }
+    }
+
+    if(siksangCg!==null){
+      tuChulCg=siksangCg;
+      sipsin=getSipsinByCg(dc, siksangCg);
+      // GEK_BODY_YONG에서 식신→食神生財格 / 상관→傷官生財格으로 자동 처리
     }
   }
 
@@ -939,14 +953,18 @@ function analyzeGek(s){
       const jaeseongOH=OH_NAME[rel.jaeseong]; // 재성 오행
       const chohuIsInseong=yongOHstr===inseongOH;
       const chohuIsJaeseong=yongOHstr===jaeseongOH;
-      if(chohuIsInseong){
-        // 조후용신이 인성 → 傷官佩印格 우선
+      // ★ 핵심 원칙 ★
+      // 극강신강(체용론 재설정으로 sipsin=상관이 된 경우)이면
+      // 조후가 인성을 가리키더라도 인성을 더 쓸 필요 없음 → 傷官生財格 우선
+      // 일반 신강도 설기(재성) 방향이 活性化
+      if(chohuIsInseong && !ilganStrong){
+        // 신약 + 조후=인성 → 傷官佩印格 우선
         bodyYong={rules:[{yong:'inseong',name:'傷官佩印格',ohKey:'inseong'},{yong:'jaeseong',name:'傷官生財格',ohKey:'jaeseong'}],default:{name:'상관格',ohKey:'inseong'}};
       } else if(chohuIsJaeseong){
         // 조후용신이 재성 → 傷官生財格 우선
         bodyYong={rules:[{yong:'jaeseong',name:'傷官生財格',ohKey:'jaeseong'},{yong:'inseong',name:'傷官佩印格',ohKey:'inseong'}],default:{name:'상관格',ohKey:'jaeseong'}};
       } else {
-        // 조후 무관 → 일간 강약으로 결정
+        // 조후 무관 or 신강+조후=인성 → 일간 강약으로 결정
         // 신강: 설기 방향(재성) 우선 / 신약: 인성 보호 우선
         bodyYong=ilganStrong
           ? {rules:[{yong:'jaeseong',name:'傷官生財格',ohKey:'jaeseong'},{yong:'inseong',name:'傷官佩印格',ohKey:'inseong'}],default:{name:'상관格',ohKey:'jaeseong'}}
@@ -987,7 +1005,12 @@ function analyzeGek(s){
     const chohuKisinOH2=yongOHidxC>=0?OH_NAME[OH_GEUKJEOK[yongOHidxC]]:null;
 
     // [A] 格局용신이 조후 기신과 같으면 → 格局용신 무효, 조후용신 채택
-    if(!chohuOverride && gekYongOH && chohuKisinOH2 && gekYongOH===chohuKisinOH2){
+    // [A] 格局용신=조후기신 → 格局용신 무효, 조후용신 채택
+    // ★ 예외: 극강신강으로 체용론 재설정된 格(식상생재格·상관생재格)은
+    //   格局용신=재성(토)이 조후 기신이더라도 파격 처리하지 않음
+    //   (극강신강이면 일간이 설기해야 하므로 재성格이 올바른 방향)
+    const isCheyongResettled=(sipsin==='식신'||sipsin==='상관')&&isExtremeStrong;
+    if(!chohuOverride && gekYongOH && chohuKisinOH2 && gekYongOH===chohuKisinOH2 && !isCheyongResettled){
       chohuOverride=true;
       gekName=gekName+'→조후우선';
       gekYongOH=yongOHstr;
@@ -1066,15 +1089,12 @@ function analyzeGek(s){
   // ── [F] 궁통보감 2오행 원칙 ──────────────────────────────────────────────
   // 궁통보감은 월별로 두 오행을 병용하도록 처방한다 (예: 丙癸 병존이면 귀격)
   // 원칙: 제1오행(yongsin)이 원국에 충족(≥2개)하면 格·조후가 이미 실현된 것
-  //        → 제2오행(hesin)이 완전 결핍(=0개)이면 hesin이 실질 제1용신으로 승격
+  //        → 제2오행(hesin)이 완전 결핍(=0개)이면 hesin이 제1용신으로 승격
   //        단, hesin이 현재 용신을 生하면 승격 금지 (기신 가중 방지)
-  // ★ 핵심 원칙 ★
-  //   格局용신 = 조후용신이 일치하는 경우(格이 조후를 이미 해결):
-  //   → gekYongOH(格局용신)는 유지. 실질 제1용신만 hesin으로 표시.
-  //   → 승격 이유: "오행 흐름의 출구(hesin) 부재" — 格局이 해결한 후 흘러가야 할 다음 오행이 없음
-  //   格局용신 ≠ 조후용신인 경우:
-  //   → 기존대로 gekYongOH를 hesin으로 교체 (조후 우선)
-  let chohu2OhInfo=null; // {yongOH, hesinOH, yongCnt, gekMatches} — 2오행 원칙 발동 정보
+  // [F] 궁통보감 2오행 원칙 — 통관용신과 독립적으로 판단
+  // ★ 格局용신 = 조후용신 일치 시: gekYongOH 유지, 실질 제1용신만 hesin으로 표시
+  // ★ 格局용신 ≠ 조후용신 시: 기존대로 gekYongOH를 hesin으로 교체
+  let chohu2OhInfo=null; // {yongOH, hesinOH, yongCnt, gekMatches}
   {
     const 조후yongIdx=OH_NAME.indexOf(yongOHstr);
     const hesinOHstr=yongsinToOH(yongData.hesin);
@@ -1082,22 +1102,19 @@ function analyzeGek(s){
     if(조후yongIdx>=0 && ohCount[조후yongIdx]>=2 && hesinIdx>=0 && ohCount[hesinIdx]===0){
       const hesinGenYong=OH_SHENG_IDX[hesinIdx]===조후yongIdx;
       if(!hesinGenYong){
-        const gekMatchesChohu=(originalGekYongOH===yongOHstr); // 格局용신=조후용신 일치 여부
+        const gekMatchesChohu=(originalGekYongOH===yongOHstr);
         chohu2OhInfo={
           yongOH:yongOHstr,
           hesinOH:hesinOHstr,
           yongCnt:ohCount[조후yongIdx],
-          gekMatches:gekMatchesChohu // true=格局이 조후를 이미 해결한 경우
+          gekMatches:gekMatchesChohu
         };
         if(gekMatchesChohu){
-          // 格局용신=조후용신 일치 → gekYongOH 유지, 표시만 "흐름 출구 부재"로
-          // 실질 용신(getSajuYongshinOH)은 hesin으로 표시하기 위해 chohu2OhInfo 활용
+          // 格局=조후 일치 → gekYongOH 유지, 표시만 흐름출구부재로
           gekName=gekName+'→흐름출구부재';
           chohuOverride=true;
-          // ★ gekYongOH는 바꾸지 않음 — 格局용신은 화(火) 그대로 유지
         } else {
-          // 格局용신 ≠ 조후용신 → 기존대로 hesin으로 교체
-          if(OH_NAME[OH_NAME.indexOf(hesinOHstr)]!==gekYongOH){
+          if(hesinOHstr!==gekYongOH){
             gekYongOH=hesinOHstr;
             gekName=gekName+'→보완필요';
             chohuOverride=true;
@@ -1134,8 +1151,7 @@ let currentYongOverride=null;
 function getSajuYongshinOH(s){
   if(currentYongOverride) return currentYongOverride;
   const gek=analyzeGek(s);
-  // [F] 格局=조후 일치 + 흐름 출구 부재 → 실질 제1용신은 hesin(수)
-  // 건강·밸런스오행 추천은 실질 제1용신 기준
+  // [F] 格局=조후 일치 + 흐름 출구 부재 → 실질 제1용신은 hesin
   if(gek.chohu2OhInfo && gek.chohu2OhInfo.gekMatches && gek.chohu2OhInfo.hesinOH){
     return gek.chohu2OhInfo.hesinOH;
   }
@@ -2954,6 +2970,7 @@ function renderEnergyCode(s){
           ${gekDetail.moJjYughep?`<span style="font-size:9px;color:#8e44ad">⚡ 月支 육합(합화:${gekDetail.moJjYughep}) — 月令 기운 합거</span>`:''}
           ${gekDetail.moLryeongByun?`<span style="font-size:9px;color:#8e44ad">⚡ 삼합·방합(${gekDetail.moLryeongByun}) — 月令 변질</span>`:''}
           ${gekDetail.ilganScore?`<span style="font-size:9px;color:#555">일간 ${gekDetail.ilganScore.unseong}(${gekDetail.ilganScore.isStrong?'신강':'신약'}·${gekDetail.ilganScore.total}점)</span>`:''}
+          ${(()=>{const s=gekDetail.ilganScore;return s&&s.isStrong&&s.deokryeong>=3&&s.tonggeun>=2&&s.deukse>=2?'<span style="font-size:9px;font-weight:700;color:#c0392b;background:rgba(192,57,43,0.08);border-radius:3px;padding:1px 6px">⚠️ 극강신강 — 인성格·관성格 파격 검토 필요</span>':''})()}
           ${gekDetail.chohuOverride&&!gekDetail.gekName.includes('보완필요')&&!gekDetail.gekName.includes('흐름출구부재')?`<span style="font-size:9px;font-weight:700;color:#c0392b">⚡ 조후우선</span>`:''}
           <span style="font-size:11px;font-weight:700;color:#2c4a2c">${gekDetail.gekName.replace('→2오행원칙','').replace('→흐름출구부재','').replace('→보완필요','')}</span>
           ${gekDetail.gekName.includes('흐름출구부재')?`<span style="font-size:9px;font-weight:700;color:#1565a0">📌 오행 흐름 출구 부재</span>`:''}
@@ -3050,6 +3067,14 @@ function renderEnergyCode(s){
 
           // ── 2. 에너지 처방 과정 블록 ──
           let processLines=[];
+
+          // 극강신강 파격 경고 (gekDetail 사용 — renderEnergyCode 스코프)
+          const ilgs2=gekDetail.ilganScore;
+          const isExStr2=ilgs2&&ilgs2.isStrong&&ilgs2.deokryeong>=3&&ilgs2.tonggeun>=2&&ilgs2.deukse>=2;
+          if(isExStr2&&(gekDetail.sipsin==='편인'||gekDetail.sipsin==='정인'||gekDetail.sipsin==='편관'||gekDetail.sipsin==='정관')){
+            processLines.push(`<span style="color:#c0392b;font-weight:700">⚠️ 극강신강 (득령${ilgs2.deokryeong}+통근${ilgs2.tonggeun}+득세${ilgs2.deukse}=${ilgs2.total}점) — 인성格·관성格이 투간됐으나 일간이 너무 강해 파격(破格) 가능</span>`);
+            processLines.push(`<span style="color:#c0392b">→ 월지 기운 중 설기(식상·재성) 방향이 실질 格일 수 있음 — AI 심층 분석 필요</span>`);
+          }
 
           // 조후용신 — 쉬운 설명
           const chohuDesc=`계절 균형으로 필요한 에너지: <b>${yong.yongsin}${origYongOH?'('+origYongOH+')':''}</b>${yong.hesin&&yong.hesin!=='-'?` · <b>${yong.hesin}${extractOH(yong.hesin)?'('+extractOH(yong.hesin)+')':''}</b>`:''}`;
@@ -3176,7 +3201,79 @@ function renderUnBox(){
         <span style="font-size:9px;color:#9a8a6a">오늘의 에너지</span>
       </div>
     </div>
+
+    <!-- 일진 달력 토글 -->
+    <div style="margin-top:10px;border-top:1px dashed #e0d0a0;padding-top:8px">
+      <button onclick="toggleIljinCal()" id="iljin-cal-btn"
+        style="width:100%;background:none;border:none;cursor:pointer;font-family:inherit;display:flex;justify-content:space-between;align-items:center;padding:2px 0">
+        <span style="font-size:10px;font-weight:700;color:#8a6200">📅 이달의 일진 달력</span>
+        <span id="iljin-cal-arrow" style="font-size:10px;color:#c9a227;transition:transform .2s">▼</span>
+      </button>
+      <div id="iljin-cal-body" style="display:none;margin-top:8px">
+        ${renderIljinCal()}
+      </div>
+    </div>
   </div>`;
+}
+
+function toggleIljinCal(){
+  const body=document.getElementById('iljin-cal-body');
+  const arrow=document.getElementById('iljin-cal-arrow');
+  const open=body.style.display==='none';
+  body.style.display=open?'':'none';
+  arrow.style.transform=open?'rotate(180deg)':'';
+}
+
+function renderIljinCal(){
+  const now=new Date();
+  const year=now.getFullYear();
+  const month=now.getMonth();
+  const today=now.getDate();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const firstDow=new Date(year,month,1).getDay();
+
+  const DOW=['일','월','화','수','목','금','토'];
+  const DOW_COLORS=['#c0392b','#5a4020','#5a4020','#5a4020','#5a4020','#5a4020','#2e5fa3'];
+
+  let html=`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">`;
+  DOW.forEach((d,i)=>{
+    html+=`<div style="text-align:center;font-size:8px;font-weight:700;color:${DOW_COLORS[i]};padding:2px 0">${d}</div>`;
+  });
+  html+=`</div>`;
+
+  html+=`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px">`;
+
+  for(let i=0;i<firstDow;i++){
+    html+=`<div></div>`;
+  }
+
+  for(let d=1;d<=daysInMonth;d++){
+    const dp=calcDay(year,month+1,d);
+    const cgOH=OH[OH_CG[dp.cg]];
+    const jjOH=OH[OH_JJ[dp.jj]];
+    const c=CO[cgOH];
+    const isToday=(d===today);
+    const dow=(firstDow+d-1)%7;
+    const dateColor=dow===0?'#c0392b':dow===6?'#2e5fa3':'#5a4020';
+
+    html+=`<div style="text-align:center;padding:3px 1px;border-radius:5px;${isToday?'background:#fffbf0;border:1.5px solid #c9a227;':'border:1px solid #f0ece0;'}">
+      <div style="font-size:8px;color:${dateColor};font-weight:${isToday?'700':'400'};margin-bottom:1px">${d}</div>
+      <div style="font-size:10px;font-weight:700;color:${c.t};line-height:1.1">${CG[dp.cg]}</div>
+      <div style="font-size:10px;font-weight:700;color:${CO[jjOH].t};line-height:1.1">${JJ[dp.jj]}</div>
+    </div>`;
+  }
+
+  html+=`</div>`;
+
+  const OH_LIST=['목','화','토','금','수'];
+  html+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;padding-top:6px;border-top:1px dashed #e0d0a0">`;
+  OH_LIST.forEach(oh=>{
+    const c=CO[oh];
+    html+=`<span style="font-size:8px;background:${c.bg};color:${c.t};border:1px solid ${c.b};border-radius:3px;padding:1px 6px">${oh}</span>`;
+  });
+  html+=`</div>`;
+
+  return html;
 }
 
 function toggleStory(id){
@@ -3429,8 +3526,13 @@ function build2ndPrompt(s, gdOverride){
       ' (득령:'+ilganScore.deokryeong+'점 운성:'+ilganScore.unseong+
       ' / 통근:'+ilganScore.tonggeun+'개 / 득세:'+ilganScore.deukse+'개 / 합계:'+ilganScore.total+'점)'
     :'미산출';
+  // 극강신강 여부 판단 — 일간강약 점수 + 득령·통근·득세 모두 충족 여부
+  const ilganScore2=gekD.ilganScore;
+  const isExtremeStrong=ilganScore2&&ilganScore2.isStrong&&ilganScore2.deokryeong>=3&&ilganScore2.tonggeun>=2&&ilganScore2.deukse>=2;
+
   const gekStr='格局: '+gekD.gekName+
     '\n일간강약: '+ilganStr+
+    (isExtremeStrong?'\n⚠️ 극강신강 — 인성格·관성格 파격 가능성 검토 필요':'')+ 
     '\n格局용신: '+(gekD.gekYongOH||'조후적용')+
     '\n실질용신: '+(finalOH||'미정')+
     (gekD.hapGeoJeong?'\n합거정화: '+(gekD.hapGeoJeong==='gang'?'格 강화 합거':'기신 합거 → 格 정화'):'');
@@ -3461,7 +3563,11 @@ function build2ndPrompt(s, gdOverride){
     '④ 공망 작용 — 결핍 독법과 정화 독법 양면\n'+
     '⑤ 합충형파해가 格·용신에 미치는 영향\n'+
     '⑥ 용신·기신 확정 및 현재 대운과의 관계\n'+
-    '⑦ 실질적 삶의 방향과 주의사항 (구체적으로)';
+    '⑦ 실질적 삶의 방향과 주의사항 (구체적으로)\n'+
+    '⑧ 일주론(日柱論) 특성을 格局·용신 해석과 연계하여 반영해주세요\n'+
+    '⑨ 일간이 극강신강(득령·통근·득세 모두 충족)이면 인성格·관성格 파격 여부를 반드시 검토하고,\n'+
+    '   파격이면 월지 기운 중 설기(식상·재성) 방향으로 실질 格을 재설정해주세요\n\n'+
+    '[일주] '+CG[pillars[2].cg]+JJ[pillars[2].jj]+'('+CG_KR[pillars[2].cg]+JJ_KR[pillars[2].jj]+')';
 }
 
 function toggleDepth2(){
