@@ -993,37 +993,31 @@ function analyzeGek(s){
     const yongOHidx=rel[chosen.ohKey];
     gekYongOH=yongOHidx!==undefined?OH_NAME[yongOHidx]:null;
 
-    // ── 조후 긴급도 교차 검증 (자평진전 × 궁통보감) ──
-    // 원칙: 조열/한습이 극단적이면 조후가 格局보다 우선
-    const 화tok=ohCount[1]; // 火 개수
-    const 수tok=ohCount[4]; // 水 개수
-    // "A를 극하는 오행" 역방향 테이블: 목←금, 화←수, 토←목, 금←화, 수←토
+    // ── 조후 긴급도 판정 (chohuIsFirst 결정용 — gekYongOH는 덮어쓰지 않음) ──
+    // 格局용신과 조후용신은 독립 보존. 아래 조건은 제1용신 판정에만 사용.
+    const 화tok=ohCount[1];
+    const 수tok=ohCount[4];
     const OH_GEUKJEOK=[3,4,0,1,2];
-    // 조후 기신 = 조후용신을 극하는 오행
     const yongOHidxC=yongOHstr?OH_NAME.indexOf(yongOHstr):-1;
     const chohuKisinOH2=yongOHidxC>=0?OH_NAME[OH_GEUKJEOK[yongOHidxC]]:null;
 
-    // [A] 格局용신이 조후 기신과 같으면 → 格局용신 무효, 조후용신 채택
+    // [A] 格局용신이 조후 기신과 충돌 → 조후 우선 플래그만 설정
     if(!chohuOverride && gekYongOH && chohuKisinOH2 && gekYongOH===chohuKisinOH2){
       chohuOverride=true;
       gekName=gekName+'→조후우선';
-      gekYongOH=yongOHstr;
+      // gekYongOH 덮어쓰기 제거 — 格局용신 독립 보존
     }
-
-    // [D] 格局용신 오행이 원국에 3개 이상 과왕 → 格局용신 무효, 조후용신 채택
-    // 추가: 格局용신=土인데 조토(燥土) 과잉이면 → 수기 고갈 가중 → 무효
+    // [D] 格局용신 과왕 → 조후 우선 플래그만 설정
     if(!chohuOverride && gekYongOH){
       const gekYongIdx=OH_NAME.indexOf(gekYongOH);
-      const toOver=(gekYongOH==='토' && jotoExcess); // 조토 과잉
+      const toOver=(gekYongOH==='토' && jotoExcess);
       if(gekYongIdx>=0 && (ohCount[gekYongIdx]>=3 || toOver)){
         chohuOverride=true;
         gekName=gekName+(toOver?'→조토과잉':'→이미충분');
-        gekYongOH=yongOHstr;
+        // gekYongOH 덮어쓰기 제거
       }
     }
-
-    // [E] 格局용신이 결핍 오행(원국 0개)을 극하면 → 格局용신 무효
-    // 결핍 오행이 있고 格局용신이 그것을 극하는 구조: 피해를 가중시키는 용신 무효
+    // [E] 格局용신이 결핍 오행 극 → 조후 우선 플래그만 설정
     if(!chohuOverride && gekYongOH){
       const gekYongIdx=OH_NAME.indexOf(gekYongOH);
       if(gekYongIdx>=0){
@@ -1031,48 +1025,42 @@ function analyzeGek(s){
         if(ohCount[OH_NAME.indexOf(格局극하는것)]===0){
           chohuOverride=true;
           gekName=gekName+'→방향전환';
-          gekYongOH=yongOHstr;
+          // gekYongOH 덮어쓰기 제거
         }
       }
     }
+    // [B] 조열긴급
     if(!chohuOverride && (moIdx>=3&&moIdx<=5) && 수tok<=1 && 화tok>=3){
       chohuOverride=true;
       gekName=gekName+'→조열긴급';
-      gekYongOH=yongOHstr;
     }
-
-    // [C] 한습 긴급: 겨울(亥子丑)에 火≤1 + 水≥3 → 조후 최우선
+    // [C] 한습긴급
     if(!chohuOverride && (moIdx>=9||moIdx<=1) && 화tok<=1 && 수tok>=3){
       chohuOverride=true;
       gekName=gekName+'→한습긴급';
-      gekYongOH=yongOHstr;
     }
   }
 
-  // ── 통관용신 (適天髓 체계) ────────────────────────────────────────────────
-  // 적용 조건: 두 오행이 직충·직극으로 대립하고 格局·조후로 해소 안 될 때
-  // 통관 오행 표: 木↔金=水 / 木↔土=火 / 火↔水=木 / 火↔金=土 / 土↔水=金
-  // 출처: 통변_핵심원칙.txt 4층 통관용신 (억부와 독립 층위)
-  // 통관용신: 格局용신 유무와 무관하게 극한 대립이면 통관 우선
+  // ── 통관용신 (適天髓 체계) — 조후용신 계열로 분류 ──────────────────────
+  // 통관용신은 格局용신을 덮어쓰지 않음
+  // 원국에 오행 대립이 극심할 때 조후용신 쪽에 통관 오행 정보로 기록
+  let tongganOH=null; // 통관 오행 (조후용신 표시에 활용)
+  let tongganName=null;
   {
     const TONGGWAN_MAP=[
       [[0,3],4], // 木↔金 → 水
       [[0,2],1], // 木↔土 → 火
-      [[1,4],0], // 火↔水 → 木  ← 水3개↔火2개 대립
+      [[1,4],0], // 火↔水 → 木
       [[1,3],2], // 火↔金 → 土
       [[2,4],3], // 土↔水 → 金
     ];
     for(const [[a,b],tongOHidx] of TONGGWAN_MAP){
-      // 일간 오행이 대립 쌍에 포함되면 1개만 있어도 통관 발동
-      // 예: 辛金 일간(금=1개) ↔ 木 3개 → 금이 1개여도 대립 성립
       const aMin=(a===me)?1:2;
       const bMin=(b===me)?1:2;
       if(ohCount[a]>=aMin && ohCount[b]>=bMin && ohCount[tongOHidx]<=1){
-        if(OH_NAME[tongOHidx]!==gekYongOH){
-          gekYongOH=OH_NAME[tongOHidx];
-          gekName='통관용신('+OH_NAME[a]+'↔'+OH_NAME[b]+')';
-          chohuOverride=true;
-        }
+        tongganOH=OH_NAME[tongOHidx];
+        tongganName='통관('+OH_NAME[a]+'↔'+OH_NAME[b]+')';
+        // gekYongOH 덮어쓰기 없음 — 格局용신 독립 보존
         break;
       }
     }
@@ -1094,15 +1082,14 @@ function analyzeGek(s){
       const hesinGenYong=OH_SHENG_IDX[hesinIdx]===조후yongIdx;
       if(!hesinGenYong){
         chohu2OhInfo={yongOH:yongOHstr, hesinOH:hesinOHstr, yongCnt:ohCount[조후yongIdx]};
-        // 통관이 이미 hesin과 같은 결론이면 승격 불필요, 정보만 보존
-        if(OH_NAME[OH_NAME.indexOf(hesinOHstr)]!==gekYongOH){
-          gekYongOH=hesinOHstr;
-          gekName=gekName+'→보완필요';
-          chohuOverride=true;
-        }
+        // [F] 조후 2오행 정보만 기록 — gekYongOH 덮어쓰기 제거
+        // 조후용신 탭에서 hesin을 조후 제2오행으로 표시하는 용도로만 사용
       }
     }
   }
+
+  // 제1용신 판정: 파격·조열긴급·한습긴급이면 조후가 제1용신
+  const chohuIsFirst = !tuChul || isBroken || chohuOverride;
 
   return {
     sipsin,
@@ -1118,7 +1105,12 @@ function analyzeGek(s){
     chohu2OhInfo,      // 궁통보감 2오행 원칙 발동 정보 {yongOH,hesinOH,yongCnt}
     gekName,
     originalGekYongOH,
-    gekYongOH,
+    gekYongOH,         // 格局용신 오행 (독립 보존)
+    chohuYongOH: yongOHstr, // 조후용신 원래 제1오행 (궁통보감 기준)
+    chohuYongOHbase: yongOHstr, // 조후 제1오행 (화 등) — UI 원문 표시용
+    tongganOH,         // 통관 오행 (조후용신 계열, null이면 없음)
+    tongganName,       // 통관 설명 문자열
+    chohuIsFirst,      // true이면 조후용신이 제1용신
     ohCount,
     ilganScore,
     tuChulChar: tuChul?CG[tuChulCg]:'미투출',
@@ -1128,9 +1120,66 @@ function analyzeGek(s){
 // 전역 용신 오버라이드 (AI 검증 후 사용자가 변경)
 let currentYongOverride=null;
 
+// 格局용신 오행 반환 (천직 에너지) — 독립
+function getGekYongOH(s){
+  const gek=analyzeGek(s);
+  let yongOH=gek.gekYongOH;
+  if(!yongOH){
+    const dc=s.pillars[2].cg;
+    const moIdx=jjToMoIdx(s.pillars[1].jj);
+    yongOH=yongsinToOH(YONGSIN_DATA[dc][moIdx].yongsin);
+  }
+  return yongOH||null;
+}
+
+// 조후용신 오행 반환 (본성 에너지) — 독립
+function getChohuYongOH(s){
+  const dc=s.pillars[2].cg;
+  const moIdx=jjToMoIdx(s.pillars[1].jj);
+  const yongData=YONGSIN_DATA[dc][moIdx];
+  const yongOH=yongsinToOH(yongData.yongsin);
+  const hesinOH=yongsinToOH(yongData.hesin);
+  if(!yongOH) return null;
+
+  // 궁통보감 2오행 원칙:
+  // 제1오행(yongOH)이 원국에 2개 이상 충족 + 제2오행(hesinOH)이 원국에 0개
+  // → 제2오행(hesin)이 실질 조후용신으로 승격
+  if(hesinOH && hesinOH!==yongOH){
+    const OH_NAME=['목','화','토','금','수'];
+    const OH_JJ_LOCAL=[0,0,1,2,2,1,2,2,3,3,4,3]; // 지지 오행 (子=4수,...) 간략버전
+    const OH_CG_LOCAL=[0,0,1,1,2,2,3,3,4,4];
+    const yongIdx=OH_NAME.indexOf(yongOH);
+    const hesinIdx=OH_NAME.indexOf(hesinOH);
+    if(yongIdx>=0 && hesinIdx>=0){
+      let yongCnt=0;
+      s.pillars.forEach(p=>{
+        if(OH_CG_LOCAL[p.cg]===yongIdx) yongCnt++;
+        if(OH_JJ[p.jj]===yongIdx) yongCnt++;
+      });
+      let hesinCnt=0;
+      s.pillars.forEach(p=>{
+        if(OH_CG_LOCAL[p.cg]===hesinIdx) hesinCnt++;
+        if(OH_JJ[p.jj]===hesinIdx) hesinCnt++;
+      });
+      // 제1오행 충족(≥2) + 제2오행 결핍(=0) → 제2오행 승격
+      // 단, hesin이 yongOH를 生하는 오행이면 승격 금지 (기신 가중 방지)
+      const hesinGenYong=(SAENGHANEUN[hesinIdx]===yongIdx);
+      if(yongCnt>=2 && hesinCnt===0 && !hesinGenYong){
+        return hesinOH; // 제2오행 승격
+      }
+    }
+  }
+  return yongOH;
+}
+
 function getSajuYongshinOH(s){
   if(currentYongOverride) return currentYongOverride;
   const gek=analyzeGek(s);
+  // 파격·조열·한습이면 조후가 제1용신
+  if(gek.chohuIsFirst){
+    const chohuOH=getChohuYongOH(s);
+    if(chohuOH) return chohuOH;
+  }
   let yongOH=gek.gekYongOH;
   if(!yongOH){
     const dc=s.pillars[2].cg;
@@ -1750,13 +1799,15 @@ function renderHealth(s){
   const season=getSeasonFromMoIdx(moIdx);
   const yongData=YONGSIN_DATA[dc][moIdx];
 
-  // ── 용신 오행 결정 — analyzeGek 6단계 보정 로직 통과한 최종 용신 사용 ──
-  const oh1=getSajuYongshinOH(s); // 格局·조후·보정 로직 모두 반영된 최종 용신
-  // oh2(희신): 최종 용신이 원래 조후용신과 다르면 원래 조후용신을 희신으로
-  const chohuOH=yongsinToOH(yongData.yongsin);
-  const oh2=(!currentYongOverride && oh1!==chohuOH)
-    ? chohuOH  // 용신이 보정됐다면 원래 조후용신이 희신
-    : (currentYongOverride?null:yongsinToOH(yongData.hesin)); // 평상시는 hesin
+  // ── 천직 에너지(格局용신) · 본성 에너지(조후용신) 독립 설정 ──
+  const gekD=analyzeGek(s);
+  const gekOH = currentYongOverride || getGekYongOH(s);   // 格局용신 (천직)
+  const chohuOH = getChohuYongOH(s);                       // 조후용신 (본성)
+  const chohuIsFirst = !currentYongOverride && gekD.chohuIsFirst;
+  // 제1/제2 결정
+  const oh1 = chohuIsFirst ? chohuOH : gekOH;
+  const oh2 = chohuIsFirst ? (gekOH&&gekOH!==chohuOH?gekOH:null)
+                           : (chohuOH&&chohuOH!==gekOH?chohuOH:null);
   const rec1=oh1?OH_HEALTH[oh1]:null;
   const rec2=oh2&&oh2!==oh1?OH_HEALTH[oh2]:null;
 
@@ -1910,9 +1961,92 @@ function renderHealth(s){
     orderHtml=makeAcc(`🛒 ${oh1} 오행 맞춤 메뉴 주문`, orderInner, '#8a6200');
   }
 
+  // ── 천직/본성 탭 렌더 함수 ──
+  function renderYongsinTabContent(tabOH, label, isFirst){
+    const rec=OH_HEALTH[tabOH];
+    if(!rec) return '';
+    const c=CO[tabOH]||{bg:'#faf8f4',t:'#5a4020',b:'#e0d0b0',dot:'#c9a227'};
+    const gutInvolved=["토","화","금"].includes(tabOH);
+    const exD=OH_EXERCISE[tabOH];
+    const gemD=OH_GEM[tabOH];
+    const tabAcc1Tea  = makeAcc(`☕ ${tabOH} 보충 · 차 추천`,
+      makeHCards(rec.teas,3,c)+
+      '<div style="margin-top:8px;padding:8px 10px;border-top:1px dashed #e0d0b0">'+
+      '<span style="background:#5a3e00;color:#fff8e8;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:500">💎 쌍화탕은 오행을 모두 포함합니다</span>'+
+      '</div>', c.t);
+    const tabAcc1Juice= makeAcc(`🥤 ${tabOH} 보충 · 주스 추천`, makeHCards(rec.juices,3,c), c.t);
+    const tabAcc1Supp = makeAcc(`💊 ${tabOH} 보충 · 건강기능식품 추천`, makeHCards(rec.supps,3,c), c.t);
+    const tabAccEx=exD?makeAcc('🏃 '+tabOH+' 오행 맞춤 운동처방',
+      '<div style="padding:4px 0">'
+      +'<div style="font-size:11px;color:#5a4020;line-height:1.8;margin-bottom:10px;background:#fffef5;border-left:3px solid #c9a227;padding:8px 10px;border-radius:0 6px 6px 0">'+exD.principle+'</div>'
+      +exD.items.map(it=>'<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid #f0ece0">'
+        +'<span style="font-size:20px;line-height:1.2">'+it.icon+'</span>'
+        +'<div><div style="font-size:12px;font-weight:700;color:#3a2a10;margin-bottom:2px">'+it.name+'</div>'
+        +'<div style="font-size:11px;color:#6a5a3a;line-height:1.6">'+it.desc+'</div></div>'
+        +'</div>').join('')
+      +'</div>', '#2e7d4f'):'';
+    const tabAccGem=gemD?makeAcc('💎 나의 수호신 보석',
+      '<div style="padding:6px 0">'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+
+      gemD.gems.map(g=>'<span style="background:'+gemD.bg+';color:'+gemD.color+';border:1px solid '+gemD.border+';border-radius:20px;padding:5px 14px;font-size:12px;font-weight:500">💎 '+g+'</span>').join('')+
+      '</div>'+
+      '<div style="padding-top:8px;border-top:1px dashed #e0d0b0">'+
+      '<span style="background:#5a3e00;color:#fff8e8;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:500">💎 나전칠기 장신구는 오행을 모두 포함합니다</span>'+
+      '</div></div>', '#5a3e00'):'';
+    return `
+      <div style="background:${c.bg};border:1.5px solid ${c.b};border-radius:10px;padding:10px 12px;margin-bottom:8px">
+        <div style="font-size:8px;font-weight:700;color:${c.t};letter-spacing:.1em;margin-bottom:5px;opacity:.8">✦ ${label}</div>
+        <div style="font-size:16px;font-weight:700;color:${c.t};margin-bottom:6px;letter-spacing:.03em">
+          ${tabOH}
+          <span style="font-size:11px;font-weight:600;margin-left:4px">(${rec.deco[0]}${tabOH} · ${rec.deco[1]}${tabOH})</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px">
+          <div style="background:rgba(255,255,255,0.55);border-radius:6px;padding:5px 7px">
+            <div style="font-size:8px;color:${c.t};opacity:.75;margin-bottom:2px;font-weight:700">관련 장부</div>
+            <div style="font-size:10px;font-weight:700;color:${c.t}">${rec.organ.replace('·','·<br>').replace(' ','')}</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.55);border-radius:6px;padding:5px 7px">
+            <div style="font-size:8px;color:${c.t};opacity:.75;margin-bottom:2px;font-weight:700">맛</div>
+            <div style="font-size:10px;font-weight:700;color:${c.t}">${rec.taste}</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.55);border-radius:6px;padding:5px 7px">
+            <div style="font-size:8px;color:${c.t};opacity:.75;margin-bottom:2px;font-weight:700">색깔</div>
+            <div style="font-size:10px;font-weight:700;color:${c.t}">${rec.color}</div>
+          </div>
+        </div>
+      </div>
+      ${tabAcc1Tea}${tabAcc1Juice}${tabAcc1Supp}${tabAccEx}${tabAccGem}`;
+  }
+
+  // 천직/본성 탭 전환 함수 (전역 등록)
+  const _hTabId='h_yong_tab_'+dc+'_'+moIdx;
+  window['switchYongTab_'+_hTabId]=function(which){
+    document.getElementById('yt_gek_'+_hTabId).style.display=which==='gek'?'block':'none';
+    document.getElementById('yt_cho_'+_hTabId).style.display=which==='cho'?'block':'none';
+    document.getElementById('ytb_gek_'+_hTabId).className='tab-btn'+(which==='gek'?' active':'');
+    document.getElementById('ytb_cho_'+_hTabId).className='tab-btn'+(which==='cho'?' active':'');
+  };
+  const firstTab = chohuIsFirst ? 'cho' : 'gek';
+  const gekTabLabel  = chohuIsFirst ? '천직 에너지' : '★ 천직 에너지';
+  const choTabLabel  = chohuIsFirst ? '★ 본성 에너지' : '본성 에너지';
+
   return`<div class="health-panel">
 
-    <!-- 제1 밸런스 오행 -->
+    <!-- 천직/본성 탭 -->
+    <div class="tabs" style="margin-bottom:12px">
+      <button class="tab-btn${firstTab==='gek'?' active':''}" id="ytb_gek_${_hTabId}"
+        onclick="switchYongTab_${_hTabId}('gek')">${gekTabLabel}</button>
+      <button class="tab-btn${firstTab==='cho'?' active':''}" id="ytb_cho_${_hTabId}"
+        onclick="switchYongTab_${_hTabId}('cho')">${choTabLabel}</button>
+    </div>
+    <div id="yt_gek_${_hTabId}" style="display:${firstTab==='gek'?'block':'none'}">
+      ${gekOH ? renderYongsinTabContent(gekOH,'格局용신 · 천직 에너지',!chohuIsFirst) : '<div style="padding:16px;text-align:center;color:#9a8a6a;font-size:11px">格局용신 정보 없음</div>'}
+    </div>
+    <div id="yt_cho_${_hTabId}" style="display:${firstTab==='cho'?'block':'none'}">
+      ${chohuOH ? renderYongsinTabContent(chohuOH,'조후용신 · 본성 에너지',chohuIsFirst) : '<div style="padding:16px;text-align:center;color:#9a8a6a;font-size:11px">조후용신 정보 없음</div>'}
+    </div>
+
+    <!-- 제1 밸런스 오행 (기존 건강 섹션 — 장건강·운동·보석·주문) -->
     <div style="background:${c1.bg};border:1.5px solid ${c1.b};border-radius:10px;padding:10px 12px;margin-bottom:8px">
       <div style="font-size:8px;font-weight:700;color:${c1.t};letter-spacing:.1em;margin-bottom:5px;opacity:.8">✦ 제1 밸런스 오행</div>
       <div style="font-size:16px;font-weight:700;color:${c1.t};margin-bottom:6px;letter-spacing:.03em">
@@ -3210,26 +3344,23 @@ function renderEnergyCode(s){
         </div>
         <div style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:5px">
           <div>
-            <span style="font-size:9px;color:#7a6040">格局용신</span><br>
+            <span style="font-size:9px;color:#1a5276;font-weight:700">★ ${gekDetail.chohuIsFirst?'':'천직 에너지'}格局용신</span><br>
             <span style="font-size:12px;font-weight:700;color:#1a3a6c">${(()=>{const r={'목':'甲乙(목)','화':'丙丁(화)','토':'戊己(토)','금':'庚辛(금)','수':'壬癸(수)'};const g=gekDetail.originalGekYongOH||gekDetail.gekYongOH;return r[g]||g||'조후적용';})()}</span>
+            ${!gekDetail.chohuIsFirst?'<br><span style="font-size:8px;background:#1a5276;color:#fff;border-radius:3px;padding:1px 5px">제1용신</span>':''}
           </div>
           <div style="color:#ccc;padding-top:14px">|</div>
           <div>
-            <span style="font-size:9px;color:#7a6040">조후용신 (궁통보감)</span><br>
-            <span style="font-size:12px;font-weight:700;color:#7a3a00">${yong.yongsin}${extractOH(yong.yongsin)?'('+extractOH(yong.yongsin)+')':''}</span>
-            ${yong.hesin&&yong.hesin!=='-'?`<span style="font-size:10px;color:#9a6a30"> · ${yong.hesin}${extractOH(yong.hesin)?'('+extractOH(yong.hesin)+')':''}</span>`:''}
+            <span style="font-size:9px;color:#7a3a00;font-weight:700">${gekDetail.chohuIsFirst?'★ ':''} 본성 에너지 · 조후용신 (궁통보감)</span><br>
+            <span style="font-size:11px;color:#9a6a30">${yong.yongsin}${extractOH(yong.yongsin)?'('+extractOH(yong.yongsin)+')':''}</span>
+            ${yong.hesin&&yong.hesin!=='-'?`<span style="font-size:11px;color:#9a6a30"> · ${yong.hesin}${extractOH(yong.hesin)?'('+extractOH(yong.hesin)+')':''}</span>`:''}
+            <br><span style="font-size:12px;font-weight:700;color:#7a3a00">▶ 실질: ${(()=>{const r={'목':'甲乙(목)','화':'丙丁(화)','토':'戊己(토)','금':'庚辛(금)','수':'壬癸(수)'};return r[getChohuYongOH(currentSaju)]||getChohuYongOH(currentSaju)||'—';})()}</span>
+            ${gekDetail.tongganOH?`<br><span style="font-size:9px;color:#5b21b6;font-weight:700">⚡ ${gekDetail.tongganOH===getChohuYongOH(currentSaju)?'본성이 통관 역할도 겸함':'통관: '+gekDetail.tongganName}</span>`:''}
+            ${gekDetail.chohuIsFirst?'<br><span style="font-size:8px;background:#c9a227;color:#fff;border-radius:3px;padding:1px 5px">제1용신</span>':''}
           </div>
-          ${gekDetail.gekName.includes('보완필요')?`
-          <div style="color:#ccc;padding-top:14px">|</div>
-          <div>
-            <span style="font-size:9px;color:#2e5fa3;font-weight:700">실질 제1용신</span><br>
-            <span style="font-size:12px;font-weight:700;color:#1a5c38">${({'목':'甲乙(목)','화':'丙丁(화)','토':'戊己(토)','금':'庚辛(금)','수':'壬癸(수)'}[finalYongOH]||finalYongOH)}</span>
-          </div>`:''}
         </div>
-        ${gekDetail.gekName.includes('보완필요')?`
-        <div style="margin-bottom:6px;padding:5px 9px;background:#eef3fb;border-radius:5px;border-left:3px solid #2e5fa3;font-size:9px;color:#1a2a5a;line-height:1.8">
-          ${yong.yongsin}(${extractOH(yong.yongsin)?'('+extractOH(yong.yongsin)+')':''} 원국에 충족 → 실질 결핍 ${yong.hesin}${extractOH(yong.hesin)?'('+extractOH(yong.hesin)+')':''}이 <b>제1용신</b>으로 승격<br>
-          수가 공급된 후에야 화의 格이 온전히 실현됩니다
+        ${gekDetail.tongganOH?`
+        <div style="margin-bottom:6px;padding:5px 9px;background:#f5f0ff;border-radius:5px;border-left:3px solid #7c3aed;font-size:9px;color:#3b0764;line-height:1.8">
+          ⚡ 통관: 원국에서 오행 대립이 감지됩니다. <b>${gekDetail.tongganName}</b> — 조후 방향으로 추구하면 내면 균형에 도움이 됩니다.
         </div>`:''}
         </div>
       </div>
@@ -3296,89 +3427,80 @@ function renderEnergyCode(s){
                 ${(gekDetail.moJjChung||gekDetail.moJjHyeong||gekDetail.moJjPa||gekDetail.moJjYughep)?`<br><span style="font-size:10px;color:#c0392b;font-weight:700">→ 格의 근거지가 복합 손상 — 格이 온전히 작동하지 않을 수 있음</span>`:''}              </div>
             </div>`;
 
-          // ── 2. 에너지 처방 과정 블록 ──
-          let processLines=[];
+          // ── 2. 格局용신 · 조후용신 처방 블록 ──
+          const gekYongOHdisp = gekDetail.gekYongOH;
+          // 조후용신: 2오행 원칙 반영된 실질값 (화 충족시 수 승격)
+          const chohuYongOHdisp = getChohuYongOH(s);
+          const chohuYongOHbase = gekDetail.chohuYongOH; // 궁통보감 제1오행 원문
+          // hesin: 조후 원문 제2오행 중 실질 조후용신과 다른 것
+          const hesinOHdisp = origHesinOH&&origHesinOH!==chohuYongOHdisp&&origHesinOH!==chohuYongOHbase ? origHesinOH : null;
+          const tongganDisp = gekDetail.tongganOH&&gekDetail.tongganOH!==chohuYongOHdisp ? gekDetail.tongganOH : null;
 
-          // 조후용신 — 쉬운 설명
-          const chohuDesc=`계절 균형으로 필요한 에너지: <b>${yong.yongsin}${origYongOH?'('+origYongOH+')':''}</b>${yong.hesin&&yong.hesin!=='-'?` · <b>${yong.hesin}${extractOH(yong.hesin)?'('+extractOH(yong.hesin)+')':''}</b>`:''}`;
-          processLines.push(`<span style="color:#7a5a00">☀️ ${chohuDesc}</span>`);
+          const gcGek=CO[gekYongOHdisp]||{bg:'rgba(26,58,108,0.10)',t:'#1a3a6c',b:'rgba(26,58,108,0.3)'};
+          const gcCho=CO[chohuYongOHdisp]||{bg:'rgba(122,58,0,0.10)',t:'#7a3a00',b:'rgba(122,58,0,0.3)'};
 
-          // 格局=조후 일치 여부
-          if(origGekYongOH&&origGekYongOH===origYongOH){
-            processLines.push(`<span style="color:#1a5c2a">✓ 格의 방향과 계절 균형이 같은 에너지(${safeRepr(origYongOH)})를 가리킴</span>`);
-          } else if(origGekYongOH){
-            processLines.push(`<span style="color:#922b21">⚠ 格의 방향(${safeRepr(origGekYongOH)})과 계절 균형(${safeRepr(origYongOH)})이 다름 — 함께 검토</span>`);
+          // 格局용신·조후용신 일치 여부 문장
+          let dualDesc='';
+          if(gekYongOHdisp&&chohuYongOHdisp){
+            if(gekYongOHdisp===chohuYongOHdisp){
+              dualDesc=`<span style="color:#1a5c2a">✓ 천직 에너지와 본성 에너지가 <b>${safeRepr(gekYongOHdisp)}</b>로 일치 — 하고 싶은 일이 곧 잘하는 일</span>`;
+            } else {
+              dualDesc=`<span style="color:#5a3e00">천직(${safeRepr(gekYongOHdisp)})과 본성(${safeRepr(chohuYongOHdisp)})이 다릅니다.<br>낮에는 <b>${safeRepr(gekYongOHdisp)}</b> 에너지로 일하고, 마음 속엔 <b>${safeRepr(chohuYongOHdisp)}</b>을 품고 삽니다.</span>`;
+            }
           }
 
-          // 보정 규칙 — 쉬운 설명
-          if(gekDetail.chohuOverride && !gekDetail.gekName.includes('보완필요')){
-            const nm=gekDetail.gekName;
-            const gekOHname=safeRepr(origGekYongOH);
-            if(nm.includes('이미충분'))
-              processLines.push(`<span style="color:#c0392b">→ 格에서 필요한 에너지 <b>${gekOHname}</b>이 원국에 이미 많이 있어 더 보충하지 않아도 됨 — 계절 균형 방향으로 전환</span>`);
-            else if(nm.includes('조토과잉'))
-              processLines.push(`<span style="color:#c0392b">→ 格에서 필요한 土 에너지가 원국에 많지만 메마른 땅이라 실제 도움이 되지 않음 — 계절 균형 방향으로 전환</span>`);
-            else if(nm.includes('방향전환'))
-              processLines.push(`<span style="color:#c0392b">→ 格에서 필요한 에너지 <b>${gekOHname}</b>이 오히려 부족한 것을 억누르는 구조 — 방향을 바꿔 계절 균형을 우선</span>`);
-            else if(nm.includes('조열'))
-              processLines.push(`<span style="color:#c0392b">→ 원국이 너무 뜨겁고 건조함 — 식히는 에너지(水)가 최우선</span>`);
-            else if(nm.includes('한습'))
-              processLines.push(`<span style="color:#c0392b">→ 원국이 너무 차고 습함 — 따뜻한 에너지(火)가 최우선</span>`);
-            else if(nm.includes('조후기신'))
-              processLines.push(`<span style="color:#c0392b">→ 格에서 필요한 에너지 <b>${gekOHname}</b>이 오히려 계절 균형을 깨뜨림 — 계절 균형을 우선</span>`);
+          // 조열/한습/파격 등 제1용신 이유
+          let priorityNote='';
+          if(gekDetail.chohuIsFirst){
+            const nm=gekDetail.gekName||'';
+            if(nm.includes('조열긴급')) priorityNote='원국이 너무 뜨겁고 건조 — 조후(水)가 먼저';
+            else if(nm.includes('한습긴급')) priorityNote='원국이 너무 차고 습함 — 조후(火)가 먼저';
+            else if(gekDetail.isBroken) priorityNote='格이 파격 — 格局용신보다 조후용신이 우선';
+            else priorityNote='조후가 格局보다 우선되는 구조';
           }
 
-          // 2오행 원칙 — corrected 여부와 무관하게 chohu2OhInfo가 있으면 표시
-          // (통관용신과 같은 결론이어도 조후 충족 → hesin 승격 이유를 함께 설명)
-          if(corrected && origYongOH){
-            const yongCnt=ohCount[['목','화','토','금','수'].indexOf(origYongOH)]||0;
-            const yongCntDesc=yongCnt>=2?`${yongCnt}개 있어 이미 충분`:yongCnt===1?`${yongCnt}개뿐이지만 格과 계절 균형이 모두 같은 방향을 가리킴`:`원국에 없지만`;
-            processLines.push(`<span style="color:#2e5fa3">→ ${safeRepr(origYongOH)} 에너지가 ${yongCntDesc}<br>&nbsp;&nbsp;&nbsp;→ 오히려 부족한 <b>${safeRepr(finalYongOH)}</b>이 더 필요 — 제1 처방, ${safeRepr(origYongOH)}은 제2 처방</span>`);
-          } else if(gekDetail.chohu2OhInfo){
-            const {yongOH:c2yong, hesinOH:c2hesin, yongCnt:c2cnt}=gekDetail.chohu2OhInfo;
-            processLines.push(`<span style="color:#2e5fa3">→ <b>${safeRepr(c2yong)}</b> 에너지가 원국에 ${c2cnt}개 있어 조후가 이미 해결됨<br>&nbsp;&nbsp;&nbsp;→ 부족한 <b>${safeRepr(c2hesin)}</b>이 제1 처방으로 승격 (궁통보감 2오행 원칙)</span>`);
-          }
+          // 통관 설명 — 조후용신과 같은 오행이면 "본성이 통관 역할 겸함"
+          const tongganMatchesChohu = gekDetail.tongganOH && gekDetail.tongganOH===chohuYongOHdisp;
+          const tongganNote=gekDetail.tongganOH
+            ?(tongganMatchesChohu
+              ?`<span style="color:#5b21b6">⚡ 본성 에너지(${safeRepr(chohuYongOHdisp)})가 통관 역할도 겸합니다 — ${gekDetail.tongganName} — 본성적으로 더 강하게 끌리는 이유</span>`
+              :`<span style="color:#5b21b6">⚡ 통관: ${gekDetail.tongganName} — 두 에너지 사이 다리 역할(조후 방향)</span>`)
+            :'';
 
-          // 최종
-          processLines.push(`<b style="color:#1a5c2a">▶ 내게 가장 필요한 에너지: ${safeRepr(finalYongOH)}</b>`);
+          // 궁통보감 2오행 원칙
+          let chohu2Note='';
+          if(gekDetail.chohu2OhInfo){
+            const {yongOH:c2y, hesinOH:c2h, yongCnt:c2n}=gekDetail.chohu2OhInfo;
+            chohu2Note=`<span style="color:#2e5fa3">→ <b>${safeRepr(c2y)}</b>이 원국에 ${c2n}개 충족 → 부족한 <b>${safeRepr(c2h)}</b>이 본성 에너지로 승격 (궁통보감 2오행)</span>`;
+          }
 
           const processBlock=`
             <div class="story-sec">
-              <div class="story-sec-title">✦ 에너지 처방 과정</div>
-              <div style="font-size:10px;line-height:2.2;color:#3a2a10">
-                ${processLines.map(l=>`<div>${l}</div>`).join('')}
+              <div class="story-sec-title">✦ 나의 두 가지 에너지 처방</div>
+              <div style="font-size:11px;line-height:2.2;color:#3a2a10">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+                  <div style="background:${gcGek.bg};border:1px solid ${gcGek.b};border-radius:7px;padding:6px 10px;flex:1;min-width:100px">
+                    <div style="font-size:9px;color:${gcGek.t};font-weight:700;margin-bottom:3px">${gekDetail.chohuIsFirst?'':'★ '}천직 에너지 (格局용신)</div>
+                    <div style="font-size:14px;font-weight:700;color:${gcGek.t}">${safeRepr(gekYongOHdisp)||'—'}</div>
+                    <div style="font-size:9px;color:${gcGek.t};opacity:.8;margin-top:2px">잘하는 일 · 평생 기질</div>
+                  </div>
+                  <div style="background:${gcCho.bg};border:1px solid ${gcCho.b};border-radius:7px;padding:6px 10px;flex:1;min-width:100px">
+                    <div style="font-size:9px;color:${gcCho.t};font-weight:700;margin-bottom:3px">${gekDetail.chohuIsFirst?'★ ':''}본성 에너지 (조후용신)</div>
+                    <div style="font-size:14px;font-weight:700;color:${gcCho.t}">${safeRepr(chohuYongOHdisp)||'—'}</div>
+                    ${chohuYongOHdisp!==chohuYongOHbase?`<div style="font-size:8px;color:\${gcCho.t};opacity:.75;margin-top:1px">${safeRepr(chohuYongOHbase)} 충족 → ${safeRepr(chohuYongOHdisp)} 승격</div>`:''}
+                    <div style="font-size:9px;color:${gcCho.t};opacity:.8;margin-top:2px">끌리는 것 · 결핍의 욕망</div>
+                  </div>
+                </div>
+                ${dualDesc?`<div>${dualDesc}</div>`:''}
+                ${priorityNote?`<div><span style="color:#c0392b;font-weight:700">→ ${priorityNote}</span></div>`:''}
+                ${tongganNote?`<div>${tongganNote}</div>`:''}
+                ${chohu2Note?`<div>${chohu2Note}</div>`:''}
               </div>
             </div>`;
 
-          // ── 3. 용신·희신·기신 pill 블록 ──
-          const fc=CO[finalYongOH]||{bg:'rgba(46,125,79,0.12)',t:'#1a5c38',b:'rgba(46,125,79,0.35)'};
-          const finalPill=`<span class="yongsin-pill yong" style="background:${fc.bg};color:${fc.t};border:1px solid ${fc.b}">용신: ${safeRepr(finalYongOH)}</span>`;
+          // 에너지 처방 요약 pill 블록 제거
 
-          // 희신 결정
-          let hesinOH2=null;
-          if(corrected) hesinOH2=origYongOH;           // 보정됐으면 원래 조후용신이 희신
-          else if(origHesinOH) hesinOH2=origHesinOH;   // 아니면 hesin
-          const hc=hesinOH2?CO[hesinOH2]:{bg:'rgba(21,101,160,0.1)',t:'#1a4c80',b:'rgba(21,101,160,0.3)'};
-          const hesinP2=hesinOH2&&hesinOH2!==finalYongOH
-            ?`<span class="yongsin-pill hes" style="background:${hc.bg};color:${hc.t};border:1px solid ${hc.b}">희신: ${safeRepr(hesinOH2)}</span>`:'';
-
-          // 기신 (용신을 극하는 오행)
-          const OH_GEUKJEOK2=[3,4,0,1,2];
-          const fiIdx=['목','화','토','금','수'].indexOf(finalYongOH);
-          const kisinOH=fiIdx>=0?['목','화','토','금','수'][OH_GEUKJEOK2[fiIdx]]:null;
-          const kc=kisinOH?CO[kisinOH]:{bg:'rgba(192,57,43,0.08)',t:'#922b21',b:'rgba(192,57,43,0.3)'};
-          const kisinP=kisinOH?`<span class="yongsin-pill byung" style="background:${kc.bg};color:${kc.t};border:1px solid ${kc.b}">기신: ${safeRepr(kisinOH)}</span>`:'';
-
-          const pillBlock=`
-            <div class="story-sec">
-              <div class="story-sec-title">✦ 에너지 처방 요약</div>
-              <div class="yongsin-pills">${finalPill}${hesinP2}${kisinP}</div>
-              <div style="font-size:9px;color:#9a8a6a;margin-top:6px;line-height:1.8">
-                ${kisinOH?`${safeRepr(kisinOH)} 에너지가 강한 시기에는 소진되거나 힘든 패턴이 나타나기 쉽습니다.`:''}
-              </div>
-            </div>`;
-
-          return gekBlock+processBlock+pillBlock;
+          return gekBlock+processBlock;
         })()}
       </div>
     </div>
@@ -4249,19 +4371,19 @@ function renderCareer(s){
   const moJJ=s.pillars[1].jj;
   const moIdx=jjToMoIdx(moJJ);
   const gek=getGekInfo(dc,moJJ);
-  const ss=gek.sipsin;
-  const oh1=getSajuYongshinOH(s);
-  // oh2: 건강 탭과 동일 — 보정으로 용신이 바뀌었으면 원래 조후용신이 희신
-  const yongData2=YONGSIN_DATA[dc][moIdx];
-  const chohuOH2=yongsinToOH(yongData2.yongsin);
-  const oh2=(!currentYongOverride && oh1!==chohuOH2)
-    ? chohuOH2
-    : (currentYongOverride?null:yongsinToOH(yongData2.hesin));
+  const gekD=analyzeGek(s);
+  const ss=gekD.sipsin||gek.sipsin;
+  // ── 천직 에너지(格局용신) · 본성 에너지(조후용신) 독립 설정 ──
+  const gekOH  = currentYongOverride || getGekYongOH(s);
+  const chohuOH= getChohuYongOH(s);
+  const chohuIsFirst = !currentYongOverride && gekD.chohuIsFirst;
   const careerSS=CAREER_DATA[ss];
-  const c1=CO[oh1]||{bg:"#faf8f4",t:"#5a4020",b:"#e0d0b0"};
-  if(!careerSS||!oh1) return "<div style='padding:20px;text-align:center;color:#9a8a6a;font-size:12px'>격국 또는 용신 정보를 확인할 수 없습니다.<br>사주 원국 탭을 먼저 확인해주세요.</div>";
-  const entry=careerSS.오행[oh1];
-  const entry2=oh2&&oh2!==oh1?careerSS.오행[oh2]:null;
+  if(!careerSS||!gekOH) return "<div style='padding:20px;text-align:center;color:#9a8a6a;font-size:12px'>격국 또는 용신 정보를 확인할 수 없습니다.<br>사주 원국 탭을 먼저 확인해주세요.</div>";
+  // 하위호환용 oh1/oh2 (AI 프롬프트 등에서 사용)
+  const oh1 = chohuIsFirst ? chohuOH : gekOH;
+  const oh2 = chohuIsFirst ? (gekOH&&gekOH!==chohuOH?gekOH:null) : (chohuOH&&chohuOH!==gekOH?chohuOH:null);
+  const entry=careerSS.오행[gekOH]||{};
+  const entryChohu=chohuOH&&chohuOH!==gekOH?(careerSS.오행[chohuOH]||null):null;
 
   function jobCard(rank, title, bg, bd){
     return "<div style='display:flex;align-items:center;gap:10px;padding:10px 12px;background:"+bg+";border-radius:9px;border:1px solid "+bd+";margin-bottom:7px'>"
@@ -4270,22 +4392,44 @@ function renderCareer(s){
       +"</div>";
   }
 
-  const entry2Html=entry2
-    ?makeAcc("✦ 제2 밸런스 오행("+oh2+") 추가 직업",
-        "<div style='padding:6px 0'>"
-        +"<div style='font-size:11px;color:#5a4020;margin-bottom:8px'><b>"+oh2+"</b> 오행 환경도 잘 맞습니다. 보조 에너지로 참고하세요.</div>"
-        +jobCard("1",entry2.r1,"#f0f8ff","#b0c8e0")
-        +jobCard("2",entry2.r2,"#f5f8fa","#c0d0e0")
-        +jobCard("3",entry2.r3,"#f8f9fb","#d0dce8")
-        +"</div>","#1565a0")
-    :"";
+  // ── 탭별 직업 카드 렌더 함수 ──
+  function careerTabHtml(tabOH, tabLabel, tabGekSS, tabCareerSS, isFirst){
+    if(!tabOH||!tabCareerSS) return '';
+    const tabEntry=tabCareerSS.오행[tabOH]||{};
+    const cT=CO[tabOH]||{bg:"#faf8f4",t:"#5a4020",b:"#e0d0b0"};
+    if(!tabEntry.r1) return `<div style='padding:16px;text-align:center;color:#9a8a6a;font-size:11px'>${tabOH} 오행 직업 데이터 없음</div>`;
+    return "<div style='background:"+cT.bg+";border:1.5px solid "+cT.b+";border-radius:10px;padding:12px 14px;margin-bottom:10px'>"
+      +"<div style='font-size:8px;font-weight:700;color:"+cT.t+";letter-spacing:.1em;margin-bottom:5px;opacity:.8'>✦ "+tabLabel+"</div>"
+      +"<div style='display:flex;align-items:center;gap:12px;flex-wrap:wrap'>"
+      +"<div style='text-align:center'>"
+      +"<div style='font-size:9px;color:"+cT.t+";opacity:.7;margin-bottom:3px'>격국(格局)</div>"
+      +"<div style='font-size:15px;font-weight:700;color:"+cT.t+"'>"+tabGekSS+"格</div>"
+      +"<div style='font-size:10px;color:"+cT.t+";opacity:.8'>"+tabCareerSS.기질+"</div>"
+      +"</div>"
+      +"<div style='font-size:18px;color:#c9a227;font-weight:300'>×</div>"
+      +"<div style='text-align:center'>"
+      +"<div style='font-size:9px;color:"+cT.t+";opacity:.7;margin-bottom:3px'>용신 오행</div>"
+      +"<div style='font-size:15px;font-weight:700;color:"+cT.t+"'>"+tabOH+"</div>"
+      +"<div style='font-size:10px;color:"+cT.t+";opacity:.8'>"+tabEntry.desc+"</div>"
+      +"</div></div></div>"
+      +"<div style='background:#fffef5;border-left:3px solid #c9a227;border-radius:0 8px 8px 0;padding:10px 13px;margin-bottom:10px'>"
+      +"<div style='font-size:10px;font-weight:700;color:#8a6200;margin-bottom:8px'>💼 추천 직업 · "+tabGekSS+"格 × "+tabOH+" 오행</div>"
+      +jobCard("1",tabEntry.r1,"#fffbf0","#e8d090")
+      +jobCard("2",tabEntry.r2,"#faf8f4","#ddd0b0")
+      +jobCard("3",tabEntry.r3,"#f5f3ee","#d8ccac")
+      +"</div>"
+      +"<div style='font-size:11px;color:#6a5a3a;line-height:1.8;background:#faf8f4;border-radius:8px;padding:10px 13px;margin-bottom:10px'>"
+      +"📌 <b>"+tabGekSS+"格 기질("+tabCareerSS.기질+")</b>이 <b>"+tabOH+" 오행</b>을 만나면 → "+tabEntry.desc+"에서 가장 빛납니다."
+      +"</div>";
+  }
 
   const promptText="[직업적성 심층 분석 요청]\n"
-    +"일간: "+CG[dc]+CG_KR[dc]+" / 격국: "+ss+"格("+careerSS.기질+") / 용신: "+oh1+(oh2?"·"+oh2:"")+"\n\n"
-    +"앱 1차 추천: "+entry.r1+", "+entry.r2+", "+entry.r3+"\n\n"
+    +"일간: "+CG[dc]+CG_KR[dc]+" / 격국: "+ss+"格("+careerSS.기질+") / 천직용신: "+gekOH+" / 본성용신: "+chohuOH+"\n\n"
+    +"天職추천: "+(entry.r1||'')+", "+(entry.r2||'')+", "+(entry.r3||'')+"\n"
+    +"本性추천: "+(entryChohu?entryChohu.r1+", "+entryChohu.r2+", "+entryChohu.r3:"(동일)")+"\n\n"
     +"아래를 고전 기준으로 심층 분석해주세요:\n"
     +"① 格局 특성이 직업 선택에 미치는 구체적 영향\n"
-    +"② 용신 오행이 왜 이 직업군과 맞는지 황제내경·오행 관점\n"
+    +"② 천직용신("+gekOH+")과 본성용신("+chohuOH+")이 다를 때 어떻게 조화시킬지\n"
     +"③ 현재 대운에서 어떤 직업적 전환이 유리한지\n"
     +"④ 피해야 할 직업 환경과 그 이유\n"
     +"⑤ 나의 에너지 코드에 최적화된 커리어 전략";
@@ -4296,34 +4440,33 @@ function renderCareer(s){
     +"<textarea onclick='this.select()' readonly style='width:100%;height:100px;font-size:9px;border-radius:6px;border:1px solid #ccc0a0;padding:8px;background:#fffef5;font-family:inherit;resize:none;line-height:1.7'>"+promptText+"</textarea>"
     +"</div>","#7a6040");
 
+  const firstTab = chohuIsFirst ? 'cho' : 'gek';
+  const gekTabLabel  = chohuIsFirst ? '천직 에너지' : '★ 천직 에너지';
+  const choTabLabel  = chohuIsFirst ? '★ 본성 에너지' : '본성 에너지';
+  const _cTabId='c_yong_tab_'+dc+'_'+moIdx;
+  const switchFn="switchCareerTab_"+_cTabId;
+
   return "<div class='health-panel'>"
-    +"<div style='background:"+c1.bg+";border:1.5px solid "+c1.b+";border-radius:10px;padding:12px 14px;margin-bottom:10px'>"
-    +"<div style='font-size:8px;font-weight:700;color:"+c1.t+";letter-spacing:.1em;margin-bottom:5px;opacity:.8'>✦ 나의 직업 에너지 코드</div>"
-    +"<div style='display:flex;align-items:center;gap:12px;flex-wrap:wrap'>"
-    +"<div style='text-align:center'>"
-    +"<div style='font-size:9px;color:"+c1.t+";opacity:.7;margin-bottom:3px'>격국(格局)</div>"
-    +"<div style='font-size:16px;font-weight:700;color:"+c1.t+"'>"+ss+"格</div>"
-    +"<div style='font-size:10px;color:"+c1.t+";opacity:.8'>"+careerSS.기질+"</div>"
+    +"<div class='tabs' style='margin-bottom:12px'>"
+    +`<button class='tab-btn${firstTab==='gek'?' active':''}' id='ctb_gek_${_cTabId}' onclick='${switchFn}("gek")'>${gekTabLabel}</button>`
+    +`<button class='tab-btn${firstTab==='cho'?' active':''}' id='ctb_cho_${_cTabId}' onclick='${switchFn}("cho")'>${choTabLabel}</button>`
     +"</div>"
-    +"<div style='font-size:18px;color:#c9a227;font-weight:300'>×</div>"
-    +"<div style='text-align:center'>"
-    +"<div style='font-size:9px;color:"+c1.t+";opacity:.7;margin-bottom:3px'>용신 오행</div>"
-    +"<div style='font-size:16px;font-weight:700;color:"+c1.t+"'>"+oh1+"</div>"
-    +"<div style='font-size:10px;color:"+c1.t+";opacity:.8'>"+entry.desc+"</div>"
-    +"</div></div></div>"
-    +"<div style='background:#fffef5;border-left:3px solid #c9a227;border-radius:0 8px 8px 0;padding:10px 13px;margin-bottom:10px'>"
-    +"<div style='font-size:10px;font-weight:700;color:#8a6200;margin-bottom:8px'>💼 추천 직업 · "+ss+"格 × "+oh1+" 오행</div>"
-    +jobCard("1",entry.r1,"#fffbf0","#e8d090")
-    +jobCard("2",entry.r2,"#faf8f4","#ddd0b0")
-    +jobCard("3",entry.r3,"#f5f3ee","#d8ccac")
+    +"<div id='ct_gek_"+_cTabId+"' style='display:"+(firstTab==='gek'?'block':'none')+"'>"
+    +careerTabHtml(gekOH,'格局용신 · 천직 에너지',ss,careerSS,!chohuIsFirst)
     +"</div>"
-    +"<div style='font-size:11px;color:#6a5a3a;line-height:1.8;background:#faf8f4;border-radius:8px;padding:10px 13px;margin-bottom:10px'>"
-    +"📌 <b>"+ss+"格 기질("+careerSS.기질+")</b>이 <b>"+oh1+" 오행 에너지</b>를 만나면 → "+entry.desc+"에서 가장 빛납니다."
+    +"<div id='ct_cho_"+_cTabId+"' style='display:"+(firstTab==='cho'?'block':'none')+"'>"
+    +(entryChohu ? careerTabHtml(chohuOH,'조후용신 · 본성 에너지',ss,careerSS,chohuIsFirst)
+      : "<div style='padding:14px;text-align:center;font-size:11px;color:#8a7a5a'>格局용신과 본성 에너지가 같은 오행("+gekOH+")입니다.</div>")
     +"</div>"
-    +entry2Html
     +aiAcc
+    +"<script>window['"+switchFn+"']=function(w){"
+    +"document.getElementById('ct_gek_"+_cTabId+"').style.display=w==='gek'?'block':'none';"
+    +"document.getElementById('ct_cho_"+_cTabId+"').style.display=w==='cho'?'block':'none';"
+    +"document.getElementById('ctb_gek_"+_cTabId+"').className='tab-btn'+(w==='gek'?' active':'');"
+    +"document.getElementById('ctb_cho_"+_cTabId+"').className='tab-btn'+(w==='cho'?' active':'');"
+    +"};<\/script>"
     +"<div style='background:#faf8f4;border:1px solid #e0d0b0;border-radius:8px;padding:9px 12px;font-size:10px;color:#9a8a6a;line-height:1.7;margin-top:10px'>"
-    +"※ 이 추천은 格局·용신 2축 기반 참고 자료입니다. 실제 직업 선택 시 개인 경험·역량·환경을 함께 고려하세요."
+    +"※ 이 추천은 格局·조후 2용신 기반 참고 자료입니다. 실제 직업 선택 시 개인 경험·역량·환경을 함께 고려하세요."
     +"</div></div>";
 }
 
