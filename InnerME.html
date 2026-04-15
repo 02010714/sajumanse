@@ -340,6 +340,17 @@ input,select{background:#faf8f4;border:1px solid #ccc0a0;color:#2c2416;border-ra
 .admin-empty{text-align:center;padding:40px 20px;color:#9a8a6a;font-size:13px}
 
 </style>
+
+<!-- ★ PWA 설정 ★ -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#c9a227">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="에너지코드">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512.png">
 </head>
 <body>
 <div class="wrap">
@@ -5155,6 +5166,17 @@ function closePillarAcc() {
       wrap.scrollIntoView({behavior:'smooth', block:'start'});
     }, 100);
   }
+}
+</script>
+
+<!-- ★ Service Worker 등록 (PWA 오프라인/홈화면 설치 지원) ★ -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.log('SW error:', err));
+  });
 }
 </script>
 </body>
