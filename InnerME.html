@@ -971,11 +971,14 @@ function analyzeGek(s){
     if(chosen.name==='GWANSAL_CHECK'){
       const gwanType=getGwanType(dc,s.pillars);
       gekName=gwanType==='jeonggwan'||gwanType==='mixed'?'官印相生格':'殺印相生格';
+      // 官印相生格·殺印相生格의 格局용신은 인성(印星)
+      // 관성이 인성을 生하고 인성이 일간을 生하는 구조 → 用神=인성
+      gekYongOH=OH_NAME[rel.inseong];
     } else {
       gekName=chosen.name;
+      const yongOHidx=rel[chosen.ohKey];
+      gekYongOH=yongOHidx!==undefined?OH_NAME[yongOHidx]:null;
     }
-    const yongOHidx=rel[chosen.ohKey];
-    gekYongOH=yongOHidx!==undefined?OH_NAME[yongOHidx]:null;
 
     // ── 조후 긴급도 판정 (chohuIsFirst 결정용 — gekYongOH는 덮어쓰지 않음) ──
     // 格局용신과 조후용신은 독립 보존. 아래 조건은 제1용신 판정에만 사용.
@@ -1020,8 +1023,9 @@ function analyzeGek(s){
       chohuOverride=true;
       gekName=gekName+'→조열긴급';
     }
-    // [C] 한습긴급
-    if(!chohuOverride && (moIdx>=9||moIdx<=1) && 화tok<=1 && 수tok>=3){
+    // [C] 한습긴급 — 亥(9)·子(10)·丑(0)월만 해당
+    // 寅월(11)은 입춘 이후, 卯월(1)은 봄 시작 — 한습긴급 대상 아님
+    if(!chohuOverride && (moIdx===9||moIdx===10||moIdx===0) && 화tok<=1 && 수tok>=3){
       chohuOverride=true;
       gekName=gekName+'→한습긴급';
     }
@@ -1065,41 +1069,106 @@ function analyzeGek(s){
     const hesinOHstr=yongsinToOH(yongData.hesin);
     const hesinIdx=hesinOHstr?OH_NAME.indexOf(hesinOHstr):-1;
     if(조후yongIdx>=0 && ohCount[조후yongIdx]>=2 && hesinIdx>=0 && ohCount[hesinIdx]===0){
-      const hesinGenYong=OH_SHENG_IDX[hesinIdx]===조후yongIdx;
-      if(!hesinGenYong){
+      const hesinGeukYong=OH_GEUGG_IDX[hesinIdx]===조후yongIdx;
+      const OH_SHENG_L2=[1,2,3,4,0];
+      const dcOH_l=OH_CG[dc];
+      const hesinGenIlgan2=(OH_SHENG_L2[hesinIdx]===dcOH_l);
+      const allowDespiteGeuk2=hesinGeukYong && hesinGenIlgan2;
+      if(!hesinGeukYong || allowDespiteGeuk2){
         chohu2OhInfo={yongOH:yongOHstr, hesinOH:hesinOHstr, yongCnt:ohCount[조후yongIdx]};
-        // [F] 조후 2오행 정보만 기록 — gekYongOH 덮어쓰기 제거
-        // 조후용신 탭에서 hesin을 조후 제2오행으로 표시하는 용도로만 사용
       }
     }
   }
 
+  // ── 格 활성도(gekStrength) 계산 ──────────────────────────────────────────
+  // 月支 공망·형·파·충·합·변질 누적 감산
+  // 100=완전성격, 0이하=격 불능
+  let gekStrength = 100;
+  const gekDamageLog = [];
+
+  if(isBroken){
+    gekStrength -= 60;
+  }
+  const gmJJlist = (s.gongmang && s.gongmang.jj) ? s.gongmang.jj : [];
+  const moJjGongmang = gmJJlist.includes(moJJ);
+  if(moJjGongmang){ gekStrength -= 40; gekDamageLog.push('月支공망(-40)'); }
+  if(moJjHyeong){   gekStrength -= 20; gekDamageLog.push('月支형(-20)'); }
+  if(moJjPa){       gekStrength -= 15; gekDamageLog.push('月支파(-15)'); }
+  if(moJjChung){    gekStrength -= 20; gekDamageLog.push('月支충(-20)'); }
+  if(moJjYughep){   gekStrength -= 15; gekDamageLog.push('月支합(-15)'); }
+  if(moLryeongByun){ gekStrength -= 10; gekDamageLog.push('月令변질(-10)'); }
+  if(!tuChul && jjType !== '정위'){ gekStrength -= 10; }
+  gekStrength = Math.max(0, Math.min(100, gekStrength));
+
+  const gekStrengthLabel =
+    isBroken      ? '파격(불능)' :
+    gekStrength >= 70 ? '활성' :
+    gekStrength >= 40 ? '반활성' :
+    gekStrength >= 20 ? '불안정' : '불능';
+
+  // ── 보조格(補助格) 판단 ──────────────────────────────────────────────────
+  // 格局의 정체성은 月支가 결정 → gekYongOH가 항상 제1 格局용신
+  // 格 활성도 < 40이면 月支 손상으로 제1格이 실질 불능
+  // → 천간에서 자동 작동하는 보조구조를 제2格(보조格)으로 기록
+  // 제1 格局용신 = 月支 格 용신 (목표·정체성)
+  // 제2 格局용신 = 보조格 용신 (막혔을 때 실제 작동)
+  let sub格Name   = null;  // 보조格 이름
+  let sub格YongOH = null;  // 보조格 용신 (= 제2 格局용신)
+
+  if(!isBroken && gekStrength < 40){
+    const siksC_v = ohCount[rel.siksang] || 0;
+    const gwanC_v = ohCount[rel.gwanseong] || 0;
+    const inC_v   = ohCount[rel.inseong] || 0;
+    if(siksC_v >= 1 && gwanC_v >= 2){
+      sub格Name   = '食神制殺格';
+      sub格YongOH = OH_NAME[rel.siksang];
+    } else if(gwanC_v >= 1 && inC_v >= 1){
+      sub格Name   = '官印相生格(천간)';
+      sub格YongOH = OH_NAME[rel.inseong];
+    } else if(siksC_v >= 2){
+      sub格Name   = '식상주도格';
+      sub格YongOH = OH_NAME[rel.siksang];
+    }
+  }
+
+  // 제1 格局용신 = 月支 格의 용신 (格의 정체성 — 항상 gekYongOH)
+  // 제2 格局용신 = 보조格 용신 (格 불능 시 실제 작동 — sub格YongOH)
+  const gek1YongOH = gekYongOH;              // 항상 月支 格 기준
+  const gek2YongOH = sub格YongOH || null;    // 보조格 있을 때만
+
   // 제1용신 판정: 파격·조열긴급·한습긴급이면 조후가 제1용신
-  const chohuIsFirst = isBroken || chohuOverride; // 미투출은 조후 우선 아님 — 파격·긴급시만
+  const chohuIsFirst = isBroken || chohuOverride;
 
   return {
     sipsin,
     tuChul,
     isBroken,
     moJjChung,
-    moJjHyeong,        // 月支 형살 종류 (null=없음)
-    moJjPa,            // 月支 파(破) 여부
+    moJjHyeong,
+    moJjPa,
     moJjYughep,
     hapGeoJeong,
     moLryeongByun,
     chohuOverride,
-    chohu2OhInfo,      // 궁통보감 2오행 원칙 발동 정보 {yongOH,hesinOH,yongCnt}
+    chohu2OhInfo,
     gekName,
+    sub格Name,         // 제2격국 이름 (null이면 없음)
     originalGekYongOH,
-    gekYongOH,         // 格局용신 오행 (독립 보존)
-    chohuYongOH: yongOHstr, // 조후용신 원래 제1오행 (궁통보감 기준)
-    chohuYongOHbase: yongOHstr, // 조후 제1오행 (화 등) — UI 원문 표시용
-    tongganOH,         // 통관 오행 (조후용신 계열, null이면 없음)
-    tongganName,       // 통관 설명 문자열
-    chohuIsFirst,      // true이면 조후용신이 제1용신
+    gekYongOH,         // 원래 格局용신 (손상 전 기준)
+    gek1YongOH,        // ★ 제1 格局용신 (실제 작동)
+    gek2YongOH,        // ★ 제2 格局용신 (보완 운에서 열리는 格)
+    chohuYongOH: yongOHstr,
+    chohuYongOHbase: yongOHstr,
+    tongganOH,
+    tongganName,
+    chohuIsFirst,
     ohCount,
     ilganScore,
     tuChulChar: tuChul?CG[tuChulCg]:'미투출',
+    moJjGongmang,
+    gekStrength,
+    gekStrengthLabel,
+    gekDamageLog,
   };
 }
 
@@ -1148,9 +1217,22 @@ function getChohuYongOH(s){
         if(OH_JJ[p.jj]===hesinIdx) hesinCnt++;
       });
       // 제1오행 충족(≥2) + 제2오행 결핍(=0) → 제2오행 승격
-      // 단, hesin이 yongOH를 生하는 오행이면 승격 금지 (기신 가중 방지)
-      const hesinGenYong=(SAENGHANEUN[hesinIdx]===yongIdx);
-      if(yongCnt>=2 && hesinCnt===0 && !hesinGenYong){
+      // 궁통보감 원칙: 제1오행이 충분할 때 부족한 제2오행이 필요
+      // 승격 금지 기본: hesin이 yong을 剋하는 관계 (기신 가중 우려)
+      // 단, 아래 경우 극 관계여도 승격 허용:
+      //   → 일간이 hesin을 설기(hesin이 일간을 生)하는 관계일 때
+      //     예: 乙木일간 + 癸水(hesin) → 수생목으로 일간이 먼저 흡수
+      //         → 癸水가 丙火를 극하기 전에 乙木으로 작동 → 병존 가능
+      //   → yong이 강(≥2)하고 hesin이 완전 결핍(=0)이면 공존 가능
+      const hesinGeukYong=(OH_GEUGG_IDX[hesinIdx]===yongIdx);
+      const dcOH_local=OH_CG_LOCAL[dc]; // 일간 오행
+      // hesin이 일간을 生하는가 (hesin → 일간 방향)
+      // SAENGHANEUN[hesinIdx]===dcOH_local: hesin이 생하는 것이 일간이면 true
+      const OH_SHENG_L=[1,2,3,4,0]; // 목생화,화생토,토생금,금생수,수생목
+      const hesinGenIlgan=(OH_SHENG_L[hesinIdx]===dcOH_local);
+      // 극 관계이지만 일간이 hesin을 흡수(설기)하면 공존 허용
+      const allowDespiteGeuk = hesinGeukYong && hesinGenIlgan && yongCnt>=2 && hesinCnt===0;
+      if(yongCnt>=2 && hesinCnt===0 && (!hesinGeukYong || allowDespiteGeuk)){
         return hesinOH; // 제2오행 승격
       }
     }
@@ -2001,23 +2083,41 @@ function renderHealth(s){
       ${(()=>{
         const gekD=analyzeGek(s);
         const chOH=yongsinToOH(yongData.yongsin);
-        if(oh1===chOH){
-          // 조후용신과 같음 → 원래 설명 사용
-          return friendlyEnergyText(YONG_REASON[dc][moIdx]);
-        }
-        // 통관·格局 보정으로 용신이 달라진 경우 → 이유 설명
         const gn=gekD.gekName||'';
-        if(gn.includes('통관용신')){
+        // 기본 설명 결정
+        let baseText='';
+        if(oh1===chOH){
+          baseText=friendlyEnergyText(YONG_REASON[dc][moIdx]);
+        } else if(gn.includes('통관용신')){
           const pair=gn.match(/\((.+)↔(.+)\)/);
-          if(pair) return `원국에서 <b>${pair[1]}</b>와 <b>${pair[2]}</b> 에너지가 충돌하고 있습니다.<br><b>${oh1}</b>이 두 에너지 사이의 다리 역할을 하여 흐름을 만들어 줍니다(통관용신 — 적천수).`;
+          if(pair) baseText=`원국에서 <b>${pair[1]}</b>와 <b>${pair[2]}</b> 에너지가 충돌하고 있습니다.<br><b>${oh1}</b>이 두 에너지 사이의 다리 역할을 하여 흐름을 만들어 줍니다(통관용신 — 적천수).`;
+        } else if(gn.includes('보완필요')){
+          baseText=`계절 균형 오행(${chOH})이 원국에 이미 충분히 있어, 부족한 <b>${oh1}</b>이 더 필요합니다(궁통보감 2오행 원칙).`;
+        } else if(gn.includes('이미충분')||gn.includes('과왕')){
+          baseText=`格에서 필요한 ${chOH} 에너지가 원국에 이미 많아, 계절 균형 방향의 <b>${oh1}</b>으로 전환합니다.`;
+        } else {
+          baseText=friendlyEnergyText(YONG_REASON[dc][moIdx]);
         }
-        if(gn.includes('보완필요')){
-          return `계절 균형 오행(${chOH})이 원국에 이미 충분히 있어, 부족한 <b>${oh1}</b>이 더 필요합니다(궁통보감 2오행 원칙).`;
+        // 格 활성도·공망·실질구조 추가 설명
+        const gs=gekD.gekStrength!==undefined?gekD.gekStrength:100;
+        const OH_N=['목','화','토','금','수'];
+        const dcOH2=ILGAN_OH[dc];
+        const siksOH=OH_N[[1,2,3,4,0][dcOH2]];
+        const gwanOH2=OH_N[[3,4,0,1,2][dcOH2]];
+        const inOH=OH_N[[4,0,1,2,3][dcOH2]];
+        const siksC=gekD.ohCount[[1,2,3,4,0][dcOH2]]||0;
+        const gwanC=gekD.ohCount[[3,4,0,1,2][dcOH2]]||0;
+        let extra='';
+        if(gekD.moJjGongmang){
+          extra+=`<br><span style="font-size:10px;color:#c0392b;font-weight:700">🌀 月支(${JJ[s.pillars[1].jj]})가 공망 — 格의 뿌리가 실제로 작동하기 어렵습니다. <b>${oh1}</b> 보완이 더욱 중요합니다.</span>`;
         }
-        if(gn.includes('이미충분')||gn.includes('과왕')){
-          return `格에서 필요한 ${chOH} 에너지가 원국에 이미 많아, 계절 균형 방향의 <b>${oh1}</b>으로 전환합니다.`;
+        if(!gekD.isBroken && gs<40 && siksC>=1 && gwanC>=2){
+          extra+=`<br><span style="font-size:10px;color:#1a3a6c">◆ 실제 작동 구조: <b>${siksOH}(식상)</b>이 <b>${gwanOH2}(관살)</b>을 다스리는 食神制殺 — 格을 그리워하며 이 구조로 살아갑니다.</span>`
+               +`<br><span style="font-size:10px;color:#2e5fa3">→ <b>${inOH}(인성)</b> 운이 들어올 때 格이 열리며 더 큰 성취가 가능합니다.</span>`;
+        } else if(!gekD.isBroken && gs<70){
+          extra+=`<br><span style="font-size:10px;color:#e65100">◆ 格 활성도 ${gs}% — 格이 완전히 실현되지 않아 <b>${oh1}</b> 보충이 더욱 중요합니다.</span>`;
         }
-        return friendlyEnergyText(YONG_REASON[dc][moIdx]);
+        return baseText+extra;
       })()}<br>
       <span style="font-size:10px;color:#7a6040">📖 황제내경 — ${oh1}${['목','화','금'].includes(oh1)?'은':'는'} ${rec1.organ.split('·')[0].trim()}을 주관 &nbsp;|&nbsp; 📖 동의보감 — ${rec1.taste}은 ${rec1.organ.split('·')[0].trim()}으로 귀납</span>
     </div>
@@ -3285,6 +3385,8 @@ function renderEnergyCode(s){
         <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:5px">
           <span style="font-size:9px;font-weight:700;color:#8a6200">${gekDetail.tuChul&&!gekDetail.isBroken?'✅ 成格':gekDetail.isBroken?'❌ 破格':'⚠️ 未成格'}</span>
           ${gekDetail.isBroken?`<span style="font-size:9px;color:#c0392b">합거(合去)로 格 무력화</span>`:''}
+          ${(gekDetail.gekStrength!==undefined&&!gekDetail.isBroken)?`<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;background:${gekDetail.gekStrength>=70?'#e8f5e9':gekDetail.gekStrength>=40?'#fff8e1':gekDetail.gekStrength>=20?'#fff3e0':'#fce4ec'};color:${gekDetail.gekStrength>=70?'#2e7d32':gekDetail.gekStrength>=40?'#f57f17':gekDetail.gekStrength>=20?'#e64a19':'#c62828'}">格활성도 ${gekDetail.gekStrength}%(${gekDetail.gekStrengthLabel})</span>`:''}
+          ${gekDetail.moJjGongmang?`<span style="font-size:9px;color:#c0392b;font-weight:700">🌀 月支공망 — 格 뿌리 공허</span>`:''}
           ${gekDetail.hapGeoJeong==='gang'?`<span style="font-size:9px;color:#1a8449">✦ 합거로 格이 오히려 강해짐</span>`:gekDetail.hapGeoJeong==='jeong'?`<span style="font-size:9px;color:#1a8449">✦ 방해 기운 합거 — 格 정화</span>`:''}
           ${gekDetail.moJjChung?`<span style="font-size:9px;color:#e67e22">⚡ 月支충 — 格 불안정</span>`:''}
           ${gekDetail.moJjHyeong?`<span style="font-size:9px;color:#e67e22">⚡ ${gekDetail.moJjHyeong} — 月支 손상</span>`:''}
@@ -3316,6 +3418,34 @@ function renderEnergyCode(s){
         <div style="margin-bottom:6px;padding:5px 9px;background:#f5f0ff;border-radius:5px;border-left:3px solid #7c3aed;font-size:9px;color:#3b0764;line-height:1.8">
           ⚡ 통관: 원국에서 오행 대립이 감지됩니다. <b>${gekDetail.tongganName}</b> — 조후 방향으로 추구하면 내면 균형에 도움이 됩니다.
         </div>`:''}
+        ${(()=>{
+          const _gs = gekDetail.gekStrength !== undefined ? gekDetail.gekStrength : 100;
+          if(gekDetail.isBroken || _gs >= 70) return '';
+          const _OH = ['목','화','토','금','수'];
+          const _ILG = [0,0,1,1,2,2,3,3,4,4];
+          const _dc = _ILG[s.pillars[2].cg];
+          const _siks = _OH[[1,2,3,4,0][_dc]];
+          const _gwan = _OH[[3,4,0,1,2][_dc]];
+          const _in   = _OH[[4,0,1,2,3][_dc]];
+          const _siksC = (gekDetail.ohCount||[])[[1,2,3,4,0][_dc]] || 0;
+          const _gwanC = (gekDetail.ohCount||[])[[3,4,0,1,2][_dc]] || 0;
+          const _inC   = (gekDetail.ohCount||[])[[4,0,1,2,3][_dc]] || 0;
+          let _h = '<div style="margin-top:6px;padding:7px 10px;background:#f0f4ff;border-left:3px solid #3b5fc0;border-radius:0 6px 6px 0;font-size:10px;color:#1a3a6c;line-height:1.8">';
+          if(_gs < 40 && _siksC >= 1 && _gwanC >= 2){
+            _h += '<b>◆ 실질 작동 구조 — 食神制殺</b><br>';
+            _h += _siks+'(식상) '+_siksC+'개가 '+_gwan+'(관살) '+_gwanC+'개를 제어합니다.<br>';
+            _h += '<span style="color:#c0392b">格을 지향하나 格의 뿌리가 손상되어 이 구조로 실제 작동합니다.</span><br>';
+            _h += '<span style="color:#2e5fa3">→ <b>'+_in+'(인성)</b> 운이 들어올 때 格이 비로소 열립니다.</span>';
+          } else if(_gwanC >= 1 && _inC >= 1){
+            _h += '<b>◆ 천간 官印 흐름 살아있음</b><br>';
+            _h += '月支 손상과 무관하게 천간의 관성→인성 에너지가 실제로 작동합니다.';
+          } else {
+            _h += '<b>◆ 格 활성도 '+_gs+'%('+gekDetail.gekStrengthLabel+')</b><br>';
+            _h += '月支 손상으로 格이 완전히 실현되지 않습니다. 보완 운이 필요합니다.';
+          }
+          _h += '</div>';
+          return _h;
+        })()}
         </div>
       </div>
     </div>
@@ -3361,6 +3491,44 @@ function renderEnergyCode(s){
           const ilgs=gekDetail.ilganScore;
           const ilganEasy=ilgs?`태어난 달 기준: ${ilgs.unseong} · 뿌리${ilgs.deokryeong} + 연결${ilgs.tonggeun} + 천간${ilgs.deukse} = ${ilgs.total}점 → ${ilgs.isStrong?'에너지가 강한 편':'에너지가 약한 편'}`:''
 
+          // ── 格 활성도 기반 실질 구조 판단 ──
+          // 格 활성도가 낮을 때 천간에서 실제 작동하는 구조를 감지해 표시
+          const gekStr = gekDetail.gekStrength !== undefined ? gekDetail.gekStrength : 100;
+          const gekStrLbl = gekDetail.gekStrengthLabel || '활성';
+          const gekIsWeak = !gekDetail.isBroken && gekStr < 40;
+          const gekIsMid  = !gekDetail.isBroken && gekStr >= 40 && gekStr < 70;
+
+          // 실질 작동 구조 감지: 천간 관계 기반
+          // 관살(수·금)과 식상(토·목)이 원국에 함께 있으면 식신제살 구조
+          const ohC = gekDetail.ohCount || [0,0,0,0,0];
+          const me_oh = ['목','화','토','금','수'].indexOf(safeOH(getSajuYongshinOH(s),''));
+          // 일간 기준 식신/상관 오행, 관/살 오행 직접 계산
+          const ILGAN_OH_L=[0,0,1,1,2,2,3,3,4,4];
+          const dcOH = ILGAN_OH_L[s.pillars[2].cg];
+          const siksangOH = [1,2,3,4,0][dcOH];  // 식상
+          const gwanOH    = [3,4,0,1,2][dcOH];   // 관성
+          const inseongOH = [4,0,1,2,3][dcOH];   // 인성
+          const jaeseongOH= [2,3,4,0,1][dcOH];   // 재성
+          const siksangCnt= ohC[siksangOH]||0;
+          const gwanCnt   = ohC[gwanOH]||0;
+          const inseongCnt= ohC[inseongOH]||0;
+
+          // 실질 구조 판정
+          let realStructure = '';
+          let realStructureDesc = '';
+          if(gekIsWeak || gekIsMid) {
+            if(siksangCnt >= 1 && gwanCnt >= 2) {
+              realStructure = '食神制殺';
+              realStructureDesc = `식상(${['목','화','토','금','수'][siksangOH]}) ${siksangCnt}개가 관살(${['목','화','토','금','수'][gwanOH]}) ${gwanCnt}개를 제어 — 格을 그리워하나 실제론 이 구조로 작동`;
+            } else if(gwanCnt >= 1 && inseongCnt >= 1) {
+              realStructure = '官印相生(천간)';
+              realStructureDesc = `천간에서 관성→인성 흐름이 살아있음 — 月支 손상과 무관하게 이 에너지가 실제 작동`;
+            } else if(siksangCnt >= 2) {
+              realStructure = '식상 주도';
+              realStructureDesc = `식상(${['목','화','토','금','수'][siksangOH]}) 에너지가 원국을 주도 — 格보다 식상의 역할이 실질적으로 강함`;
+            }
+          }
+
           // ── 1. 에너지 구조 블록 ──
           const gekBlock=`
             <div class="story-sec">
@@ -3375,10 +3543,15 @@ function renderEnergyCode(s){
                 ${gekDetail.moJjHyeong?`<br><span style="font-size:10px;color:#e67e22">⚡ ${gekDetail.moJjHyeong} — 태어난 달의 기운이 형살로 손상</span>`:''}
                 ${gekDetail.moJjPa?`<br><span style="font-size:10px;color:#e67e22">⚡ 月支파(破) — 태어난 달의 기운 추가 손상</span>`:''}
                 ${gekDetail.moJjYughep?`<br><span style="font-size:10px;color:#8e44ad">⚡ 月支 육합 — 태어난 달의 기운이 합해져 ${gekDetail.moJjYughep} 에너지로 바뀜</span>`:''}
+                ${gekDetail.moJjGongmang?`<br><span style="font-size:10px;color:#c0392b;font-weight:700">🌀 月支 공망 — 格의 뿌리가 공허, 추구하나 온전히 실현하기 어려운 구조</span>`:''}
                 ${gekDetail.isBroken?`<br><span style="font-size:10px;color:#c0392b">❌ 格의 핵심 기운이 합해져 힘을 잃음</span>`:''}
                 ${gekDetail.hapGeoJeong==='gang'?`<br><span style="font-size:10px;color:#1a8449">✦ 합거로 格의 기운이 오히려 강해짐 — 기신이 格을 강화하는 오행으로 합화</span>`:gekDetail.hapGeoJeong==='jeong'?`<br><span style="font-size:10px;color:#1a8449">✦ 방해 기운이 합해져 사라짐 — 格이 더 깔끔해짐</span>`:''}
                 ${gekDetail.moLryeongByun?`<br><span style="font-size:10px;color:#8e44ad">⚡ 지지들이 뭉쳐 달의 에너지 색깔이 ${gekDetail.moLryeongByun}으로 바뀔 수 있음</span>`:''}
-                ${(gekDetail.moJjChung||gekDetail.moJjHyeong||gekDetail.moJjPa||gekDetail.moJjYughep)?`<br><span style="font-size:10px;color:#c0392b;font-weight:700">→ 格의 근거지가 복합 손상 — 格이 온전히 작동하지 않을 수 있음</span>`:''}              </div>
+                ${(gekDetail.gekStrength!==undefined&&!gekDetail.isBroken&&gekDetail.gekStrength<70)?`<br><span style="font-size:10px;font-weight:700;color:${gekDetail.gekStrength>=40?'#e65100':'#c62828'}">→ 格 활성도 ${gekDetail.gekStrength}%(${gekDetail.gekStrengthLabel}) — ${gekDetail.gekStrength>=40?'格을 지향하나 실현에 제약이 있음':'格이 온전히 작동하지 않는 구조 — 보완 운이 필요'}</span>`:''}
+                ${(gekDetail.moJjChung||gekDetail.moJjHyeong||gekDetail.moJjPa||gekDetail.moJjYughep)&&!gekDetail.moJjGongmang?`<br><span style="font-size:10px;color:#c0392b;font-weight:700">→ 格의 근거지가 복합 손상 — 格이 온전히 작동하지 않을 수 있음</span>`:''}
+                ${realStructure?`<br><div style="margin-top:4px;padding:7px 10px;background:#f0f4ff;border-left:3px solid #3b5fc0;border-radius:0 6px 6px 0;font-size:10px;color:#1a3a6c;line-height:1.8"><b>◆ 실질 작동 구조 — ${realStructure}</b><br>${realStructureDesc}</div>`:''}
+                ${(gekIsWeak || gekIsMid)?`<br><span style="font-size:10px;color:#2e5fa3">→ ${['목','화','토','금','수'][inseongOH]}(인성) 운이 들어올 때 格이 비로소 활성화됩니다</span>`:''}
+              </div>
             </div>`;
 
           // ── 2. 格局용신 · 조후용신 처방 블록 ──
@@ -3428,30 +3601,73 @@ function renderEnergyCode(s){
             chohu2Note=`<span style="color:#2e5fa3">→ <b>${safeRepr(c2y)}</b>이 원국에 ${c2n}개 충족 → 부족한 <b>${safeRepr(c2h)}</b>이 본성 에너지로 승격 (궁통보감 2오행)</span>`;
           }
 
+          // ── processBlock: gek1YongOH/gek2YongOH 기반으로 구성 ──
+          // analyzeGek이 이미 제1/제2 格局용신을 계산해서 반환함
+          const gek1OH = gekDetail.gek1YongOH || gekYongOHdisp;  // 제1 格局용신 (실제 작동)
+          const gek2OH = gekDetail.gek2YongOH || null;            // 제2 格局용신 (보완 운)
+          const sub格N = gekDetail.sub格Name || null;             // 제2격국 이름
+          const gcGek1 = CO[gek1OH] || gcGek;
+
+          // dualDesc — 제1/제2格 구분 반영
+          if(sub格N){
+            // 두 格의 십신 특질 텍스트
+            const GEK_TRAIT = {
+              '食神制殺格': '자기 원칙(식신)으로 외부 압박(관살)을 다스리는 실무형',
+              '官印相生格': '사회적 역할과 배움이 서로를 키우는 성장형',
+              '殺印相生格': '강한 압박이 오히려 깊이를 만드는 단련형',
+              '官印相生格(천간)': '천간에서 관성→인성 흐름이 살아있는 성장형',
+              '식상주도格': '표현과 생산 에너지가 원국을 주도하는 창작형',
+            };
+            const gek1TraitKey = gekDetail.gekName.replace(/→.*/,'');
+            const gek1Trait = GEK_TRAIT[gek1TraitKey] || gek1TraitKey;
+            const gek2Trait = GEK_TRAIT[sub格N] || sub格N;
+            const OH_N_L=['목','화','토','금','수'];
+            const ILGAN_OH_L2=[0,0,1,1,2,2,3,3,4,4];
+            const dc2L=ILGAN_OH_L2[s.pillars[2].cg];
+            const inOHL=OH_N_L[[4,0,1,2,3][dc2L]];
+            dualDesc = `<div style="background:#f8f4ff;border-left:3px solid #7c3aed;border-radius:0 6px 6px 0;padding:7px 10px;font-size:10px;color:#3a2a10;line-height:1.9">`
+              +`<b style="color:#5b21b6">두 格이 혼재하는 구조</b><br>`
+              +`<b>제1格(格의 정체성): ${gek1TraitKey}</b> — ${gek1Trait}<br>`
+              +`<b>제2格(보조 작동): ${sub格N}</b> — ${gek2Trait}<br>`
+              +`<span style="color:#555">格의 뿌리가 손상되어 평소엔 제2格 방식으로 실현됩니다.`
+              +` ${safeRepr(inOHL)} 에너지가 강해지는 운에 제1格이 온전히 열립니다.</span>`
+              +`</div>`;
+          } else if(gek1OH && chohuYongOHdisp){
+            if(gek1OH === chohuYongOHdisp){
+              dualDesc = `<span style="color:#1a5c2a">✓ 천직 에너지와 본성 에너지가 <b>${safeRepr(gek1OH)}</b>로 일치 — 하고 싶은 일이 곧 잘하는 일</span>`;
+            } else {
+              dualDesc = `<span style="color:#5a3e00">천직(${safeRepr(gek1OH)})과 본성(${safeRepr(chohuYongOHdisp)})이 다릅니다.<br>낮에는 <b>${safeRepr(gek1OH)}</b> 에너지로 일하고, 마음 속엔 <b>${safeRepr(chohuYongOHdisp)}</b>을 품고 삽니다.</span>`;
+            }
+          }
+
           const processBlock=`
             <div class="story-sec">
               <div class="story-sec-title">✦ 나의 두 가지 에너지 처방</div>
               <div style="font-size:11px;line-height:2.2;color:#3a2a10">
-                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
-                  <div style="background:${gcGek.bg};border:1px solid ${gcGek.b};border-radius:7px;padding:6px 10px;flex:1;min-width:100px">
-                    <div style="font-size:9px;color:${gcGek.t};font-weight:700;margin-bottom:3px">${gekDetail.chohuIsFirst?'':'★ '}천직 에너지 (格局용신)</div>
-                    <div style="font-size:14px;font-weight:700;color:${gcGek.t}">${safeRepr(gekYongOHdisp)||'—'}</div>
-                    <div style="font-size:9px;color:${gcGek.t};opacity:.8;margin-top:2px">잘하는 일 · 평생 기질</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+                  <div style="background:${gcGek1.bg};border:1px solid ${gcGek1.b};border-radius:7px;padding:6px 10px;flex:1;min-width:90px">
+                    <div style="font-size:9px;color:${gcGek1.t};font-weight:700;margin-bottom:3px">${gekDetail.chohuIsFirst?'':'★ '}제1 格局용신</div>
+                    <div style="font-size:14px;font-weight:700;color:${gcGek1.t}">${safeRepr(gek1OH)||'—'}</div>
+                    <div style="font-size:9px;color:${gcGek1.t};opacity:.85;margin-top:2px">${gekDetail.gekName.replace(/→.*/,'')} — 格의 정체성</div>
                   </div>
-                  <div style="background:${gcCho.bg};border:1px solid ${gcCho.b};border-radius:7px;padding:6px 10px;flex:1;min-width:100px">
-                    <div style="font-size:9px;color:${gcCho.t};font-weight:700;margin-bottom:3px">${gekDetail.chohuIsFirst?'★ ':''}본성 에너지 (조후용신)</div>
+                  ${gek2OH?`<div style="background:${(CO[gek2OH]||gcGek).bg};border:1px solid ${(CO[gek2OH]||gcGek).b};border-radius:7px;padding:6px 10px;flex:1;min-width:90px">
+                    <div style="font-size:9px;color:${(CO[gek2OH]||gcGek).t};font-weight:700;margin-bottom:3px">제2 格局용신</div>
+                    <div style="font-size:14px;font-weight:700;color:${(CO[gek2OH]||gcGek).t}">${safeRepr(gek2OH)}</div>
+                    <div style="font-size:9px;color:${(CO[gek2OH]||gcGek).t};opacity:.85;margin-top:2px">${sub格N} — 보조 작동</div>
+                  </div>`:''}
+                  <div style="background:${gcCho.bg};border:1px solid ${gcCho.b};border-radius:7px;padding:6px 10px;flex:1;min-width:90px">
+                    <div style="font-size:9px;color:${gcCho.t};font-weight:700;margin-bottom:3px">${gekDetail.chohuIsFirst?'★ ':''}조후용신</div>
                     <div style="font-size:14px;font-weight:700;color:${gcCho.t}">${safeRepr(chohuYongOHdisp)||'—'}</div>
-                    ${chohuYongOHdisp!==chohuYongOHbase?`<div style="font-size:8px;color:\${gcCho.t};opacity:.75;margin-top:1px">${safeRepr(chohuYongOHbase)} 충족 → ${safeRepr(chohuYongOHdisp)} 승격</div>`:''}
-                    <div style="font-size:9px;color:${gcCho.t};opacity:.8;margin-top:2px">끌리는 것 · 결핍의 욕망</div>
+                    ${chohuYongOHdisp!==chohuYongOHbase?`<div style="font-size:8px;color:${gcCho.t};opacity:.75;margin-top:1px">${safeRepr(chohuYongOHbase)} 충족 → ${safeRepr(chohuYongOHdisp)} 승격</div>`:''}
+                    <div style="font-size:9px;color:${gcCho.t};opacity:.8;margin-top:2px">본성 에너지 · 결핍</div>
                   </div>
                 </div>
-                ${dualDesc?`<div>${dualDesc}</div>`:''}
+                ${dualDesc?`<div style="margin-bottom:4px">${dualDesc}</div>`:''}
                 ${priorityNote?`<div><span style="color:#c0392b;font-weight:700">→ ${priorityNote}</span></div>`:''}
                 ${tongganNote?`<div>${tongganNote}</div>`:''}
                 ${chohu2Note?`<div>${chohu2Note}</div>`:''}
               </div>
             </div>`;
-
           // 에너지 처방 요약 pill 블록 제거
 
           return gekBlock+processBlock;
@@ -3742,13 +3958,21 @@ function buildGekPrompt(s){
     +'格局: '+gek.sipsin+' / 成格여부: '+(gek.tuChul?'成格('+gek.tuChulChar+' 투출)':'未成格(미투출)')+'\n'
     +'格局명: '+gek.gekName+'\n'
     +'格局용신(앱): '+( gek.gekYongOH||'미성격→조후용신 적용')+'\n'
-    +'조후용신(궁통보감): '+yong.yongsin+' / 희신: '+yong.hesin+'\n\n'
+    +'조후용신(궁통보감): '+yong.yongsin+' / 희신: '+yong.hesin+'\n'
+    +'格 활성도: '+gek.gekStrength+'% ('+gek.gekStrengthLabel+')'
+    +(gek.moJjGongmang?'\n⚠ 月支 공망 — 格의 뿌리 공허':'')
+    +(gek.moJjHyeong?'\n⚠ 月支 형살('+gek.moJjHyeong+') — 格 손상':'')
+    +(gek.moJjPa?'\n⚠ 月支 파(破) — 格 추가 손상':'')
+    +(gek.moJjChung?'\n⚠ 月支 충 — 格 불안정':'')
+    +(gek.moJjYughep?'\n⚠ 月支 육합(합화:'+gek.moJjYughep+') — 月令 변질':'')
+    +'\n\n'
     +'아래 기준으로 정밀 검증해주세요:\n'
     +'① 오행 생극제화 — 格을 生·보호하는 오행이 원국에서 실제로 작동하는가\n'
     +'② 합충형파해 — 格 또는 용신이 합거·충으로 훼손되지 않는가\n'
-    +'③ 格局용신과 조후용신 일치 여부 — 충돌 시 어느 쪽을 우선하는가\n'
-    +'④ 최종 용신 오행과 格局명을 확정해주세요\n'
-    +'⑤ 확정된 용신 오행 기준으로 음식·운동·직업 추천 방향도 알려주세요';
+    +'③ 格 활성도가 낮을 경우(공망·다중손상) — 실제로 작동하는 보조 구조가 무엇인가\n'
+    +'④ 格局용신과 조후용신 일치 여부 — 충돌 시 어느 쪽을 우선하는가\n'
+    +'⑤ 최종 용신 오행과 格局명을 확정해주세요\n'
+    +'⑥ 확정된 용신 오행 기준으로 음식·운동·직업 추천 방향도 알려주세요';
 }
 
 // ── 원국 합충형파해 전체 계산 함수 ──────────────────────────────────────
