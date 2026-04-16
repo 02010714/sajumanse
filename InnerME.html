@@ -694,17 +694,37 @@ function getIlganStrengthScore(dc, pillars){
   }
 
   const total=deokryeong+tonggeun+deukse;
+
+  // 식상 과왕 보정: 식상(일간이 生하는 오행)이 3개 이상이면 설기가 심해 실질 약화
+  // 득세 점수에서 식상 과왕분 차감 (최대 -2)
+  const siksangOH_s=[1,2,3,4,0][me]; // 일간의 식상 오행
+  let siksangCnt_s=0;
+  for(const p of pillars){
+    if(OH_CG[p.cg]===siksangOH_s) siksangCnt_s++;
+    // 지지도 반영
+    const jzs=JJGAN[p.jj];
+    if(jzs.some(c=>OH_CG[c]===siksangOH_s)) siksangCnt_s+=0.3;
+  }
+  // 식상 오행 개수로 단순 계산
+  let siksangTotal_s=0;
+  for(const p of pillars){
+    if(OH_CG[p.cg]===siksangOH_s) siksangTotal_s++;
+    const jzs2=JJGAN[p.jj];
+    if(jzs2[jzs2.length-1]!==undefined && OH_CG[jzs2[jzs2.length-1]]===siksangOH_s) siksangTotal_s++;
+  }
+  const siksangPenalty = siksangTotal_s>=5 ? 2 : siksangTotal_s>=3 ? 1 : 0;
+  const totalAdj = total - siksangPenalty;
   // 신강/신약 판단: 총점 기준
   // 득령(5)+통근(4)+득세(최대4) = 최대13점
   // 7점 이상 = 신강, 5점 이하 = 신약, 중간 = 중화
   return {
-    total,
+    total: totalAdj,
     deokryeong,
     tonggeun,
     deukse,
     unseong,
-    isStrong: total>=7,
-    isWeak: total<=4,
+    isStrong: totalAdj>=7,
+    isWeak: totalAdj<=4,
   };
 }
 
@@ -905,6 +925,16 @@ function analyzeGek(s){
     }
   }
 
+
+  // 식신格 + 식상 과왕(≥3) → 상관格으로 전환
+  // 식신이 절제 없이 넘쳐흐르면 상관의 거침없는 에너지로 발현
+  if(sipsin==='식신'){
+    const siksangOH_over=SAENGHANEUN[me];
+    if(ohCount[siksangOH_over]>=3){
+      sipsin='상관'; // 식상 과왕 → 상관格 취급
+    }
+  }
+
   // ③ 각 십신 계열 오행 강도
   const rel={
     siksang:  SAENGHANEUN[me],
@@ -952,24 +982,50 @@ function analyzeGek(s){
       if(chohuIsInseong){
         const inseongCnt = ohCount[rel.inseong] || 0;
         const bijepCnt   = ohCount[me] || 0;
-        const inseongEffective = inseongCnt >= 2 && bijepCnt < 3;
-        if(inseongEffective){
+
+        // 신약이면 인성(佩印)이 원칙 — 일간을 生해줘야 함
+        // 단, 인성이 원국에 아예 없으면(=0) 쓸 수 없으므로 生財格
+        // 신강이면 비겁 과왕(≥3) 또는 인성 역부족(≤1)이면 生財格
+        let usePaein;
+        if(!ilganStrong){
+          // 신약 → 佩印格 우선, 인성 완전 결핍이면 예외
+          usePaein = inseongCnt >= 1;
+          if(!usePaein){
+            gekDecisionLog.push({
+              candidate:'상관패인격(傷官佩印格)',
+              reason:`신약 일간이나 인성(${inseongOH}) 원국 완전 결핍 — 쓸 인성이 없음`,
+              rejected:true
+            });
+            gekDecisionLog.push({
+              candidate:'상관생재격(傷官生財格)',
+              reason:`인성 결핍 → 설기(${jaeseongOH}) 방향으로 전환`,
+              rejected:false
+            });
+          }
+        } else {
+          // 신강 → 비겁과왕 또는 인성부족이면 生財格
+          const inseongEffective = inseongCnt >= 2 && bijepCnt < 3;
+          usePaein = inseongEffective;
+          if(!usePaein){
+            gekDecisionLog.push({
+              candidate:'관인상생격 / 상관패인격',
+              reason:'인성이 일간을 生하는 구조 — 신강 일간에 역효과',
+              rejected:true
+            });
+            gekDecisionLog.push({
+              candidate:'상관생재격(傷官生財格)',
+              reason: bijepCnt>=3
+                ? `일간/비겁 ${OH_NAME[me]} ${bijepCnt}개 과왕 + 인성 ${inseongCnt}개 역부족 → 설기(${jaeseongOH}) 방향이 순리`
+                : `인성 ${inseongCnt}개로 강한 상관 제어 역부족 → 설기(${jaeseongOH}) 방향 선택`,
+              rejected:false
+            });
+          }
+        }
+
+        if(usePaein){
           bodyYong={rules:[{yong:'inseong',name:'傷官佩印格',ohKey:'inseong'},{yong:'jaeseong',name:'傷官生財格',ohKey:'jaeseong'}],default:{name:'상관격',ohKey:'inseong'}};
         } else {
           bodyYong={rules:[{yong:'jaeseong',name:'傷官生財格',ohKey:'jaeseong'},{yong:'inseong',name:'傷官佩印格',ohKey:'inseong'}],default:{name:'상관격',ohKey:'jaeseong'}};
-          // 格局 결정 과정 기록
-          gekDecisionLog.push({
-            candidate:'관인상생격 / 상관패인격',
-            reason:'인성이 일간을 生하는 구조 — 신강 일간에 역효과',
-            rejected:true
-          });
-          gekDecisionLog.push({
-            candidate:'상관생재격(傷官生財格)',
-            reason: bijepCnt>=3
-              ? `일간/비겁 ${OH_NAME[me]} ${bijepCnt}개 과왕 + 인성 ${inseongCnt}개 역부족 → 설기(${jaeseongOH}) 방향이 순리`
-              : `인성 ${inseongCnt}개로 강한 상관 제어 역부족 → 설기(${jaeseongOH}) 방향 선택`,
-            rejected:false
-          });
         }
       } else if(chohuIsJaeseong){
         bodyYong={rules:[{yong:'jaeseong',name:'傷官生財格',ohKey:'jaeseong'},{yong:'inseong',name:'傷官佩印格',ohKey:'inseong'}],default:{name:'상관격',ohKey:'jaeseong'}};
@@ -1163,6 +1219,36 @@ function analyzeGek(s){
   if(moJjYughep){   gekStrength -= 15; gekDamageLog.push('月支합(-15)'); }
   if(moLryeongByun){ gekStrength -= 10; gekDamageLog.push('月令변질(-10)'); }
   if(!tuChul && jjType !== '정위'){ gekStrength -= 10; }
+
+  // ── 格局용신 지지 충 손상 감지 ──────────────────────────────────────────
+  // 格局용신 오행에 해당하는 지지(통근처)가 원국에서 충받으면 격 약화
+  // 예: 傷官佩印格(수)에서 亥水가 巳亥충으로 손상
+  // 月支 충과 별개로 용신 통근처 충을 추가 감산
+  if(!isBroken && gekYongOH){
+    const 지지들_str=s.pillars.map(p=>p.jj);
+    const CHUNG_PAIR=[[0,6],[1,7],[2,8],[3,9],[4,10],[5,11]];
+    const OH_NAME_L=['목','화','토','금','수'];
+    const OH_JJ_L=[4,2,0,0,2,1,1,2,3,3,2,4];
+    const yongOHidx=OH_NAME_L.indexOf(gekYongOH);
+    // 용신 오행의 지지들 (통근처)
+    const yongJJlist=지지들_str.filter(j=>OH_JJ_L[j]===yongOHidx);
+    // 각 통근처가 충받는지 확인
+    let yongJJChungCnt=0;
+    for(const yj of yongJJlist){
+      const pair=CHUNG_PAIR.find(p=>p.includes(yj));
+      if(pair){
+        const 상대=pair.find(j=>j!==yj);
+        if(지지들_str.includes(상대)){ yongJJChungCnt++; }
+      }
+    }
+    if(yongJJChungCnt>0){
+      // 용신 통근처 전부 충받으면 격 상당 약화
+      const allChung=(yongJJlist.length>0 && yongJJChungCnt===yongJJlist.length);
+      const penalty = allChung ? 35 : 20;
+      gekStrength -= penalty;
+      gekDamageLog.push(`용신(${gekYongOH}) 통근처 충 손상(-${penalty})`);
+    }
+  }
   gekStrength = Math.max(0, Math.min(100, gekStrength));
 
   const gekStrengthLabel =
@@ -2078,6 +2164,34 @@ function renderHealth(s){
   }
 
   // ── 천직/본성 탭 렌더 함수 ──
+  // 오행 기본 정보 박스만 렌더링 (장부·맛·색깔)
+  function renderOhBox(tabOH, label){
+    const rec=OH_HEALTH[tabOH];
+    if(!rec) return '';
+    const c=CO[tabOH]||{bg:'#faf8f4',t:'#5a4020',b:'#e0d0b0'};
+    return `<div style="background:${c.bg};border:1.5px solid ${c.b};border-radius:10px;padding:10px 12px;margin-bottom:8px">
+        <div style="font-size:8px;font-weight:700;color:${c.t};letter-spacing:.1em;margin-bottom:5px;opacity:.8">✦ ${label}</div>
+        <div style="font-size:16px;font-weight:700;color:${c.t};margin-bottom:6px;letter-spacing:.03em">
+          ${tabOH}
+          <span style="font-size:11px;font-weight:600;margin-left:4px">(${rec.deco[0]}${tabOH} · ${rec.deco[1]}${tabOH})</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px">
+          <div style="background:rgba(255,255,255,0.55);border-radius:6px;padding:5px 7px">
+            <div style="font-size:8px;color:${c.t};opacity:.75;margin-bottom:2px;font-weight:700">관련 장부</div>
+            <div style="font-size:10px;font-weight:700;color:${c.t}">${rec.organ.replace('·','·<br>').replace(' ','')}</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.55);border-radius:6px;padding:5px 7px">
+            <div style="font-size:8px;color:${c.t};opacity:.75;margin-bottom:2px;font-weight:700">맛</div>
+            <div style="font-size:10px;font-weight:700;color:${c.t}">${rec.taste}</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.55);border-radius:6px;padding:5px 7px">
+            <div style="font-size:8px;color:${c.t};opacity:.75;margin-bottom:2px;font-weight:700">색깔</div>
+            <div style="font-size:10px;font-weight:700;color:${c.t}">${rec.color}</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
   function renderYongsinTabContent(tabOH, label, isFirst){
     const rec=OH_HEALTH[tabOH];
     if(!rec) return '';
@@ -2157,51 +2271,8 @@ function renderHealth(s){
     </div>
     <div id="yt_gek_${_hTabId}" style="display:${firstTab==='gek'?'block':'none'}">
 
-    <!-- 왜 이 오행인가? (천직 에너지 탭) -->
-    <div style="background:#fffef5;border-left:3px solid #c9a227;border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:10px;font-size:12px;color:#3a2a00;line-height:1.9">
-      <b style="color:#8a6200">왜 ${oh1} 오행인가요?</b><br>
-      당신의 일간은 <b>${CG[dc]}(${CG_KR[dc]})</b>, 월지는 <b>${JJ[s.pillars[1].jj]}(${JJ_KR[s.pillars[1].jj]})</b>입니다.<br>
-      ${(()=>{
-        const gekD=analyzeGek(s);
-        const chOH=yongsinToOH(yongData.yongsin);
-        const gn=gekD.gekName||'';
-        // 기본 설명 결정
-        let baseText='';
-        if(oh1===chOH){
-          baseText=friendlyEnergyText(YONG_REASON[dc][moIdx]);
-        } else if(gn.includes('통관용신')){
-          const pair=gn.match(/\((.+)↔(.+)\)/);
-          if(pair) baseText=`원국에서 <b>${pair[1]}</b>와 <b>${pair[2]}</b> 에너지가 충돌하고 있습니다.<br><b>${oh1}</b>이 두 에너지 사이의 다리 역할을 하여 흐름을 만들어 줍니다(통관용신 — 적천수).`;
-        } else if(gn.includes('보완필요')){
-          baseText=`계절 균형 오행(${chOH})이 원국에 이미 충분히 있어, 부족한 <b>${oh1}</b>이 더 필요합니다(궁통보감 2오행 원칙).`;
-        } else if(gn.includes('이미충분')||gn.includes('과왕')){
-          baseText=`격에서 필요한 ${chOH} 에너지가 원국에 이미 많아, 계절 균형 방향의 <b>${oh1}</b>으로 전환합니다.`;
-        } else {
-          baseText=friendlyEnergyText(YONG_REASON[dc][moIdx]);
-        }
-        // 격 활성도·공망·실질구조 추가 설명
-        const gs=gekD.gekStrength!==undefined?gekD.gekStrength:100;
-        const OH_N=['목','화','토','금','수'];
-        const dcOH2=ILGAN_OH[dc];
-        const siksOH=OH_N[[1,2,3,4,0][dcOH2]];
-        const gwanOH2=OH_N[[3,4,0,1,2][dcOH2]];
-        const inOH=OH_N[[4,0,1,2,3][dcOH2]];
-        const siksC=gekD.ohCount[[1,2,3,4,0][dcOH2]]||0;
-        const gwanC=gekD.ohCount[[3,4,0,1,2][dcOH2]]||0;
-        let extra='';
-        if(gekD.moJjGongmang){
-          extra+=`<br><span style="font-size:10px;color:#c0392b;font-weight:700">🌀 月支(${JJ[s.pillars[1].jj]})가 공망 — 격의 뿌리가 실제로 작동하기 어렵습니다. <b>${oh1}</b> 보완이 더욱 중요합니다.</span>`;
-        }
-        if(!gekD.isBroken && gs<40 && siksC>=1 && gwanC>=2){
-          extra+=`<br><span style="font-size:10px;color:#1a3a6c">◆ 실제 작동 구조: <b>${siksOH}(식상)</b>이 <b>${gwanOH2}(관살)</b>을 다스리는 食神制殺 — 격을 그리워하며 이 구조로 살아갑니다.</span>`
-               +`<br><span style="font-size:10px;color:#2e5fa3">→ <b>${inOH}(인성)</b> 운이 들어올 때 격이 열리며 더 큰 성취가 가능합니다.</span>`;
-        } else if(!gekD.isBroken && gs<70){
-          extra+=`<br><span style="font-size:10px;color:#e65100">◆ 격 활성도 ${gs}% — 격(격)이 완전히 실현되지 않아 <b>${oh1}</b> 보충이 더욱 중요합니다.</span>`;
-        }
-        return baseText+extra;
-      })()}<br>
-      <span style="font-size:10px;color:#7a6040">📖 황제내경 — ${oh1}${['목','화','금'].includes(oh1)?'은':'는'} ${rec1.organ.split('·')[0].trim()}을 주관 &nbsp;|&nbsp; 📖 동의보감 — ${rec1.taste}은 ${rec1.organ.split('·')[0].trim()}으로 귀납</span>
-    </div>
+    <!-- 格局용신 오행 기본 정보 박스 -->
+    ${gekOH ? renderOhBox(gekOH,'格局용신 · 천직 에너지') : ''}
 
     <!-- 운동처방 -->
     ${accExercise}
@@ -3546,8 +3617,28 @@ function renderEnergyCode(s){
             _h += '<span style="color:#c0392b">격(격)을 지향하나 격의 뿌리가 손상되어 이 구조로 실제 작동합니다.</span><br>';
             _h += '<span style="color:#2e5fa3">→ <b>'+_in+'(인성)</b> 운이 들어올 때 격(격)이 비로소 열립니다.</span>';
           } else if(_gwanC >= 1 && _inC >= 1){
-            _h += '<b>◆ 천간 官印 흐름 살아있음</b><br>';
-            _h += '月支 손상과 무관하게 천간의 관성→인성 에너지가 실제로 작동합니다.';
+            // 格局과 충돌 방지 및 정관/편관 구분 로직으로 교체
+            const _gekNm2=gekDetail.gekName||'';
+            const _is상관식신2=(_gekNm2.includes('傷官')||_gekNm2.includes('食神')||_gekNm2.includes('상관')||_gekNm2.includes('식신'));
+            if(!_is상관식신2){
+              const _dcCg2=s.pillars[2].cg;
+              const _gwanCgList2=s.pillars.map(p=>p.cg).filter(c=>[3,4,0,1,2][[0,0,1,1,2,2,3,3,4,4][c]]===[3,4,0,1,2][_dc]);
+              const _hasJeonggwan2=_gwanCgList2.some(c=>c%2!==_dcCg2%2);
+              const _hasPyeong2=_gwanCgList2.some(c=>c%2===_dcCg2%2);
+              if(_hasJeonggwan2){
+                _h += '<b>◆ 천간 官印 흐름</b><br>';
+                _h += '천간에서 정관→인성 흐름이 살아있어 보완 운에서 작동합니다.';
+              } else if(_hasPyeong2){
+                _h += '<b>◆ 천간 殺印相生 흐름</b><br>';
+                _h += '천간에서 칠살→인성 흐름 — 압박을 인성으로 흡수하는 구조입니다.';
+              } else {
+                _h += '<b>◆ 格 활성도 '+_gs+'%</b><br>';
+                _h += '格을 지향하나 실현에 제약이 있습니다.';
+              }
+            } else {
+              _h += '<b>◆ 格 활성도 '+_gs+'%('+gekDetail.gekStrengthLabel+')</b><br>';
+              _h += '格을 지향하나 실현에 제약이 있습니다. 보완 운이 필요합니다.';
+            }
           } else {
             _h += '<b>◆ 격(격) 활성도 '+_gs+'%('+gekDetail.gekStrengthLabel+')</b><br>';
             _h += '月支 손상으로 격이 완전히 실현되지 않습니다. 보완 운이 필요합니다.';
@@ -3626,15 +3717,35 @@ function renderEnergyCode(s){
           let realStructure = '';
           let realStructureDesc = '';
           if(gekIsWeak || gekIsMid) {
+            const 격이름=gekDetail.gekName||'';
+            const 상관식신格=(격이름.includes('傷官')||격이름.includes('食神')||격이름.includes('상관')||격이름.includes('식신'));
+
             if(siksangCnt >= 1 && gwanCnt >= 2) {
               realStructure = '食神制殺';
               realStructureDesc = `식상(${['목','화','토','금','수'][siksangOH]}) ${siksangCnt}개가 관살(${['목','화','토','금','수'][gwanOH]}) ${gwanCnt}개를 제어 — 격을 그리워하나 실제론 이 구조로 작동`;
-            } else if(gwanCnt >= 1 && inseongCnt >= 1) {
-              realStructure = '官印相生(천간)';
-              realStructureDesc = `천간에서 관성→인성 흐름이 살아있음 — 月支 손상과 무관하게 이 에너지가 실제 작동`;
-            } else if(siksangCnt >= 2) {
+            } else if(gwanCnt >= 1 && inseongCnt >= 1 && !상관식신格) {
+              // 官印/殺印相生: 格이 상관·식신계가 아닐 때만 표시
+              // 일간과 관성의 음양 비교로 정관/편관(칠살) 구분
+              const dcCg=s.pillars[2].cg;
+              const gwanCgList=s.pillars.map(p=>p.cg).filter(c=>{
+                const cOH=[0,0,1,1,2,2,3,3,4,4][c];
+                return cOH===[3,4,0,1,2][dcOH];
+              });
+              // 정관: 일간과 음양 다름 (甲↔辛, 乙↔庚 등)
+              const hasJeonggwan=gwanCgList.some(c=>c%2!==dcCg%2);
+              // 편관(칠살): 일간과 음양 같음
+              const hasPyeongwan=gwanCgList.some(c=>c%2===dcCg%2);
+              const inseongCgList=s.pillars.map(p=>p.cg).filter(c=>[4,0,1,2,3][[0,0,1,1,2,2,3,3,4,4][c]]===[4,0,1,2,3][dcOH]);
+              if(hasJeonggwan && inseongCgList.length>=1){
+                realStructure = '官印相生(천간)';
+                realStructureDesc = `천간에서 정관→인성 흐름 — 格 활성화 보완 운에서 이 에너지가 작동`;
+              } else if(hasPyeongwan && inseongCgList.length>=1){
+                realStructure = '殺印相生(천간)';
+                realStructureDesc = `천간에서 칠살→인성 흐름 — 압박을 인성으로 흡수하는 구조`;
+              }
+            } else if(siksangCnt >= 2 && 상관식신格) {
               realStructure = '식상 주도';
-              realStructureDesc = `식상(${['목','화','토','금','수'][siksangOH]}) 에너지가 원국을 주도 — 격보다 식상의 역할이 실질적으로 강함`;
+              realStructureDesc = `식상(${['목','화','토','금','수'][siksangOH]}) 에너지가 원국을 주도 — 格보다 식상의 역할이 실질적으로 강함`;
             }
           }
 
