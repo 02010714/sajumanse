@@ -2257,7 +2257,7 @@ function renderHealth(s){
     document.getElementById('ytb_cho_'+_hTabId).className='tab-btn'+(which==='cho'?' active':'');
   };
   const firstTab = 'gek';
-  const gekTabLabel  = '천직 에너지 (格局용신)';
+  const gekTabLabel  = '천직 에너지 (격국용신)';
   const choTabLabel  = '본성 에너지 (조후용신)';
 
   return`<div class="health-panel">
@@ -2272,7 +2272,7 @@ function renderHealth(s){
     <div id="yt_gek_${_hTabId}" style="display:${firstTab==='gek'?'block':'none'}">
 
     <!-- 格局용신 오행 기본 정보 박스 -->
-    ${gekOH ? renderOhBox(gekOH,'格局용신 · 천직 에너지') : ''}
+    ${gekOH ? renderOhBox(gekOH,'격국용신 · 천직 에너지') : ''}
 
     <!-- 운동처방 -->
     ${accExercise}
@@ -2336,7 +2336,7 @@ function buildHealthPrompt(s){
 ② ${oh1} 오행에 맞는 운동 루틴 (종류·강도·시간대)
 ③ ${oh1} 오행이 약해지는 계절·시간대와 대처법
 ④ 피해야 할 음식과 생활 습관
-⑤ 하루 건강 루틴 제안 (아침~저녁 흐름으로)`;
+⑤ 하루 건강 루틴 제안 (아침~저녁 흐름으로)`+_plainLangMini();
 }
 
 function toggleHealthPrompt(){
@@ -3119,31 +3119,37 @@ function ohPill(label,value,ohName){
 function extractOH(str){for(const oh of OH){if(str&&str.includes(oh))return oh;}return null;}
 
 // 격名 한글 병기 변환 함수
-function gekNameKR(name){
+function gekNameKR(name, pureKorean){
   if(!name) return name;
-  const pure=name.replace(/→.*/,''); // →방향전환 등 제거
+  const m=name.match(/^(.+?)(→.+)?$/);
+  const pure=m?m[1]:name;
+  const suffix=m&&m[2]?m[2]:'';
   const MAP={
-    '食神生財格':'식신생재격(食神生財格)',
-    '食神制殺格':'식신제살격(食神制殺格)',
-    '傷官生財格':'상관생재격(傷官生財格)',
-    '傷官佩印格':'상관패인격(傷官佩印格)',
-    '食傷生財格':'식상생재격(食傷生財格)',
-    '官印相生格':'관인상생격(官印相生格)',
+    '食神生財格':'식신생재격',
+    '食神制殺格':'식신제살격',
+    '傷官生財格':'상관생재격',
+    '傷官佩印格':'상관패인격',
+    '食傷生財格':'식상생재격',
+    '官印相生格':'관인상생격',
     '官印相生格(천간)':'관인상생격(천간)',
-    '殺印相生格':'살인상생격(殺印相生格)',
-    '財生官格':'재생관격(財生官格)',
-    '財滋弱殺格':'재자약살격(財滋弱殺格)',
-    '梟印奪食格':'효인탈식격(梟印奪食格)',
-    '財破印格':'재파인격(財破印格)',
-    '比劫用官格':'비겁용관격(比劫用官格)',
-    '比劫用財格':'비겁용재격(比劫用財格)',
-    '劫財制官格':'겁재제관격(劫財制官格)',
-    '食神制殺格':'식신제살격(食神制殺格)',
-    '파격(破格)':'파격(破格)',
-    '미성격(未成格)':'미성격(未成格)',
+    '殺印相生格':'살인상생격',
+    '財生官格':'재생관격',
+    '財滋弱殺格':'재자약살격',
+    '梟印奪食格':'효인탈식격',
+    '財破印格':'재파인격',
+    '比劫用官格':'비겁용관격',
+    '比劫用財格':'비겁용재격',
+    '劫財制官格':'겁재제관격',
+    '파격(破格)':'파격',
+    '미성격(未成格)':'미성격',
     '식상주도격':'식상주도격',
   };
-  return MAP[pure]||pure;
+  const kr=MAP[pure]||pure;
+  if(pureKorean) return kr+suffix;           // 순한글 모드
+  // 기본 모드: 한글(한자) 병기 + 접미사
+  const hasHanja=/[\u4E00-\u9FFF]/.test(pure);
+  const display=hasHanja?`${kr}(${pure})`:kr;
+  return display+suffix;
 }
 
 // null/undefined → 한국어 안전 변환 함수
@@ -3394,7 +3400,7 @@ function renderEnergyCode(s){
     </div>
     <div class="story-accordion">
       <button class="story-toggle" id="toggle_gek_${id}" onclick="toggleStory('gek_${id}')">
-        <span class="toggle-label">✦ 格局·용신 상세 보기</span>
+        <span class="toggle-label">✦ 격국·용신 상세 보기</span>
         <span class="toggle-arrow">▼</span>
       </button>
       <div class="story-body" id="body_gek_${id}">
@@ -3411,14 +3417,14 @@ function renderEnergyCode(s){
           ${gekDetail.moJjYughep?`<span style="font-size:9px;color:#8e44ad">⚡ 月支 육합(합화:${gekDetail.moJjYughep}) — 月令 기운 합거</span>`:''}
           ${gekDetail.moLryeongByun?`<span style="font-size:9px;color:#8e44ad">⚡ 삼합·방합(${gekDetail.moLryeongByun}) — 月令 변질</span>`:''}
           ${gekDetail.ilganScore?`<span style="font-size:9px;color:#555">일간 ${gekDetail.ilganScore.unseong}(${gekDetail.ilganScore.isStrong?'신강':'신약'}·${gekDetail.ilganScore.total}점)</span>`:''}
-          <span style="font-size:11px;font-weight:700;color:#2c4a2c">${gekNameKR(gekDetail.gekName)}</span>
-          ${(()=>{const nm=gekDetail.gekName||'';const tag=(t,c)=>`<span style="font-size:9px;font-weight:700;color:${c};margin-left:3px">${t}</span>`;if(nm.includes('방향전환'))return tag('⚡ 格局 방향전환','#7c3aed');if(nm.includes('설기방향'))return tag('⚡ 설기 방향','#7c3aed');if(nm.includes('과왕설기')||nm.includes('이미충분')||nm.includes('조토과잉'))return tag('⚡ 과왕 설기','#e65100');return '';})()}
+          <span style="font-size:11px;font-weight:700;color:#2c4a2c">${gekNameKR(gekDetail.gekName,true)}</span>
+          ${(()=>{const nm=gekDetail.gekName||'';const tag=(t,c)=>`<span style="font-size:9px;font-weight:700;color:${c};margin-left:3px">${t}</span>`;if(nm.includes('방향전환'))return tag('⚡ 격국 방향전환','#7c3aed');if(nm.includes('설기방향'))return tag('⚡ 설기 방향','#7c3aed');if(nm.includes('과왕설기')||nm.includes('이미충분')||nm.includes('조토과잉'))return tag('⚡ 과왕 설기','#e65100');return '';})()}
           ${gekDetail.gekName.includes('보완필요')?`<span style="font-size:9px;font-weight:700;color:#2e5fa3">📌 궁통보감 2오행 원칙</span>`:''}
         </div>
         <div style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:5px">
           <div>
-            <span style="font-size:9px;color:#1a5276;font-weight:700">천직 에너지 · 格局용신</span><br>
-            <span style="font-size:12px;font-weight:700;color:#1a3a6c">${(()=>{const r={'목':'甲乙(목)','화':'丙丁(화)','토':'戊己(토)','금':'庚辛(금)','수':'壬癸(수)'};const g=gekDetail.originalGekYongOH||gekDetail.gekYongOH;return r[g]||g||'조후적용';})()}</span>
+            <span style="font-size:9px;color:#1a5276;font-weight:700">천직 에너지 · 격국용신</span><br>
+            <span style="font-size:12px;font-weight:700;color:#1a3a6c">${(()=>{const r={'목':'甲乙(목)','화':'丙丁(화)','토':'戊己(토)','금':'庚辛(금)','수':'壬癸(수)'};const g=gekDetail.gekYongOH||gekDetail.originalGekYongOH;return r[g]||g||'조후적용';})()}</span>
             
           </div>
           <div style="color:#ccc;padding-top:14px">|</div>
@@ -3498,7 +3504,7 @@ function renderEnergyCode(s){
           const origYongOH=extractOH(yong.yongsin);
           const origHesinOH=extractOH(yong.hesin);
           const corrected=finalYongOH&&finalYongOH!==origYongOH;
-          const origGekYongOH=gekDetail.originalGekYongOH||gekDetail.gekYongOH;
+          const origGekYongOH=gekDetail.gekYongOH||gekDetail.originalGekYongOH;
 
           // ── 格局명 한국어 부연 설명 ──
           const GEK_EASY={
@@ -3591,7 +3597,7 @@ function renderEnergyCode(s){
             <div class="story-sec">
               <div class="story-sec-title">✦ 내 사주의 에너지 구조</div>
               <div style="font-size:11px;color:#3a2a10;line-height:2">
-                <b style="color:#1a3a6c;font-size:12px">${gekNameKR(gekDetail.gekName)}</b><br>
+                <b style="color:#1a3a6c;font-size:12px">${gekNameKR(gekDetail.gekName,true)}</b><br>
                 ${gekEasyDesc?`<span style="color:#5a4a2a">${gekEasyDesc}</span><br>`:''}
                 필요한 에너지:&nbsp;<b style="color:#1a3a6c">${safeRepr(origGekYongOH)||'분석 중'}</b>
                 &nbsp;—&nbsp;<span style="color:#5a4a2a">${realGekLabel.desc||''}</span><br>
@@ -3615,7 +3621,7 @@ function renderEnergyCode(s){
                   const chosen=log.find(d=>!d.rejected);
                   if(!rejected.length) return '';
                   let html='<div style="margin-top:6px;padding:7px 10px;background:#f9f5e7;border-left:3px solid #c9a227;border-radius:0 6px 6px 0;font-size:10px;color:#3a2a00;line-height:1.9">';
-                  html+='<b style="color:#7a5200">◆ 格局 결정 과정</b><br>';
+                  html+='<b style="color:#7a5200">◆ 격국 결정 과정</b><br>';
                   rejected.forEach(d=>{
                     html+=`<span style="color:#999;text-decoration:line-through">${d.candidate}</span> — <span style="color:#c0392b">${d.reason}</span><br>`;
                   });
@@ -3654,7 +3660,7 @@ function renderEnergyCode(s){
           let priorityNote='';
           if(gekDetail.gekName&&gekDetail.gekName.includes('조열긴급')) priorityNote='원국이 너무 뜨겁고 건조 — 조후(水)가 핵심';
           else if(gekDetail.gekName&&gekDetail.gekName.includes('한습긴급')) priorityNote='원국이 너무 차고 습함 — 조후(火)가 핵심';
-          else if(gekDetail.isBroken) priorityNote='파격(破格) — 格局 무력화';
+          else if(gekDetail.isBroken) priorityNote='파격(破格) — 격국 무력화';
 
           // 통관 설명 — 조후용신과 같은 오행이면 "본성이 통관 역할 겸함"
           const tongganMatchesChohu = gekDetail.tongganOH && gekDetail.tongganOH===chohuYongOHdisp;
@@ -3690,17 +3696,17 @@ function renderEnergyCode(s){
             };
             const gek1TraitKey = gekDetail.gekName.replace(/→.*/,''); // 원문 키값 유지
             const gek1Trait = GEK_TRAIT[gek1TraitKey] || gek1TraitKey;
-            const gek2Trait = GEK_TRAIT[sub格N] || gekNameKR(sub格N);
+            const gek2Trait = GEK_TRAIT[sub格N] || gekNameKR(sub格N,true);
             const OH_N_L=['목','화','토','금','수'];
             const ILGAN_OH_L2=[0,0,1,1,2,2,3,3,4,4];
             const dc2L=ILGAN_OH_L2[s.pillars[2].cg];
             const inOHL=OH_N_L[[4,0,1,2,3][dc2L]];
             dualDesc = `<div style="background:#f8f4ff;border-left:3px solid #7c3aed;border-radius:0 6px 6px 0;padding:7px 10px;font-size:10px;color:#3a2a10;line-height:1.9">`
               +`<b style="color:#5b21b6">두 격이 혼재하는 구조</b><br>`
-              +`<b>제1格(격의 정체성/격국용신): ${gekNameKR(gek1TraitKey)}</b> — ${gek1Trait}<br>`
-              +`<b>제2格(보조 작동): ${gekNameKR(sub格N)}</b> — ${gek2Trait}<br>`
+              +`<b>제1格(격의 정체성/격국용신): ${gekNameKR(gek1TraitKey,true)}</b> — ${gek1Trait}<br>`
+              +`<b>제2格(보조 작동): ${gekNameKR(sub格N,true)}</b> — ${gek2Trait}<br>`
               +`<span style="color:#555">격의 뿌리가 손상되어 평소엔 보조격(제2格) 방식으로 실현됩니다.`
-              +` ${safeRepr(inOHL)} 에너지가 강해지는 운에 제1格(格局)이 온전히 열립니다.</span>`
+              +` ${safeRepr(inOHL)} 에너지가 강해지는 운에 제1格(격국)이 온전히 열립니다.</span>`
               +`</div>`;
           } else if(gek1OH && chohuYongOHdisp){
             if(gek1OH === chohuYongOHdisp){
@@ -3716,16 +3722,16 @@ function renderEnergyCode(s){
               <div style="font-size:11px;line-height:2.2;color:#3a2a10">
                 <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
                   <div style="background:${gcGek1.bg};border:1px solid ${gcGek1.b};border-radius:7px;padding:6px 10px;flex:1;min-width:90px">
-                    <div style="font-size:9px;color:${gcGek1.t};font-weight:700;margin-bottom:3px">格局용신 (천직 에너지)</div>
+                    <div style="font-size:9px;color:${gcGek1.t};font-weight:700;margin-bottom:3px">격국용신 (천직 에너지)</div>
                     <div style="font-size:14px;font-weight:700;color:${gcGek1.t}">${safeRepr(gek1OH)||'—'}</div>
-                    <div style="font-size:9px;color:${gcGek1.t};opacity:.85;margin-top:2px">${gekNameKR(gekDetail.gekName)} — 격의 정체성</div>
+                    <div style="font-size:9px;color:${gcGek1.t};opacity:.85;margin-top:2px">${gekNameKR(gekDetail.gekName,true)} — 격의 정체성</div>
                     ${(()=>{
                       const nm=gekDetail.gekName||'';
                       const orig=gekDetail.originalGekYongOH;
                       const OH_REPR={'목':'甲乙(목)','화':'丙丁(화)','토':'戊己(토)','금':'庚辛(금)','수':'壬癸(수)'};
                       const r=OH_REPR;
                       if(nm.includes('방향전환') && orig && orig!==gek1OH)
-                        return `<div style="font-size:8px;color:${gcGek1.t};opacity:.7;margin-top:2px;line-height:1.5">${r[orig]||orig} → ${r[gek1OH]||gek1OH}<br>원래 格局용신(${r[orig]||orig})이 수를 극해 결핍 가중<br>→ 격의 출발점(${r[gek1OH]||gek1OH})으로 당김</div>`;
+                        return `<div style="font-size:8px;color:${gcGek1.t};opacity:.7;margin-top:2px;line-height:1.5">${r[orig]||orig} → ${r[gek1OH]||gek1OH}<br>원래 격국용신(${r[orig]||orig})이 수를 극해 결핍 가중<br>→ 격의 출발점(${r[gek1OH]||gek1OH})으로 당김</div>`;
                       if(nm.includes('설기방향') && orig && orig!==gek1OH)
                         return `<div style="font-size:8px;color:${gcGek1.t};opacity:.7;margin-top:2px;line-height:1.5">${r[orig]||orig} → ${r[gek1OH]||gek1OH}<br>일간/비겁 과왕 → 설기(${r[gek1OH]||gek1OH}) 방향이 순리</div>`;
                       if(nm.includes('과왕설기') && orig && orig!==gek1OH)
@@ -3734,9 +3740,9 @@ function renderEnergyCode(s){
                     })()}
                   </div>
                   ${gek2OH?`<div style="background:${(CO[gek2OH]||gcGek).bg};border:1px solid ${(CO[gek2OH]||gcGek).b};border-radius:7px;padding:6px 10px;flex:1;min-width:90px">
-                    <div style="font-size:9px;color:${(CO[gek2OH]||gcGek).t};font-weight:700;margin-bottom:3px">제2 格局용신</div>
+                    <div style="font-size:9px;color:${(CO[gek2OH]||gcGek).t};font-weight:700;margin-bottom:3px">제2 격국용신</div>
                     <div style="font-size:14px;font-weight:700;color:${(CO[gek2OH]||gcGek).t}">${safeRepr(gek2OH)}</div>
-                    <div style="font-size:9px;color:${(CO[gek2OH]||gcGek).t};opacity:.85;margin-top:2px">${gekNameKR(sub格N)} — 보조 작동</div>
+                    <div style="font-size:9px;color:${(CO[gek2OH]||gcGek).t};opacity:.85;margin-top:2px">${gekNameKR(sub格N,true)} — 보조 작동</div>
                   </div>`:''}
                   <div style="background:${gcCho.bg};border:1px solid ${gcCho.b};border-radius:7px;padding:6px 10px;flex:1;min-width:90px">
                     <div style="font-size:9px;color:${gcCho.t};font-weight:700;margin-bottom:3px">조후용신 (본성 에너지)</div>
@@ -4021,6 +4027,23 @@ function renderChart(s){
     +'<div class="acc-wrap">'+'<a href="https://www.notion.so/33df39144c0181f393b4d13924e4a9d5" target="_blank"'+'style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;'+'text-decoration:none;">'+'<span class="acc-label" style="color:#8a6200">📚 독자 자료실 — AI 사주비서 세팅 자료</span>'+'<span style="font-size:12px;color:#c9a227">→</span>'+'</a></div>';
 }
 
+// ── 格局명 접미사 해석 (AI 혼란 방지용) ──
+function _gekNameAnnotation(gekName){
+  if(!gekName) return '';
+  const notes=[];
+  if(gekName.includes('→방향전환'))
+    notes.push('※ 방향전환: 격신이 결핍 오행을 극하여 격신을 生하는 오행으로 格局용신을 재설정');
+  if(gekName.includes('→과왕설기'))
+    notes.push('※ 과왕설기: 격신이 과도하게 강해 설기시키는 오행으로 格局용신을 재설정');
+  if(gekName.includes('→설기방향'))
+    notes.push('※ 설기방향: 일간 설기 우선, 격신을 설기하는 오행으로 格局용신을 재설정');
+  if(gekName.includes('→조열긴급'))
+    notes.push('※ 조열긴급: 巳午未월 강한 건조·열기 → 조후(水) 긴급 보완');
+  if(gekName.includes('→한습긴급'))
+    notes.push('※ 한습긴급: 亥子丑월 강한 한기·습기 → 조후(火) 긴급 보완');
+  return notes.length?'\n'+notes.join('\n'):'';
+}
+
 function buildGekPrompt(s){
   if(!s) return '';
   const dc=s.pillars[2].cg;
@@ -4041,7 +4064,7 @@ function buildGekPrompt(s){
     +'[오행 분포] '+ohCount+'\n\n'
     +'[Energy Code 앱 1차 판단]\n'
     +'格局: '+gek.sipsin+' / 成格여부: '+(gek.tuChul?'成格('+gek.tuChulChar+' 투출)':'未成格(미투출)')+'\n'
-    +'格局명: '+gek.gekName+'\n'
+    +'格局명: '+gek.gekName+_gekNameAnnotation(gek.gekName)+'\n'
     +'格局용신(앱): '+( gek.gekYongOH||'미성격→조후용신 적용')+'\n'
     +'조후용신(궁통보감): '+yong.yongsin+' / 희신: '+yong.hesin+'\n'
     +'격 활성도: '+gek.gekStrength+'% ('+gek.gekStrengthLabel+')'
@@ -4057,7 +4080,8 @@ function buildGekPrompt(s){
     +'③ 격 활성도가 낮을 경우(공망·다중손상) — 실제로 작동하는 보조 구조가 무엇인가\n'
     +'④ 格局용신과 조후용신 일치 여부 — 충돌 시 어느 쪽을 우선하는가\n'
     +'⑤ 최종 용신 오행과 格局명을 확정해주세요\n'
-    +'⑥ 확정된 용신 오행 기준으로 음식·운동·직업 추천 방향도 알려주세요';
+    +'⑥ 확정된 용신 오행 기준으로 음식·운동·직업 추천 방향도 알려주세요'
+    +_plainLangMini();
 }
 
 // ── 원국 합충형파해 전체 계산 함수 ──────────────────────────────────────
@@ -4177,6 +4201,26 @@ function calcHapChungAll(pillars){
   return results.length>0 ? results.join('\n') : '해당 없음 (원국 내 합충형파해 없음)';
 }
 
+// ── 일반인 친화 출력 언어 지침 (통변_출력언어_일반인.txt 기반) ──
+// 표준판: 종합간명(2번)처럼 해석 범위가 넓은 프롬프트용
+function _plainLangGuide(){
+  return '\n\n[출력 언어]\n'
+    +'· 한자·전문용어 금지. 첫 등장 시만 괄호로 쉬운 말 병기 후 일상어로 전환\n'
+    +'  (格局→삶의 큰 틀, 용신→필요 에너지, 신강/신약→기운이 충분/부족,\n'
+    +'   합충형=끌림/충돌/비틀림, 공망=비어있는 글자, 극/생=압박/힘 실어줌)\n'
+    +'· 오행은 자연 이미지로(木=봄나무, 火=불꽃, 土=땅, 金=쇠붙이, 水=물)\n'
+    +'· 십신은 삶의 역할로(식신=꾸준한 재능, 상관=틀 깨는 창의, 정관=책임·명예,\n'
+    +'   편관=외부 압박, 정인=후원·배움, 편인=직관, 정재/편재=성실한 결실/유동적 기회)\n'
+    +'· 길흉 단정(흉·망함) 금지 → "이 시기는 ○○ 에너지가 강해진다"로\n'
+    +'· 분석 과정·점수 노출 금지, 결론만 구체적 생활 장면으로 서술\n'
+    +'· 대운 서술: 밝은 면 / 조심할 면 / 잘 보내려면 — 3단 구조';
+}
+// 미니판: 주제가 좁은 프롬프트용(건강·직업·궁합·오늘전략·格局검증)
+function _plainLangMini(){
+  return '\n\n[출력 언어] 한자·전문용어는 첫 등장 시 괄호로 쉬운 말 병기 후 일상어만. '
+    +'오행은 자연 이미지, 십신은 삶의 역할로. 길흉 단정 금지, 구체적 삶의 장면으로 서술.';
+}
+
 function build2ndPrompt(s, gdOverride){
   const{pillars,dc,daeun,gongmang}=s;
   const yr=parseInt(document.getElementById('yr').value);
@@ -4250,17 +4294,7 @@ function build2ndPrompt(s, gdOverride){
     '⑦ 실질적 삶의 방향과 주의사항 (구체적으로)\n'+
     '⑧ 일주론(日柱論) 특성을 格局·용신 해석과 연계하여 반영해주세요\n\n'+
     '[일주] '+CG[pillars[2].cg]+JJ[pillars[2].jj]+'('+CG_KR[pillars[2].cg]+JJ_KR[pillars[2].jj]+')'+
-    '\n\n[일반인 친화 설명 원칙 — 반드시 준수]\n'+
-    '① 사주명리 전문용어를 처음 쓸 때는 반드시 괄호 안에 쉬운 말로 풀어쓴다\n'+
-    '   예) 식신격(타고난 재능을 꾸준히 표현하는 삶의 구조), 용신(내게 가장 필요한 에너지),\n'+
-    '       기신(내 에너지를 소모시키는 방향), 대운(10년 단위로 바뀌는 인생의 큰 흐름),\n'+
-    '       신강(에너지가 강하고 넘치는 상태), 신약(에너지가 부족한 상태),\n'+
-    '       통근(힘이 지지를 받아 안정된 상태), 합(두 기운이 만나 변화), 충(두 기운이 충돌)\n'+
-    '② 한자·오행은 반드시 한국어로 풀어 설명\n'+
-    '   예) 甲木 → 갑목(큰 나무의 기운), 壬水 → 임수(큰 강·바다의 기운)\n'+
-    '③ 전문 분석은 유지하되 결론은 반드시 일반인이 이해할 수 있는 생활 언어로 마무리\n'+
-    '④ 각 항목의 마지막은 "실생활에서는 어떤 의미인가"로 연결\n'+
-    '⑤ 어렵고 딱딱한 고전 용어 설명보다 독자가 자신의 삶과 연결할 수 있는 구체적 예시를 든다';
+    _plainLangGuide();
 }
 
 function toggleOrigin(){
@@ -4395,7 +4429,8 @@ function buildCopyText(s, gdOverride){
   return'아래 사주를 종합 간명해주세요.\n\n'+
     '성별: '+gd+'성\n\n'+
     '[사주 원국]\n'+pillarStr+'\n\n'+
-    '[대운] '+dir+' | '+daeun.sy+'세 시작\n'+dStr+cdStr;
+    '[대운] '+dir+' | '+daeun.sy+'세 시작\n'+dStr+cdStr+
+    _plainLangMini();
 }
 
 
@@ -4639,7 +4674,7 @@ function buildCompatPrompt(s1, s2, r1, r2, r3, r4, verdict){
 ② 오행 한난조습 보완 관계 (궁통보감 기준)
 ③ 배우자성 강약 — 남성 정재, 여성 정관의 원국 위치와 상태
 ④ 두 사람 대운 방향의 일치 여부
-⑤ 상대방이 나에게 어떤 에너지 역할을 하는지 종합 정리`;
+⑤ 상대방이 나에게 어떤 에너지 역할을 하는지 종합 정리${_plainLangMini()}`;
 }
 
 
@@ -4718,7 +4753,8 @@ function renderCareer(s){
     +"② 천직용신("+gekOH+")과 본성용신("+chohuOH+")이 다를 때 어떻게 조화시킬지\n"
     +"③ 현재 대운에서 어떤 직업적 전환이 유리한지\n"
     +"④ 피해야 할 직업 환경과 그 이유\n"
-    +"⑤ 나의 에너지 코드에 최적화된 커리어 전략";
+    +"⑤ 나의 에너지 코드에 최적화된 커리어 전략"
+    +_plainLangMini();
 
   const aiAcc=makeAcc("🤖 AI 직업 심층 분석 프롬프트",
     "<div style='padding:4px 0'>"
@@ -4727,7 +4763,7 @@ function renderCareer(s){
     +"</div>","#7a6040");
 
   const firstTab = 'gek';
-  const gekTabLabel  = '천직 에너지 (格局용신)';
+  const gekTabLabel  = '천직 에너지 (격국용신)';
   const choTabLabel  = '본성 에너지 (조후용신)';
   const _cTabId='c_yong_tab_'+dc+'_'+moIdx;
   const switchFn="switchCareerTab_"+_cTabId;
@@ -4987,7 +5023,9 @@ function buildTodayStrategyText(s, gdOverride, targetDate){
     '[현재 대운]  '+(cd?CG[cd.cg]+JJ[cd.jj]+' ('+CG_KR[cd.cg]+JJ_KR[cd.jj]+')  '+cdAge:'미상')+'\n\n'+
     '[세  운]    '+CG[t.year.cg]+JJ[t.year.jj]+' ('+CG_KR[t.year.cg]+JJ_KR[t.year.jj]+')\n'+
     '[월  운]    '+CG[t.month.cg]+JJ[t.month.jj]+' ('+CG_KR[t.month.cg]+JJ_KR[t.month.jj]+')\n'+
-    '[일  진]    '+CG[t.day.cg]+JJ[t.day.jj]+' ('+CG_KR[t.day.cg]+JJ_KR[t.day.jj]+')';
+    '[일  진]    '+CG[t.day.cg]+JJ[t.day.jj]+' ('+CG_KR[t.day.cg]+JJ_KR[t.day.jj]+')\n\n'+
+    '위 원국·대운·세운·월운·일진을 종합해 오늘의 에너지 흐름과 실천 방향을 짧게 알려주세요.'+
+    _plainLangMini();
 }
 
 function setTodayGender(gd){
